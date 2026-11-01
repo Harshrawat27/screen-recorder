@@ -40,10 +40,10 @@ export function Footer() {
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-5 py-10 text-sm text-slate sm:flex-row sm:items-center sm:justify-between sm:px-8">
         <Logo />
         <nav className="flex gap-6">
-          <Link href="/privacy/" className="hover:text-ink">
+          <Link href="/privacy" className="hover:text-ink">
             Privacy
           </Link>
-          <Link href="/terms/" className="hover:text-ink">
+          <Link href="/terms" className="hover:text-ink">
             Terms
           </Link>
           <a href={`mailto:${site.contactEmail}`} className="hover:text-ink">
