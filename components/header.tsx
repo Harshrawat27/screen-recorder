@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { site } from "@/lib/site";
+import { betaHref, site } from "@/lib/site";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { LogoMark, buttonClass } from "@/components/ui";
 
 export function Logo() {
   return (
-    <Link href="/" className="flex items-center gap-2.5 font-semibold tracking-tight">
-      <span aria-hidden className="grid size-6 place-items-center rounded-full bg-ink">
-        <span className="size-2.5 rounded-full bg-rec" />
-      </span>
+    <Link href="/" className="flex items-center gap-2.5 text-[17px] font-bold tracking-tight text-text">
+      <LogoMark />
       {site.name}
     </Link>
   );
@@ -14,22 +14,24 @@ export function Logo() {
 
 export function Header() {
   return (
-    <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-6 sm:px-8">
-      <Logo />
-      <nav className="flex items-center gap-6 text-sm">
-        <a href="#pricing" className="hidden text-slate hover:text-ink sm:inline">
-          Pricing
-        </a>
-        <a href="#faq" className="hidden text-slate hover:text-ink sm:inline">
-          Questions
-        </a>
-        <a
-          href={`mailto:${site.contactEmail}?subject=${encodeURIComponent(`${site.name} beta`)}`}
-          className="rounded-full bg-ink px-4 py-2 font-medium text-paper hover:bg-ink/90"
-        >
-          Join the beta
-        </a>
-      </nav>
+    <header className="sticky top-0 z-20 border-b border-line/70 bg-canvas/85 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
+        <Logo />
+        <nav className="flex items-center gap-1">
+          <div className="hidden items-center gap-1 sm:flex">
+            <Link href="/#pricing" className={buttonClass("ghost", "sm")}>
+              Pricing
+            </Link>
+            <Link href="/#how" className={buttonClass("ghost", "sm")}>
+              How it works
+            </Link>
+          </div>
+          <ThemeToggle />
+          <a href={betaHref} className={buttonClass("primary", "sm", "ml-2")}>
+            Join the beta
+          </a>
+        </nav>
+      </div>
     </header>
   );
 }
@@ -37,16 +39,16 @@ export function Header() {
 export function Footer() {
   return (
     <footer className="border-t border-line">
-      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-5 py-10 text-sm text-slate sm:flex-row sm:items-center sm:justify-between sm:px-8">
+      <div className="mx-auto flex max-w-6xl flex-col gap-5 px-5 py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between sm:px-8">
         <Logo />
         <nav className="flex gap-6">
-          <Link href="/privacy" className="hover:text-ink">
+          <Link href="/privacy" className="hover:text-text">
             Privacy
           </Link>
-          <Link href="/terms" className="hover:text-ink">
+          <Link href="/terms" className="hover:text-text">
             Terms
           </Link>
-          <a href={`mailto:${site.contactEmail}`} className="hover:text-ink">
+          <a href={`mailto:${site.contactEmail}`} className="hover:text-text">
             Contact
           </a>
         </nav>

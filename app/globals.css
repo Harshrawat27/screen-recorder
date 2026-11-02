@@ -1,46 +1,130 @@
 @import "tailwindcss";
 
-@theme {
-  --color-fog: #eef1f5;
-  --color-paper: #ffffff;
-  --color-ink: #0f2340;
-  --color-slate: #56657a;
-  --color-line: #d3dae3;
-  --color-rec: #e5322d;
-  --font-sans: var(--font-schibsted), ui-sans-serif, system-ui, sans-serif;
+/* Showthrough design tokens. See BRAND.md and /brand.
+   Components use the semantic names (bg-canvas, text-muted, bg-brand…), never raw hex,
+   so light and dark themes switch by changing these variables only. */
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  color-scheme: light;
+
+  /* Brand: Ember. Orange is a signal, not decoration. */
+  --brand: #fa6717;
+  --brand-hover: #e8570b;
+  --brand-soft: #fff0e6;
+  --brand-ink: #c2410c; /* orange text on light surfaces (4.8:1 on canvas) */
+  --on-brand: #18181b; /* text on orange fills: ink, for 5.9:1 contrast */
+
+  /* Neutrals */
+  --canvas: #f6f6f4; /* page background, off-white */
+  --surface: #ffffff; /* cards, panels, inputs */
+  --sunken: #efefec; /* wells, skeletons, hover fills */
+  --line: #e3e3df;
+  --line-strong: #d0d0cb;
+  --text: #18181b;
+  --muted: #5b5b63;
+  --faint: #76767e;
+
+  /* Video stage: the frame around recordings in both themes */
+  --stage: #1c1c1f;
+
+  /* Status */
+  --rec: #fa6717;
+  --success: #16a34a;
+  --danger: #dc2626;
+
+  --shadow-pop: 0 1px 2px rgb(24 24 27 / 0.06), 0 12px 32px -12px rgb(24 24 27 / 0.18);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --brand: #fa6717;
+  --brand-hover: #ff7a30;
+  --brand-soft: rgb(250 103 23 / 0.14);
+  --brand-ink: #ff8a4c;
+  --on-brand: #18181b;
+
+  --canvas: #141416; /* dark grey, not black */
+  --surface: #1c1c1f;
+  --sunken: #232327;
+  --line: #2c2c31;
+  --line-strong: #3b3b42;
+  --text: #f4f4f5;
+  --muted: #a6a6ae;
+  --faint: #8a8a92;
+
+  --stage: #0f0f11;
+
+  --rec: #fa6717;
+  --success: #22c55e;
+  --danger: #f87171;
+
+  --shadow-pop: 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 40px -16px rgb(0 0 0 / 0.6);
+}
+
+@theme inline {
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-ink: var(--brand-ink);
+  --color-on-brand: var(--on-brand);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-sunken: var(--sunken);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-stage: var(--stage);
+  --color-rec: var(--rec);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-control: 10px; /* buttons, inputs, pills' inner parts */
+  --radius-card: 16px; /* cards, menus */
+  --radius-panel: 24px; /* large panels, video frames */
+
+  --shadow-pop: var(--shadow-pop);
 }
 
 html {
-  background: var(--color-fog);
-  color: var(--color-ink);
+  background: var(--canvas);
+  color: var(--text);
 }
 
 body {
   font-family: var(--font-sans);
-  font-feature-settings: "ss01";
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background: var(--color-ink);
-  color: var(--color-paper);
+  background: var(--brand);
+  color: var(--on-brand);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-ink);
+  outline: 2px solid var(--brand);
   outline-offset: 3px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .tabular {
   font-variant-numeric: tabular-nums;
 }
 
+/* Recording dot: the only looping motion in the product. */
 @keyframes rec-pulse {
   50% {
-    opacity: 0.25;
+    opacity: 0.3;
   }
 }
-
 .rec-dot {
   animation: rec-pulse 1.4s ease-in-out infinite;
 }
@@ -51,55 +135,65 @@ body {
   }
 }
 
-.range-light {
+/* Range input in brand colors */
+.range {
   appearance: none;
   height: 28px;
   background: transparent;
   cursor: pointer;
 }
-.range-light::-webkit-slider-runnable-track {
-  height: 4px;
-  border-radius: 2px;
-  background: rgb(255 255 255 / 0.25);
+.range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--brand) var(--fill, 0%), var(--sunken) var(--fill, 0%));
 }
-.range-light::-moz-range-track {
-  height: 4px;
-  border-radius: 2px;
-  background: rgb(255 255 255 / 0.25);
+.range::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--sunken);
 }
-.range-light::-webkit-slider-thumb {
+.range::-moz-range-progress {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--brand);
+}
+.range::-webkit-slider-thumb {
   appearance: none;
   width: 22px;
   height: 22px;
-  margin-top: -9px;
+  margin-top: -8px;
   border-radius: 50%;
-  background: var(--color-paper);
+  background: var(--surface);
+  border: 2px solid var(--brand);
+  box-shadow: var(--shadow-pop);
 }
-.range-light::-moz-range-thumb {
-  width: 22px;
-  height: 22px;
-  border: 0;
+.range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: var(--color-paper);
-}
-.range-light:focus-visible {
-  outline-color: var(--color-paper);
+  background: var(--surface);
+  border: 2px solid var(--brand);
 }
 
+/* Long-form text (privacy, terms) */
 .prose-legal h2 {
   font-size: 1.25rem;
   font-weight: 650;
   margin: 2.5rem 0 0.75rem;
+  color: var(--text);
 }
-
 .prose-legal p,
 .prose-legal li {
-  color: var(--color-slate);
+  color: var(--muted);
   line-height: 1.7;
   margin-bottom: 0.75rem;
 }
-
 .prose-legal ul {
   list-style: disc;
   padding-left: 1.25rem;
+}
+.prose-legal a {
+  color: var(--brand-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }

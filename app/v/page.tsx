@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Logo } from "@/components/header";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Player } from "@/components/player";
 
 export const metadata: Metadata = {
@@ -12,8 +13,9 @@ export const metadata: Metadata = {
 export default function VideoPage() {
   return (
     <div className="min-h-screen">
-      <header className="mx-auto flex max-w-6xl items-center px-5 py-5 sm:px-8">
+      <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
         <Logo />
+        <ThemeToggle />
       </header>
       <main className="mx-auto max-w-6xl px-5 pb-16 sm:px-8">
         <Player />

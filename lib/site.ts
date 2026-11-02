@@ -1,10 +1,11 @@
-// Everything that may change once the product name and pricing are final.
+// Everything that may change: name, domain, price, contact.
 export const site = {
-  name: "BYO Recorder",
-  domain: "videos.harshraw.at",
-  url: "https://videos.harshraw.at",
+  name: "Showthrough",
+  domain: "showthrough.com",
+  url: "https://www.showthrough.com",
+  tagline: "Screen recording you own.",
   description:
-    "A screen recorder like Loom that keeps your videos in your own free Cloudflare account. Pay once instead of paying per person, per month.",
+    "Record your screen and share a link in seconds. Videos live in your own free Cloudflare storage, and you pay once instead of per person, per month.",
   contactEmail: "harsh.webflow@gmail.com",
   price: {
     amount: 39,
@@ -17,3 +18,5 @@ export const site = {
   },
   chromeStoreUrl: null as string | null,
 } as const;
+
+export const betaHref = `mailto:${site.contactEmail}?subject=${encodeURIComponent(`${site.name} beta`)}`;

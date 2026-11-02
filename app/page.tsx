@@ -1,47 +1,23 @@
 import { Footer, Header } from "@/components/header";
-import { RecorderPreview } from "@/components/recorder-preview";
+import { HeroVisual } from "@/components/hero-visual";
 import { Savings } from "@/components/savings";
-import { site } from "@/lib/site";
+import { CheckIcon, buttonClass } from "@/components/ui";
+import { betaHref, site } from "@/lib/site";
+
+const proof = ["Link ready the moment you stop", "Works in Chrome on Mac, Windows and Chromebooks", "Videos stay in your own cloud"];
 
 const steps = [
   {
     title: "Connect your Cloudflare",
-    body: "Create a free Cloudflare account if you don't have one, then click Allow. We set up your private video storage in about 30 seconds.",
+    body: "Sign in to a free Cloudflare account and click Allow. We set up your private video storage in about 30 seconds.",
   },
   {
-    title: "Add the Chrome extension",
-    body: "Record your screen, your voice and your camera bubble. Works on Mac, Windows and Chromebooks.",
+    title: "Record from Chrome",
+    body: "Your screen, your voice and a camera bubble. The video uploads while you talk.",
   },
   {
-    title: "Stop and paste",
-    body: "The video uploads while you talk, so the link is copied the moment you stop. It plays instantly for whoever opens it.",
-  },
-];
-
-const faqs = [
-  {
-    q: "Do I need a Cloudflare account?",
-    a: "Yes. It's free, and it's where your videos are stored. If you don't have one, you can create it during setup in about a minute.",
-  },
-  {
-    q: "Is the storage really free?",
-    a: "Cloudflare's free tier includes 10 GB of storage, which is roughly 10 hours of recordings, and watching videos never costs anything. After that, Cloudflare charges about $0.015 per GB each month, so 100 GB is around $1.50.",
-  },
-  {
-    q: "Can you see my videos or my other Cloudflare data?",
-    a: "No. Your videos live in your Cloudflare account and play from there. We only ask for access to storage and to the small app that runs your video links, never your websites, DNS or billing. We recommend a separate Cloudflare account just for videos.",
-  },
-  {
-    q: "What do you actually store?",
-    a: "Your email, your license, your team list and the total minutes you've recorded. That's it.",
-  },
-  {
-    q: "What happens to my videos if you shut down?",
-    a: "They stay where they are: in your Cloudflare account, with links that keep working.",
-  },
-  {
-    q: "Can my whole team use it?",
-    a: "Yes. Invite teammates by email and everyone records into your company's storage. Remove someone and their access stops right away.",
+    title: "Stop and paste the link",
+    body: "It's copied the moment you stop and plays instantly for whoever opens it. No account needed to watch.",
   },
 ];
 
@@ -50,93 +26,81 @@ export default function Home() {
     <>
       <Header />
       <main>
-        <section className="mx-auto grid max-w-6xl items-center gap-16 px-5 pb-24 pt-10 sm:px-8 lg:grid-cols-[1.05fr_1fr] lg:pt-20">
+        {/* Hero */}
+        <section className="mx-auto grid max-w-6xl items-center gap-16 px-5 pb-28 pt-14 sm:px-8 lg:grid-cols-[1fr_1.05fr] lg:pt-24">
           <div>
-            <h1 className="max-w-[14ch] text-5xl font-semibold leading-[1.02] tracking-[-0.035em] sm:text-7xl">
-              Record your screen. Skip the per-seat bill.
+            <h1 className="max-w-[13ch] text-[44px] font-bold leading-[1.02] tracking-[-0.04em] sm:text-[64px]">
+              Show it once. Skip the meeting.
             </h1>
-            <p className="mt-6 max-w-[46ch] text-lg leading-relaxed text-slate">
-              A screen recorder like Loom that keeps your videos in your own free Cloudflare account. Pay{" "}
-              {`$${site.price.amount}`} once for your whole team.
+            <p className="mt-6 max-w-[48ch] text-lg leading-relaxed text-muted">
+              {site.name} records your screen, camera and voice, and the link is ready the moment you stop. Videos live in your own free
+              Cloudflare storage, so you pay ${site.price.amount} once, not per person every month.
             </p>
-            <div className="mt-9 flex flex-wrap items-center gap-4">
-              <a
-                href={`mailto:${site.contactEmail}?subject=${encodeURIComponent(`${site.name} beta`)}`}
-                className="rounded-full bg-ink px-6 py-3.5 font-medium text-paper hover:bg-ink/90"
-              >
+            <div className="mt-9 flex flex-wrap gap-3">
+              <a href={betaHref} className={buttonClass("primary", "lg")}>
                 Join the beta
               </a>
-              <a href="#pricing" className="px-2 py-3.5 font-medium underline decoration-line underline-offset-4 hover:decoration-ink">
-                See how much you’d save
+              <a href="#pricing" className={buttonClass("secondary", "lg")}>
+                See what you&rsquo;d save
               </a>
             </div>
+            <ul className="mt-10 space-y-2.5 text-[15px] text-muted">
+              {proof.map((item) => (
+                <li key={item} className="flex items-center gap-2.5">
+                  <span className="grid size-5 place-items-center rounded-full bg-brand-soft text-brand-ink">
+                    <CheckIcon className="size-3.5" />
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
-          <RecorderPreview />
+          <HeroVisual />
         </section>
 
-        <section id="pricing" className="mx-auto max-w-6xl scroll-mt-8 px-5 pb-28 sm:px-8">
-          <h2 className="mb-8 max-w-[22ch] text-3xl font-semibold tracking-tight sm:text-4xl">
-            Loom charges for every person, every month.
-          </h2>
-          <Savings />
+        {/* Pricing */}
+        <section id="pricing" className="scroll-mt-20 border-y border-line bg-surface/50">
+          <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-24 sm:px-8 lg:grid-cols-[0.9fr_1.1fr]">
+            <div>
+              <h2 className="max-w-[16ch] text-4xl font-bold leading-[1.08] tracking-[-0.03em] sm:text-5xl">
+                Loom bills every person, every month.
+              </h2>
+              <p className="mt-5 max-w-[42ch] text-lg leading-relaxed text-muted">
+                {site.name} is ${site.price.amount}, once, for your whole team. Your videos sit in your own Cloudflare account, where
+                storage is free up to 10 GB and pennies after that.
+              </p>
+            </div>
+            <Savings />
+          </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-5 pb-28 sm:px-8">
-          <h2 className="max-w-[22ch] text-3xl font-semibold tracking-tight sm:text-4xl">
-            Two minutes from sign-up to your first link.
+        {/* How it works */}
+        <section id="how" className="mx-auto max-w-6xl scroll-mt-20 px-5 py-24 sm:px-8">
+          <h2 className="max-w-[20ch] text-4xl font-bold leading-[1.08] tracking-[-0.03em] sm:text-5xl">
+            From sign-up to your first link in two minutes.
           </h2>
-          <ol className="mt-12 grid gap-10 md:grid-cols-3">
+          <ol className="mt-14 grid gap-10 md:grid-cols-3 md:gap-8">
             {steps.map((step, i) => (
-              <li key={step.title} className="border-t-2 border-ink pt-5">
-                <span className="tabular text-sm font-medium text-slate">Step {i + 1}</span>
-                <h3 className="mt-2 text-xl font-semibold tracking-tight">{step.title}</h3>
-                <p className="mt-3 max-w-[38ch] leading-relaxed text-slate">{step.body}</p>
+              <li key={step.title}>
+                <span className="tabular grid size-10 place-items-center rounded-full bg-brand-soft text-base font-bold text-brand-ink">
+                  {i + 1}
+                </span>
+                <h3 className="mt-5 text-xl font-bold tracking-tight">{step.title}</h3>
+                <p className="mt-2.5 max-w-[36ch] leading-relaxed text-muted">{step.body}</p>
               </li>
             ))}
           </ol>
-        </section>
-
-        <section className="mx-auto max-w-6xl px-5 pb-28 sm:px-8">
-          <div className="grid gap-12 rounded-3xl border border-line bg-paper p-8 sm:p-12 lg:grid-cols-[1fr_1.4fr]">
-            <h2 className="max-w-[16ch] text-3xl font-semibold tracking-tight sm:text-4xl">
-              Your videos never touch our servers.
-            </h2>
-            <div className="grid gap-8 sm:grid-cols-2">
-              <div>
-                <h3 className="font-semibold">In your Cloudflare account</h3>
-                <ul className="mt-3 space-y-2 text-slate">
-                  <li>Every video</li>
-                  <li>The player your viewers see</li>
-                  <li>Views and comments</li>
-                  <li>Your own domain, if you add one</li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="font-semibold">With us</h3>
-                <ul className="mt-3 space-y-2 text-slate">
-                  <li>Your email and license</li>
-                  <li>Your team list</li>
-                  <li>Total minutes recorded</li>
-                </ul>
-              </div>
+          <div className="mt-16 flex flex-col items-start justify-between gap-6 rounded-panel bg-stage p-8 text-white dark:border dark:border-line sm:flex-row sm:items-center sm:p-10">
+            <div>
+              <p className="text-2xl font-bold tracking-tight">Your videos never touch our servers.</p>
+              <p className="mt-2 max-w-[56ch] text-white/65">
+                They&rsquo;re stored in your Cloudflare account and stream from there. We keep your email, your license and the number of
+                minutes you&rsquo;ve recorded. That&rsquo;s it.
+              </p>
             </div>
-          </div>
-        </section>
-
-        <section id="faq" className="mx-auto max-w-3xl scroll-mt-8 px-5 pb-28 sm:px-8">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Questions</h2>
-          <div className="mt-8 divide-y divide-line border-y border-line">
-            {faqs.map((f) => (
-              <details key={f.q} className="group py-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-medium [&::-webkit-details-marker]:hidden">
-                  {f.q}
-                  <span aria-hidden className="text-2xl leading-none text-slate transition-transform group-open:rotate-45">
-                    +
-                  </span>
-                </summary>
-                <p className="mt-3 max-w-[62ch] leading-relaxed text-slate">{f.a}</p>
-              </details>
-            ))}
+            <a href={betaHref} className={buttonClass("primary", "lg", "shrink-0")}>
+              Join the beta
+            </a>
           </div>
         </section>
       </main>

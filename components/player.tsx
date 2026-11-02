@@ -2,6 +2,7 @@
 
 import Hls from "hls.js";
 import Link from "next/link";
+import { buttonClass } from "@/components/ui";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { site } from "@/lib/site";
 
@@ -102,12 +103,12 @@ export function Player() {
 
   return (
     <div>
-      <div className="relative aspect-video overflow-hidden rounded-2xl bg-ink">
+      <div className="relative aspect-video overflow-hidden rounded-panel bg-stage">
         {problem ? (
-          <div role="alert" className="absolute inset-0 grid place-items-center p-8 text-center text-paper">
+          <div role="alert" className="absolute inset-0 grid place-items-center p-8 text-center text-white">
             <div className="max-w-md">
               <h1 className="text-2xl font-semibold tracking-tight">{problem.title}</h1>
-              <p className="mt-3 leading-relaxed text-paper/70">{problem.body}</p>
+              <p className="mt-3 leading-relaxed text-white/70">{problem.body}</p>
             </div>
           </div>
         ) : (
@@ -121,7 +122,7 @@ export function Player() {
           />
         )}
         {shown === "live" && (
-          <span className="absolute left-4 top-4 flex items-center gap-2 rounded-full bg-paper px-3 py-1 text-sm font-medium">
+          <span className="absolute left-4 top-4 flex items-center gap-2 rounded-full bg-surface px-3 py-1 text-sm font-semibold text-text">
             <span className="rec-dot size-2 rounded-full bg-rec" />
             Recording now
           </span>
@@ -129,9 +130,9 @@ export function Player() {
       </div>
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
-        <p className="text-sm text-slate">
+        <p className="text-sm text-muted">
           Recorded with{" "}
-          <Link href="/" className="font-medium text-ink underline decoration-line underline-offset-4 hover:decoration-ink">
+          <Link href="/" className="font-semibold text-text underline decoration-line-strong underline-offset-4 hover:decoration-brand">
             {site.name}
           </Link>
           . Stored in the sender&rsquo;s own cloud.
@@ -140,7 +141,7 @@ export function Player() {
           <button
             type="button"
             onClick={copyLink}
-            className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper hover:bg-ink/90"
+            className={buttonClass("primary", "md")}
           >
             {copied ? "Link copied" : "Copy link"}
           </button>
