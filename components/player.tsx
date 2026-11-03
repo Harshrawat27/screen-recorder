@@ -40,9 +40,34 @@ const messages: Record<Exclude<Status, "loading" | "ready" | "live">, { title: s
   },
 };
 
-export function Player() {
+type Meta = { title?: string | null; createdAt?: number | null; durationSec?: number | null };
+
+function recordedAgo(ms: number) {
+  const minutes = Math.round((Date.now() - ms) / 60000);
+  if (minutes < 1) return "just now";
+  if (minutes < 60) return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+  return new Date(ms).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+}
+
+/** Plays an HLS recording. Pass `src` (short links), or it reads #src= from the URL (older links). */
+export function Player({ src: srcProp, metaUrl }: { src?: string; metaUrl?: string } = {}) {
   const hash = useSyncExternalStore(subscribeHash, () => window.location.hash, () => null);
-  const src = readSource(hash);
+  const src = srcProp ?? readSource(hash);
+  const [meta, setMeta] = useState<Meta | null>(null);
+
+  useEffect(() => {
+    if (!metaUrl) return;
+    let cancelled = false;
+    fetch(metaUrl)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => !cancelled && data && setMeta(data))
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [metaUrl]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [status, setStatus] = useState<Status>("loading");
   const [copied, setCopied] = useState(false);
@@ -103,6 +128,12 @@ export function Player() {
 
   return (
     <div>
+      {meta?.title && (
+        <div className="mb-5">
+          <h1 className="text-[28px] font-bold leading-tight tracking-[-0.02em]">{meta.title}</h1>
+          {meta.createdAt && <p className="mt-1 text-sm text-muted">Recorded {recordedAgo(meta.createdAt)}</p>}
+        </div>
+      )}
       <div className="relative aspect-video overflow-hidden rounded-panel bg-stage">
         {problem ? (
           <div role="alert" className="absolute inset-0 grid place-items-center p-8 text-center text-white">

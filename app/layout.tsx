@@ -1,14 +1,14 @@
-import type { Metadata, Viewport } from "next";
-import localFont from "next/font/local";
-import { site } from "@/lib/site";
-import "./globals.css";
-
+import type { Metadata, Viewport } from 'next';
+import localFont from 'next/font/local';
+import { site } from '@/lib/site';
+import './globals.css';
+import { Analytics } from '@vercel/analytics/next';
 // Figtree (SIL Open Font License), self-hosted so builds work offline.
 const figtree = localFont({
-  src: "./fonts/Figtree-Variable.woff2",
-  variable: "--font-figtree",
-  weight: "300 900",
-  display: "swap",
+  src: './fonts/Figtree-Variable.woff2',
+  variable: '--font-figtree',
+  weight: '300 900',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -23,27 +23,30 @@ export const metadata: Metadata = {
     description: site.description,
     url: site.url,
     siteName: site.name,
-    type: "website",
+    type: 'website',
   },
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f6f6f4" },
-    { media: "(prefers-color-scheme: dark)", color: "#141416" },
+    { media: '(prefers-color-scheme: light)', color: '#f6f6f4' },
+    { media: '(prefers-color-scheme: dark)', color: '#141416' },
   ],
 };
 
 // Runs before paint so the saved or system theme never flashes the wrong colors.
 const themeScript = `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='light'}})()`;
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="en" className={figtree.variable} suppressHydrationWarning>
+    <html lang='en' className={figtree.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="min-h-screen bg-canvas text-text">{children}</body>
+      <body className='min-h-screen bg-canvas text-text'>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

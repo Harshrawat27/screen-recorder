@@ -27,7 +27,10 @@ export function Header() {
             </Link>
           </div>
           <ThemeToggle />
-          <a href={betaHref} className={buttonClass("primary", "sm", "ml-2")}>
+          <Link href="/login" className={buttonClass("ghost", "sm")}>
+            Sign in
+          </Link>
+          <a href={betaHref} className={buttonClass("primary", "sm", "ml-1")}>
             Join the beta
           </a>
         </nav>
