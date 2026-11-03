@@ -194,7 +194,8 @@ export async function listVideos(workerUrl: string, uploadKey: string): Promise<
     });
     if (!res.ok) return { videos: [], reachable: false };
     const data = (await res.json()) as { videos: VideoSummary[] };
-    return { videos: data.videos ?? [], reachable: true };
+    // Leftover connection-check files (videos/stcheck…/) are not recordings.
+    return { videos: (data.videos ?? []).filter((v) => !v.id.startsWith("stcheck")), reachable: true };
   } catch {
     return { videos: [], reachable: false };
   }

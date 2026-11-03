@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SignOutButton } from "@/components/auth-buttons";
 import { ConnectCloudflareButton } from "@/components/connect-cloudflare";
+import { ConnectionCheck } from "@/components/connection-check";
 import { Logo } from "@/components/header";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CheckIcon, Pill, buttonClass } from "@/components/ui";
 import { type VideoSummary, listVideos } from "@/lib/cloudflare";
+import { MEDIA_URL } from "@/lib/config";
 import { getWorkspace } from "@/lib/db";
 import { requireSession } from "@/lib/session";
 
@@ -187,6 +189,10 @@ export default async function DashboardPage() {
               <VideoCard key={video.id} video={video} href={`/v/${workspace.space}/${video.id}`} />
             ))}
           </section>
+        )}
+
+        {workspace && (
+          <ConnectionCheck workerUrl={workspace.worker_url} uploadKey={workspace.upload_key} space={workspace.space} mediaBase={MEDIA_URL} />
         )}
 
         {setupDone && (
