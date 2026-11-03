@@ -5,7 +5,7 @@ export const CLOUDFLARE_CLIENT_ID = process.env.NEXT_PUBLIC_CLOUDFLARE_CLIENT_ID
 // Cloudflare OAuth scope names match API token permission names. Change via env if
 // your OAuth client lists them differently (GET /client/v4/oauth/scopes).
 export const CLOUDFLARE_SCOPES =
-  process.env.NEXT_PUBLIC_CLOUDFLARE_SCOPES ?? "account-settings.read workers-scripts.edit workers-r2.write";
+  process.env.NEXT_PUBLIC_CLOUDFLARE_SCOPES ?? "account-settings.read workers-scripts.admin workers-r2.write";
 
 export const CLOUDFLARE_AUTHORIZE_URL =
   process.env.NEXT_PUBLIC_CLOUDFLARE_AUTHORIZE_URL ?? "https://dash.cloudflare.com/oauth2/auth";

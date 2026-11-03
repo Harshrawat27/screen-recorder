@@ -57,6 +57,6 @@ Extra environment variables:
 | --- | --- |
 | `NEXT_PUBLIC_CLOUDFLARE_CLIENT_ID` | Client ID of the Cloudflare OAuth client |
 | `NEXT_PUBLIC_MEDIA_URL` | `https://media.showthrough.com` |
-| `NEXT_PUBLIC_CLOUDFLARE_SCOPES` | Optional. Default `account-settings.read workers-scripts.edit workers-r2.write` |
+| `NEXT_PUBLIC_CLOUDFLARE_SCOPES` | Optional. Default `account-settings.read workers-scripts.admin workers-r2.write` |
 
 If Cloudflare rejects a scope name, list the real ones with `GET https://api.cloudflare.com/client/v4/oauth/scopes` and set `NEXT_PUBLIC_CLOUDFLARE_SCOPES`.
