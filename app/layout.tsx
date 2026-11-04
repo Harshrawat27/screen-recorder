@@ -3,11 +3,18 @@ import localFont from 'next/font/local';
 import { site } from '@/lib/site';
 import './globals.css';
 import { Analytics } from '@vercel/analytics/next';
-// Figtree (SIL Open Font License), self-hosted so builds work offline.
-const figtree = localFont({
-  src: './fonts/Figtree-Variable.woff2',
-  variable: '--font-figtree',
-  weight: '300 900',
+// Self-hosted (SIL Open Font License) so builds work offline.
+// Newsreader for headings, Instrument Sans for body text and buttons.
+const newsreader = localFont({
+  src: './fonts/Newsreader-Variable.woff2',
+  variable: '--font-newsreader',
+  weight: '200 800',
+  display: 'swap',
+});
+const instrumentSans = localFont({
+  src: './fonts/InstrumentSans-Variable.woff2',
+  variable: '--font-instrument-sans',
+  weight: '400 700',
   display: 'swap',
 });
 
@@ -39,7 +46,7 @@ const themeScript = `(function(){try{var t=localStorage.getItem('theme');if(t!==
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang='en' className={figtree.variable} suppressHydrationWarning>
+    <html lang='en' className={`${newsreader.variable} ${instrumentSans.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

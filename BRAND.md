@@ -39,7 +39,7 @@ In code, use the token names (`bg-brand`, `text-muted`, `border-line`), never he
 
 ## Typography
 
-**Figtree**, one family for everything (self-hosted in `app/fonts`). It's friendly without being playful, very readable at small UI sizes, and has tabular numbers for timers and prices (`.tabular`).
+**Newsreader** for headings (`h1`–`h4`, medium weight, slight negative tracking) and **Instrument Sans** for body text, buttons and UI. Both are self-hosted in `app/fonts`. Use `font-display` to put Newsreader on a non-heading element. Tabular numbers for timers and prices: `.tabular`.
 
 | Style | Size / weight / tracking | Use |
 | --- | --- | --- |
@@ -77,7 +77,7 @@ Only the recording dot loops. Everything else moves in response to the user (men
 
 ## Logo
 
-The mark is a screen with a camera bubble in its corner, on an orange tile: the product in one shape. Use it with the wordmark in Figtree Bold. Minimum size 16px. Don't recolor the tile, outline it, or place it on orange.
+The mark is a screen with a camera bubble in its corner, on an orange tile: the product in one shape. Use it with the wordmark in Instrument Sans Bold. Minimum size 16px. Don't recolor the tile, outline it, or place it on orange.
 
 ## Dashboard direction
 

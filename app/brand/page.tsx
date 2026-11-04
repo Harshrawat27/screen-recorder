@@ -34,7 +34,7 @@ const principles = [
   ["Orange is a signal.", "Use it for the one primary action, recording state, progress and a single key number. Never for decoration or large backgrounds."],
   ["Neutrals do the work.", "Layouts are built from canvas, surface and line. Hierarchy comes from type weight and spacing before color."],
   ["Video sits on stage.", "Recordings always appear on the dark stage color, in both themes, so screens look the same everywhere."],
-  ["One family, clear steps.", "Figtree everywhere. Bold (700) for headings, semibold (600) for labels and buttons, regular (400) for reading."],
+  ["Two families, clear roles.", "Newsreader (medium, 500) for headings. Instrument Sans for everything else: semibold (600) for labels and buttons, regular (400) for reading."],
   ["Plain words.", "Name things by what people do: Record, Stop, Copy link. Sentence case, no all-caps labels."],
 ];
 
@@ -84,7 +84,7 @@ export default function BrandPage() {
         </section>
 
         <section className="mt-16">
-          <h2 className="text-[28px] font-bold tracking-[-0.02em]">Type: Figtree</h2>
+          <h2 className="text-[28px] font-bold tracking-[-0.02em]">Type: Newsreader and Instrument Sans</h2>
           <div className="mt-6 divide-y divide-line rounded-card border border-line bg-surface">
             {type.map((t) => (
               <div key={t.name} className="grid gap-2 p-5 sm:grid-cols-[180px_1fr] sm:items-baseline">

@@ -83,7 +83,8 @@
   --color-success: var(--success);
   --color-danger: var(--danger);
 
-  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-newsreader), ui-serif, Georgia, serif;
 
   --radius-control: 10px; /* buttons, inputs, pills' inner parts */
   --radius-card: 16px; /* cards, menus */
@@ -196,4 +197,16 @@ body {
   color: var(--brand-ink);
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+/* Headings use Newsreader. Unlayered on purpose so it wins over weight and tracking
+   utilities on headings: a serif reads best at medium weight with gentle tracking. */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  font-optical-sizing: auto;
 }
