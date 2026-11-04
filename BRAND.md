@@ -19,21 +19,21 @@ Everything else is built from neutrals. Never use orange for large backgrounds o
 
 | Token | Light | Dark | Use |
 | --- | --- | --- | --- |
-| `brand` | `#FA6717` | `#FA6717` | Primary buttons, recording dot, progress, focus ring |
-| `brand-hover` | `#E8570B` | `#FF7A30` | Hover on orange |
-| `brand-soft` | `#FFF0E6` | orange at 14% | Badges, icon backgrounds, selected rows |
-| `brand-ink` | `#C2410C` | `#FF8A4C` | Orange text and links (passes AA) |
+| `brand` | `#F35733` | `#F35733` | Primary buttons, recording dot, progress, focus ring |
+| `brand-hover` | `#E1441F` | `#FF6E4D` | Hover on orange |
+| `brand-soft` | `#FEEDE8` | orange at 14% | Badges, icon backgrounds, selected rows |
+| `brand-ink` | `#C2381A` | `#FF8466` | Orange text and links (passes AA) |
 | `on-brand` | `#18181B` | `#18181B` | Text on orange fills |
-| `canvas` | `#F6F6F4` | `#141416` | Page background (off-white / dark grey) |
-| `surface` | `#FFFFFF` | `#1C1C1F` | Cards, panels, inputs, menus |
-| `sunken` | `#EFEFEC` | `#232327` | Wells, skeletons, hover fills, slider tracks |
-| `line` / `line-strong` | `#E3E3DF` / `#D0D0CB` | `#2C2C31` / `#3B3B42` | Borders, dividers |
+| `canvas` | `#FAFAFA` | `#080808` | Page background |
+| `surface` | `#FFFFFF` | `#111111` | Cards, panels, inputs, menus |
+| `sunken` | `#F2F2F2` | `#1A1A1A` | Wells, skeletons, hover fills, slider tracks |
+| `line` / `line-strong` | `#E1E1E1` / `#CFCFCF` | `#2D2D2D` / `#3D3D3D` | Borders, dividers |
 | `text` | `#18181B` | `#F4F4F5` | Primary text |
 | `muted` | `#5B5B63` | `#A6A6AE` | Secondary text |
 | `faint` | `#76767E` | `#8A8A92` | Captions, hints, timestamps |
-| `stage` | `#1C1C1F` | `#0F0F11` | Frame behind any video, in both themes |
+| `stage` | `#1C1C1F` | `#000000` | Frame behind any video, in both themes |
 
-**Why ink text on orange buttons:** white on `#FA6717` is only 3.0:1 contrast and fails accessibility for normal-size text. Ink on orange is 5.9:1. Keep it.
+**Why ink text on orange buttons:** white on `#F35733` is only 3.4:1 contrast and fails accessibility for normal-size text. Ink on it is 5.2:1. Keep it.
 
 In code, use the token names (`bg-brand`, `text-muted`, `border-line`), never hex values. Dark mode then works automatically.
 

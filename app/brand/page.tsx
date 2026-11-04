@@ -5,18 +5,18 @@ import { Card, LogoMark, Pill, buttonClass } from "@/components/ui";
 export const metadata: Metadata = { title: "Brand", robots: { index: false, follow: false } };
 
 const colors = [
-  { token: "brand", role: "Primary action, recording, progress", light: "#FA6717", dark: "#FA6717" },
-  { token: "brand-hover", role: "Hover on orange", light: "#E8570B", dark: "#FF7A30" },
-  { token: "brand-soft", role: "Tinted backgrounds, badges", light: "#FFF0E6", dark: "Orange 14%" },
-  { token: "brand-ink", role: "Orange text and links", light: "#C2410C", dark: "#FF8A4C" },
-  { token: "canvas", role: "Page background", light: "#F6F6F4", dark: "#141416" },
-  { token: "surface", role: "Cards, panels, inputs", light: "#FFFFFF", dark: "#1C1C1F" },
-  { token: "sunken", role: "Wells, skeletons, hover", light: "#EFEFEC", dark: "#232327" },
-  { token: "line", role: "Borders and dividers", light: "#E3E3DF", dark: "#2C2C31" },
+  { token: "brand", role: "Primary action, recording, progress", light: "#F35733", dark: "#F35733" },
+  { token: "brand-hover", role: "Hover on orange", light: "#E1441F", dark: "#FF6E4D" },
+  { token: "brand-soft", role: "Tinted backgrounds, badges", light: "#FEEDE8", dark: "Orange 14%" },
+  { token: "brand-ink", role: "Orange text and links", light: "#C2381A", dark: "#FF8466" },
+  { token: "canvas", role: "Page background", light: "#FAFAFA", dark: "#080808" },
+  { token: "surface", role: "Cards, panels, inputs", light: "#FFFFFF", dark: "#111111" },
+  { token: "sunken", role: "Wells, skeletons, hover", light: "#F2F2F2", dark: "#1A1A1A" },
+  { token: "line", role: "Borders and dividers", light: "#E1E1E1", dark: "#2D2D2D" },
   { token: "text", role: "Primary text", light: "#18181B", dark: "#F4F4F5" },
   { token: "muted", role: "Secondary text", light: "#5B5B63", dark: "#A6A6AE" },
   { token: "faint", role: "Captions, hints", light: "#76767E", dark: "#8A8A92" },
-  { token: "stage", role: "Frame behind video", light: "#1C1C1F", dark: "#0F0F11" },
+  { token: "stage", role: "Frame behind video", light: "#1C1C1F", dark: "#000000" },
 ];
 
 const type = [
