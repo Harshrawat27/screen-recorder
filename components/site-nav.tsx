@@ -2,12 +2,14 @@ import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LogoMark } from "@/components/ui";
 import { betaHref, site } from "@/lib/site";
+import "./sky-hero.css";
 
-// Floating navbar for the home page hero.
+// Floating navbar, used on the home page and the roadmap.
 const links = [
-  { href: "#how", label: "How it works" },
-  { href: "#pricing", label: "Pricing" },
-  { href: "#faq", label: "FAQ" },
+  { href: "/#how", label: "How it works" },
+  { href: "/#pricing", label: "Pricing" },
+  { href: "/roadmap", label: "Roadmap" },
+  { href: "/#faq", label: "FAQ" },
 ];
 
 export function SiteNav() {

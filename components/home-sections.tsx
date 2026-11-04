@@ -18,12 +18,27 @@ function SectionIntro({ title, body }: { title: string; body: string }) {
 
 /* ---------- Features (bento) ---------- */
 
-function Tile({ title, body, className = "", children }: { title: string; body: string; className?: string; children: React.ReactNode }) {
+function Tile({
+  title,
+  body,
+  soon = false,
+  className = "",
+  children,
+}: {
+  title: string;
+  body: string;
+  soon?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className={`flex flex-col overflow-hidden rounded-[24px] border border-line bg-surface ${className}`}>
       <div className="relative flex-1 bg-sunken/60 p-5 sm:p-6">{children}</div>
       <div className="border-t border-line p-6">
-        <h3 className="text-[24px] leading-tight">{title}</h3>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <h3 className="text-[24px] leading-tight">{title}</h3>
+          {soon && <span className="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold text-muted">Coming soon</span>}
+        </div>
         <p className="mt-2 text-[15px] leading-relaxed text-muted">{body}</p>
       </div>
     </div>
@@ -157,6 +172,57 @@ function SafeVisual() {
   );
 }
 
+function TalkVisual() {
+  const comments = [
+    { who: "Priya", at: "1:12", text: "Can we keep the old button color here?", left: "22%" },
+    { who: "Marco", at: "2:40", text: "This flow is so much clearer. Ship it.", left: "58%" },
+  ];
+  const reactions = [
+    { emoji: "👍", left: "12%" },
+    { emoji: "👀", left: "34%" },
+    { emoji: "❤️", left: "49%" },
+    { emoji: "🎉", left: "66%" },
+    { emoji: "👍", left: "81%" },
+  ];
+  return (
+    <div className="flex h-full min-h-[240px] flex-col justify-center gap-6 px-1 sm:px-6">
+      <div className="grid gap-3 sm:grid-cols-2">
+        {comments.map((c) => (
+          <div key={c.at} className="rounded-2xl border border-line bg-surface p-4 shadow-pop">
+            <div className="flex items-center gap-2.5 text-sm">
+              <span className="grid size-7 place-items-center rounded-full bg-text text-xs font-semibold text-canvas">{c.who[0]}</span>
+              <span className="font-semibold">{c.who}</span>
+              <span className="tabular rounded-md bg-sunken px-1.5 py-0.5 text-xs text-muted">{c.at}</span>
+            </div>
+            <p className="mt-2.5 text-[15px] leading-snug">{c.text}</p>
+          </div>
+        ))}
+      </div>
+      <div className="relative pt-9">
+        {reactions.map((r, i) => (
+          <span
+            key={i}
+            className="absolute top-0 grid size-8 -translate-x-1/2 place-items-center rounded-full border border-line bg-surface text-[15px] shadow-pop"
+            style={{ left: r.left }}
+          >
+            {r.emoji}
+          </span>
+        ))}
+        <div className="relative h-1.5 rounded-full bg-line">
+          <div className="h-full w-[64%] rounded-full bg-text" />
+          {comments.map((c) => (
+            <span key={c.at} className="absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-surface bg-text" style={{ left: c.left }} />
+          ))}
+        </div>
+        <div className="tabular mt-2 flex justify-between text-xs text-muted">
+          <span>2:41</span>
+          <span>4:12</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Features() {
   return (
     <section id="how" className="mx-auto max-w-6xl scroll-mt-6 px-5 py-24 sm:px-8 sm:py-32">
@@ -195,6 +261,14 @@ export function Features() {
           body="Every recording is saved on your computer until it has fully uploaded, so a closed tab or a dropped connection doesn't cost you a take."
         >
           <SafeVisual />
+        </Tile>
+        <Tile
+          soon
+          className="md:col-span-2 lg:col-span-4"
+          title="Comments and reactions"
+          body="Viewers react with an emoji or leave a comment pinned to the exact moment in the video, so feedback lands where it belongs. Stored in your Cloudflare, like your videos."
+        >
+          <TalkVisual />
         </Tile>
       </div>
     </section>
@@ -369,24 +443,27 @@ export function SiteFooter() {
         <div className="grid grid-cols-2 gap-x-16 gap-y-3 text-sm">
           <p className="font-semibold">Product</p>
           <p className="font-semibold">Company</p>
-          <a href="#how" className="text-muted hover:text-text">
+          <a href="/#how" className="text-muted hover:text-text">
             Features
           </a>
           <Link href="/privacy" className="text-muted hover:text-text">
             Privacy
           </Link>
-          <a href="#pricing" className="text-muted hover:text-text">
+          <a href="/#pricing" className="text-muted hover:text-text">
             Pricing
           </a>
           <Link href="/terms" className="text-muted hover:text-text">
             Terms
           </Link>
-          <a href="#faq" className="text-muted hover:text-text">
+          <a href="/#faq" className="text-muted hover:text-text">
             FAQ
           </a>
           <a href={`mailto:${site.contactEmail}`} className="text-muted hover:text-text">
             Contact
           </a>
+          <Link href="/roadmap" className="text-muted hover:text-text">
+            Roadmap
+          </Link>
         </div>
       </div>
       <div className="mt-14 flex flex-col justify-between gap-2 border-t border-line pt-6 text-sm text-faint sm:flex-row">

@@ -52,7 +52,7 @@ function recordedAgo(ms: number) {
 }
 
 /** Plays an HLS recording. Pass `src` (short links), or it reads #src= from the URL (older links). */
-export function Player({ src: srcProp, metaUrl }: { src?: string; metaUrl?: string } = {}) {
+export function Player({ src: srcProp, metaUrl, poster }: { src?: string; metaUrl?: string; poster?: string } = {}) {
   const hash = useSyncExternalStore(subscribeHash, () => window.location.hash, () => null);
   const src = srcProp ?? readSource(hash);
   const [meta, setMeta] = useState<Meta | null>(null);
@@ -148,6 +148,7 @@ export function Player({ src: srcProp, metaUrl }: { src?: string; metaUrl?: stri
             controls
             playsInline
             preload="auto"
+            poster={poster}
             className="absolute inset-0 size-full"
             aria-label="Shared screen recording"
           />
