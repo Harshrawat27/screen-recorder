@@ -65,6 +65,7 @@ Keep reading text under ~75 characters per line (`max-w-[48ch]` to `max-w-[62ch]
 Use `buttonClass(variant, size)` from `components/ui.tsx`:
 
 - `primary`: ink fill, black in light mode and white in dark mode. The main action on a screen (Record, Join the beta, Save).
+  Every primary button also carries the `btn-primary` finish (added automatically by `buttonClass`): a soft light along the top edge, a thin shade along the bottom and a small drop shadow, so it looks raised. If you hand-style a primary button, add the `btn-primary` class.
 - `brand`: orange. Reserved for one special call to action; don't use it elsewhere.
 - `secondary`: surface with a hairline (Copy link, Cancel next to a primary).
 - `ghost`: text only (navigation, tertiary actions).

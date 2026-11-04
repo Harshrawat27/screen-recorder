@@ -1,0 +1,67 @@
+/* Home hero: plain black and white for now. Follows the light and dark theme. */
+.sky {
+  background: var(--canvas);
+}
+
+/* Frosted surface for the navbar and the badge */
+.sky-glass {
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* The library picture rises out of the hero and fades out at the fold. */
+.sky-mock {
+  max-height: 460px;
+  -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent);
+  mask-image: linear-gradient(180deg, #000 72%, transparent);
+}
+
+/* FAQ: hide the default disclosure triangle (Safari) */
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Live dot on the pre-launch badge: brand orange with soft rings pulsing outward. */
+.live-dot {
+  position: relative;
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-right: 2px;
+  border-radius: 9999px;
+  background: #f35733;
+}
+.live-dot::before,
+.live-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #f35733;
+  animation: live-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.live-dot::after {
+  animation-delay: 1.2s;
+}
+@keyframes live-ping {
+  from {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(3.6);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-dot::before,
+  .live-dot::after {
+    animation: none;
+    opacity: 0;
+  }
+  .live-dot {
+    box-shadow: 0 0 0 4px rgb(243 87 51 / 0.2);
+  }
+}

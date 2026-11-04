@@ -9,7 +9,7 @@ const base =
 
 const variants: Record<Variant, string> = {
   // Ink fill: black in light mode, white in dark mode. The main action on a screen.
-  primary: "bg-text text-canvas hover:bg-text/85",
+  primary: "btn-primary bg-text text-canvas hover:bg-text/85",
   // Orange fill with ink text. Reserved for one special call to action; use sparingly.
   brand: "bg-brand text-on-brand hover:bg-brand-hover",
   // Neutral surface with a hairline: secondary actions.
@@ -32,8 +32,8 @@ export function LogoMark({ className = "size-7" }: { className?: string }) {
   return (
     <svg viewBox="0 0 32 32" aria-hidden className={className}>
       <rect width="32" height="32" rx="8" fill="var(--brand)" />
-      <rect x="7" y="8" width="18" height="13" rx="3" fill="#fff" />
-      <circle cx="11.5" cy="21" r="4.5" fill="#18181B" stroke="var(--brand)" strokeWidth="2" />
+      <rect x="7" y="8" width="18" height="13" rx="3" fill="var(--canvas)" />
+      <circle cx="11.5" cy="21" r="4.5" fill="var(--brand)" stroke="var(--brand)" strokeWidth="2" />
     </svg>
   );
 }
