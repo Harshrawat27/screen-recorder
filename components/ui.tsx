@@ -1,15 +1,17 @@
 // Shared building blocks. Every page and the future dashboard should use these
 // instead of styling buttons and cards from scratch.
 
-type Variant = "primary" | "secondary" | "ghost";
+type Variant = "primary" | "secondary" | "ghost" | "brand";
 type Size = "sm" | "md" | "lg";
 
 const base =
   "inline-flex items-center justify-center gap-2 rounded-control font-semibold whitespace-nowrap transition-colors disabled:pointer-events-none disabled:opacity-50";
 
 const variants: Record<Variant, string> = {
-  // Orange fill with ink text: the one primary action on a screen.
-  primary: "bg-brand text-on-brand hover:bg-brand-hover",
+  // Ink fill: black in light mode, white in dark mode. The main action on a screen.
+  primary: "bg-text text-canvas hover:bg-text/85",
+  // Orange fill with ink text. Reserved for one special call to action; use sparingly.
+  brand: "bg-brand text-on-brand hover:bg-brand-hover",
   // Neutral surface with a hairline: secondary actions.
   secondary: "border border-line bg-surface text-text hover:border-line-strong hover:bg-sunken",
   // Text only: tertiary actions, navigation.

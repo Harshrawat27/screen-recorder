@@ -14,12 +14,12 @@ Tokens live in `app/globals.css`; shared components in `components/ui.tsx`.
 
 ## Color
 
-Orange is a **signal**: the one primary action on a screen, the recording state, progress bars, and a single key number.
+Orange is a **signal**: the recording state, progress bars, a single key number, and at most one special call to action. Buttons are black and white.
 Everything else is built from neutrals. Never use orange for large backgrounds or decoration.
 
 | Token | Light | Dark | Use |
 | --- | --- | --- | --- |
-| `brand` | `#F35733` | `#F35733` | Primary buttons, recording dot, progress, focus ring |
+| `brand` | `#F35733` | `#F35733` | One special call to action, recording dot, progress, focus ring |
 | `brand-hover` | `#E1441F` | `#FF6E4D` | Hover on orange |
 | `brand-soft` | `#FEEDE8` | orange at 14% | Badges, icon backgrounds, selected rows |
 | `brand-ink` | `#C2381A` | `#FF8466` | Orange text and links (passes AA) |
@@ -64,7 +64,8 @@ Keep reading text under ~75 characters per line (`max-w-[48ch]` to `max-w-[62ch]
 
 Use `buttonClass(variant, size)` from `components/ui.tsx`:
 
-- `primary`: orange, one per screen (Record, Join the beta, Save).
+- `primary`: ink fill, black in light mode and white in dark mode. The main action on a screen (Record, Join the beta, Save).
+- `brand`: orange. Reserved for one special call to action; don't use it elsewhere.
 - `secondary`: surface with a hairline (Copy link, Cancel next to a primary).
 - `ghost`: text only (navigation, tertiary actions).
 - Sizes `sm` (36px), `md` (44px), `lg` (52px).
@@ -81,4 +82,4 @@ The mark is a screen with a camera bubble in its corner, on an orange tile: the 
 
 ## Dashboard direction
 
-Follow the same tokens: `canvas` page, `surface` sidebar and cards, `line` dividers, video thumbnails on `stage` at 16px radius, a single orange **New video** button top-right, orange only for active nav item indicator, recording states and progress. Light and dark from day one.
+Follow the same tokens: `canvas` page, `surface` sidebar and cards, `line` dividers, video thumbnails on `stage` at 16px radius, a single primary (ink) **New video** button top-right, orange only for active nav item indicator, recording states and progress. Light and dark from day one.

@@ -64,7 +64,7 @@ function VideoCard({ video, href }: { video: VideoSummary; href: string }) {
     <Link href={href} target="_blank" className="group block">
       <div className="relative aspect-video overflow-hidden rounded-card bg-stage">
         <span className="absolute inset-0 grid place-items-center">
-          <span className="grid size-12 place-items-center rounded-full bg-white/10 text-white transition-colors group-hover:bg-brand group-hover:text-on-brand">
+          <span className="grid size-12 place-items-center rounded-full bg-white/10 text-white transition-colors group-hover:bg-white group-hover:text-black">
             <svg viewBox="0 0 12 12" className="ml-0.5 size-4" fill="currentColor" aria-hidden>
               <path d="M3 1.8v8.4L10 6z" />
             </svg>
