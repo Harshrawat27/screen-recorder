@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ConnectCloudflareButton } from "@/components/connect-cloudflare";
 import { ConnectionCheck } from "@/components/connection-check";
 import { PageHeader } from "@/components/dashboard-ui";
 import { pages } from "@/lib/dashboard-pages";
 import { CheckIcon, Pill, buttonClass } from "@/components/ui";
-import { type VideoSummary, listVideos } from "@/lib/cloudflare";
+import { listVideos } from "@/lib/cloudflare";
 import { MEDIA_URL } from "@/lib/config";
 import { getWorkspace } from "@/lib/db";
-import { VideoThumb } from "@/components/video-thumb";
+import { type LibraryFolder, type LibraryVideo, LibraryActions, LibraryView } from "@/components/library-ui";
 import { requireSession } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Library", robots: { index: false } };
@@ -46,26 +45,11 @@ function Step({ n, done, title, body, children }: { n: number; done: boolean; ti
   );
 }
 
-function VideoCard({ video, href, thumb }: { video: VideoSummary; href: string; thumb: string }) {
-  const length = duration(video.durationSec);
-  return (
-    <Link href={href} target="_blank" className="group block">
-      <div className="relative aspect-video overflow-hidden rounded-card bg-stage">
-        <VideoThumb src={thumb} />
-        <span className="absolute inset-0 grid place-items-center">
-          <span className="grid size-12 place-items-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-colors group-hover:bg-white group-hover:text-black">
-            <svg viewBox="0 0 12 12" className="ml-0.5 size-4" fill="currentColor" aria-hidden>
-              <path d="M3 1.8v8.4L10 6z" />
-            </svg>
-          </span>
-        </span>
-        {length && <span className="tabular absolute bottom-2.5 right-2.5 rounded-md bg-black/70 px-1.5 py-0.5 text-xs font-semibold text-white">{length}</span>}
-      </div>
-      <p className="mt-3 truncate font-semibold group-hover:text-brand-ink">{video.title || "Untitled recording"}</p>
-      <p className="text-sm text-muted">{video.ready ? when(video.createdAt) : "Still uploading or interrupted"}</p>
-    </Link>
-  );
-}
+// Sample folders so the layout can be shown before folders are built.
+const exampleFolders: LibraryFolder[] = [
+  { id: "product", name: "Product walkthroughs", videos: 4, people: ["Maya", "Leo"] },
+  { id: "weekly", name: "Weekly updates", videos: 2, people: ["Sam"] },
+];
 
 export default async function DashboardPage() {
   const { user } = await requireSession();
@@ -80,7 +64,9 @@ export default async function DashboardPage() {
 
   return (
     <main className="px-5 py-8 sm:px-10 sm:py-10">
-        <PageHeader title={pages.library.title} description={pages.library.description} />
+        <PageHeader title={pages.library.title} description={pages.library.description}>
+          <LibraryActions />
+        </PageHeader>
 
         {!setupDone && (
           <section aria-labelledby="setup" className="mt-10 max-w-3xl rounded-panel border border-line bg-surface p-6 sm:p-8">
@@ -126,20 +112,29 @@ export default async function DashboardPage() {
           </p>
         )}
 
-        {recorded && workspace && (
-          <section aria-label="Recordings" className="mt-10 grid gap-x-6 gap-y-8 sm:grid-cols-2 xl:grid-cols-3">
-            {videos.map((video) => (
-              <VideoCard
-                key={video.id}
-                video={video}
-                href={`/v/${workspace.space}/${video.id}`}
-                thumb={`${MEDIA_URL}/${workspace.space}/videos/${video.id}/thumb-small.jpg`}
-              />
-            ))}
-          </section>
-        )}
+        {setupDone && workspace ? (
+          <LibraryView
+            author={{ name: user.name, image: user.image }}
+            folders={exampleFolders}
+            videos={videos.map(
+              (video): LibraryVideo => ({
+                id: video.id,
+                title: video.title || "Untitled recording",
+                href: `/v/${workspace.space}/${video.id}`,
+                thumb: `${MEDIA_URL}/${workspace.space}/videos/${video.id}/thumb-small.jpg`,
+                length: duration(video.durationSec),
+                when: when(video.createdAt),
+                ready: video.ready,
+                // Not tracked yet.
+                views: 0,
+                comments: 0,
+                reactions: 0,
+              }),
+            )}
+          />
+        ) : null}
 
-        {workspace && (
+        {workspace && !setupDone && (
           <ConnectionCheck workerUrl={workspace.worker_url} uploadKey={workspace.upload_key} space={workspace.space} mediaBase={MEDIA_URL} />
         )}
 
