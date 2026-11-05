@@ -43,7 +43,6 @@ export default function Privacy() {
         everything listed above. Your videos are yours to delete in Cloudflare.
       </p>
 
-      <p className="mt-10 text-sm">This is an early draft and will be reviewed before launch.</p>
     </LegalPage>
   );
 }

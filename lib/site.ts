@@ -6,11 +6,7 @@ export const site = {
   tagline: "Screen recording you own.",
   description:
     "Record your screen and share a link in seconds. Videos live in your own free Cloudflare storage, and you pay once instead of per person, per month.",
-  contactEmail: "harsh.webflow@gmail.com",
-  price: {
-    amount: 39,
-    label: "one time, for your whole team",
-  },
+  contactEmail: "harshrawat.dev@gmail.com",
   loom: {
     perUserPerMonth: 18,
     planName: "Loom Business, billed monthly",
@@ -19,4 +15,3 @@ export const site = {
   chromeStoreUrl: null as string | null,
 } as const;
 
-export const betaHref = `mailto:${site.contactEmail}?subject=${encodeURIComponent(`${site.name} beta`)}`;

@@ -6,11 +6,11 @@ import { site } from "@/lib/site";
 const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
 const YEARS = 3;
 
-export function Savings() {
+export function Savings({ price }: { price: number }) {
   const [people, setPeople] = useState(10);
   const id = useId();
   const loom = people * site.loom.perUserPerMonth * 12 * YEARS;
-  const ours = site.price.amount;
+  const ours = price;
   const fill = `${((people - 1) / 99) * 100}%`;
   const ourBar = Math.max((ours / loom) * 100, 1.2);
 
@@ -44,10 +44,10 @@ export function Savings() {
         <div>
           <div className="flex items-baseline justify-between gap-4">
             <dt className="font-semibold">{site.name}, ever</dt>
-            <dd className="tabular text-2xl font-bold tracking-tight text-brand-ink">{usd(ours)}</dd>
+            <dd className="tabular text-2xl font-bold tracking-tight">{usd(ours)}</dd>
           </div>
           <div aria-hidden className="mt-2.5 h-3 rounded-full bg-sunken">
-            <div className="h-full rounded-full bg-brand" style={{ width: `${ourBar}%` }} />
+            <div className="h-full rounded-full bg-text" style={{ width: `${ourBar}%` }} />
           </div>
         </div>
       </dl>

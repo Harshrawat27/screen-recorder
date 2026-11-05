@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Savings } from "@/components/savings";
 import { CheckIcon, LogoMark, buttonClass } from "@/components/ui";
-import { betaHref, site } from "@/lib/site";
+import { site } from "@/lib/site";
+import { type TierState, tierStates } from "@/lib/pricing";
 
 // Home page sections below the hero. Black and white for now; every color comes from theme tokens.
 
@@ -88,7 +89,7 @@ function CloudVisual() {
   );
 }
 
-function PriceVisual() {
+function PriceVisual({ price }: { price: number }) {
   return (
     <div className="flex h-full min-h-[200px] flex-col justify-center gap-4">
       <div>
@@ -101,7 +102,7 @@ function PriceVisual() {
       <div>
         <div className="flex justify-between text-sm">
           <span className="font-semibold">{site.name}, forever</span>
-          <span className="tabular font-semibold">${site.price.amount}</span>
+          <span className="tabular font-semibold">${price}</span>
         </div>
         <div className="mt-2 h-2.5 rounded-full bg-line">
           <div className="h-full w-[2%] min-w-2.5 rounded-full bg-text" />
@@ -223,7 +224,7 @@ function TalkVisual() {
   );
 }
 
-export function Features() {
+export function Features({ price }: { price: number }) {
   return (
     <section id="how" className="mx-auto max-w-6xl scroll-mt-6 px-5 py-24 sm:px-8 sm:py-32">
       <SectionIntro
@@ -246,8 +247,8 @@ export function Features() {
         >
           <CloudVisual />
         </Tile>
-        <Tile title="Pay once" body={`$${site.price.amount} for your whole team. No seats, no subscription.`}>
-          <PriceVisual />
+        <Tile title="Pay once" body={`$${price} for your whole team. No seats, no subscription.`}>
+          <PriceVisual price={price} />
         </Tile>
         <Tile title="Camera bubble" body="Put your face in the corner so it feels like a conversation.">
           <BubbleVisual />
@@ -282,37 +283,112 @@ const included = [
   "Screen, camera bubble, mic and tab audio",
   "Every team member, no per-seat pricing",
   "Videos stored in your own Cloudflare",
-  "Every future update, for the first 100 buyers",
 ];
 
-export function Pricing() {
+const badge: Record<TierState, string> = {
+  open: "On sale now",
+  next: "Next",
+  "sold-out": "Sold out",
+  later: "After the first 100",
+};
+
+function TierCard({ name, price, updates, note, state, left, size }: {
+  name: string;
+  price: number;
+  updates: string;
+  note: string;
+  state: TierState;
+  left: number | null;
+  size: number | null;
+}) {
+  const open = state === "open";
+  const faded = state === "sold-out" || state === "later";
+  const hasUpdates = updates.startsWith("Lifetime");
+  return (
+    <div
+      aria-disabled={!open || undefined}
+      className={`flex flex-col rounded-[24px] bg-surface p-7 sm:p-8 ${
+        open ? "border-2 border-text shadow-pop" : "border border-line"
+      } ${faded ? "pointer-events-none select-none opacity-45" : ""}`}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-lg font-semibold">{name}</p>
+        <span
+          className={`rounded-full px-3 py-1 text-xs font-semibold ${open ? "bg-text text-canvas" : "border border-line text-muted"}`}
+        >
+          {badge[state]}
+        </span>
+      </div>
+      <p className="mt-6 flex items-baseline gap-2">
+        <span className="font-display text-[64px] leading-none" style={{ letterSpacing: "-0.03em" }}>
+          ${price}
+        </span>
+        <span className="text-muted">once</span>
+      </p>
+      <p className="mt-2 text-muted">{note}</p>
+
+      <p className="mt-6 flex items-center gap-2.5 text-[15px] font-medium">
+        <span
+          className={`grid size-5 shrink-0 place-items-center rounded-full ${hasUpdates ? "bg-text text-canvas" : "border border-line-strong text-muted"}`}
+        >
+          {hasUpdates ? (
+            <CheckIcon className="size-3" />
+          ) : (
+            <svg viewBox="0 0 12 12" className="size-2.5" fill="none" aria-hidden>
+              <path d="M3 6h6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            </svg>
+          )}
+        </span>
+        {updates}
+      </p>
+
+      {size !== null && left !== null && (
+        <div className="mt-6">
+          <div className="flex justify-between text-sm">
+            <span className="text-muted">{state === "sold-out" ? "All spots taken" : `${left} of ${size} spots left`}</span>
+          </div>
+          <div className="mt-2 h-2 rounded-full bg-sunken">
+            <div className="h-full rounded-full bg-text" style={{ width: `${((size - left) / size) * 100}%` }} />
+          </div>
+        </div>
+      )}
+
+      <div className="mt-auto pt-8">
+        {open ? (
+          <a href="/buy" className={buttonClass("primary", "lg", "w-full rounded-full")}>
+            Buy for ${price}
+          </a>
+        ) : (
+          <span className={buttonClass("secondary", "lg", "w-full cursor-default rounded-full opacity-70")}>
+            {state === "next" ? "Opens after the first 20" : state === "sold-out" ? "Sold out" : "Not on sale yet"}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export function Pricing({ sold, price, notice }: { sold: number; price: number; notice?: React.ReactNode }) {
   return (
     <section id="pricing" className="scroll-mt-6 border-y border-line bg-surface/60">
       <div className="mx-auto max-w-6xl px-5 py-24 sm:px-8 sm:py-32">
         <SectionIntro
           title="One price. Your whole team. Forever."
-          body="Loom charges every person, every month. Showthrough is a one-time purchase, and storage runs on Cloudflare's free tier."
+          body="Loom charges every person, every month. Showthrough is a one-time purchase, and the earlier you buy, the less you pay."
         />
 
-        <div className="mt-14 grid items-start gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-[24px] border-2 border-text bg-surface p-7 shadow-pop sm:p-9">
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-lg font-semibold">Founder</p>
-              <span className="rounded-full bg-text px-3 py-1 text-xs font-semibold text-canvas">First 100 only</span>
-            </div>
-            <p className="mt-6 flex items-baseline gap-2">
-              <span className="font-display text-[72px] leading-none" style={{ letterSpacing: "-0.03em" }}>
-                ${site.price.amount}
-              </span>
-              <span className="text-muted">once</span>
-            </p>
-            <p className="mt-2 text-muted">For your whole team, with every future update included.</p>
+        {notice && <div className="mx-auto mt-10 max-w-3xl">{notice}</div>}
 
-            <a href={betaHref} className={buttonClass("primary", "lg", "mt-8 w-full rounded-full")}>
-              Join the beta
-            </a>
+        <div className="mt-14 grid gap-5 lg:grid-cols-3">
+          {tierStates(sold).map(({ tier, state, left, size }) => (
+            <TierCard key={tier.id} name={tier.name} price={tier.price} updates={tier.updates} note={tier.note} state={state} left={left} size={size} />
+          ))}
+        </div>
 
-            <ul className="mt-8 space-y-3.5 border-t border-line pt-7 text-[15px]">
+        <div className="mt-6 grid items-start gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="rounded-[24px] border border-line bg-surface p-7 sm:p-9">
+            <p className="text-lg font-semibold">Every plan includes</p>
+            <ul className="mt-6 space-y-3.5 text-[15px]">
               {included.map((item) => (
                 <li key={item} className="flex items-start gap-3">
                   <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-text text-canvas">
@@ -322,13 +398,13 @@ export function Pricing() {
                 </li>
               ))}
             </ul>
-            <p className="mt-7 text-sm leading-relaxed text-faint">
-              After the first 100, the price stays ${site.price.amount} and includes a year of updates. Cloudflare storage is free up to
-              10 GB; beyond that, Cloudflare bills your account about $0.015 per GB a month.
+            <p className="mt-7 border-t border-line pt-6 text-sm leading-relaxed text-faint">
+              One-time payment, no subscription. Cloudflare storage is free up to 10 GB; beyond that, Cloudflare bills your
+              account about $0.015 per GB a month.
             </p>
           </div>
 
-          <Savings />
+          <Savings price={price} />
         </div>
       </div>
     </section>
@@ -359,12 +435,16 @@ const faqs: { q: string; a: string }[] = [
     a: "Yes. Showthrough is a Chrome extension, so it works anywhere Chrome runs: Mac, Windows, Linux and ChromeOS.",
   },
   {
-    q: "What do the first 100 buyers get?",
-    a: `The same $${site.price.amount} lifetime license, plus every future update for free, forever. After the first 100, a purchase includes one year of updates, and everything you have keeps working after that.`,
+    q: "Why are there three prices?",
+    a: "The first 20 customers pay $29 and customers 21 to 100 pay $59. Both include every future update, forever. After the first 100 the price is $99, and that purchase covers the version you buy without future updates. Whatever you buy keeps working.",
+  },
+  {
+    q: "Is it a subscription?",
+    a: "No. You pay once and your whole team can use it. The only other cost is Cloudflare storage if you go past their free 10 GB, billed to your own Cloudflare account.",
   },
   {
     q: "When can I start recording?",
-    a: "The extension is in review on the Chrome Web Store. Join the beta now and you'll get access the day it's approved.",
+    a: "The Chrome extension is in review on the Chrome Web Store. As soon as it's approved, it works for every account that has bought.",
   },
 ];
 
@@ -376,13 +456,6 @@ export function Faq() {
           <h2 className="text-[40px] leading-[1.04] sm:text-[56px]" style={{ letterSpacing: "-0.025em" }}>
             Questions, answered.
           </h2>
-          <p className="mt-5 text-lg leading-relaxed text-muted">
-            Something else?{" "}
-            <a href={`mailto:${site.contactEmail}`} className="font-medium text-text underline underline-offset-4">
-              Email us
-            </a>
-            .
-          </p>
         </div>
         <div className="mt-12 divide-y divide-line border-y border-line">
           {faqs.map((item) => (
@@ -406,7 +479,7 @@ export function Faq() {
 
 /* ---------- Final call to action ---------- */
 
-export function FinalCta() {
+export function FinalCta({ price }: { price: number }) {
   return (
     <section className="px-2 pb-2 sm:px-3 sm:pb-3">
       <div className="mx-auto flex max-w-[1400px] flex-col items-center rounded-[28px] bg-text px-6 py-20 text-center text-canvas sm:rounded-[32px] sm:py-28">
@@ -414,13 +487,13 @@ export function FinalCta() {
           Be one of the first 100.
         </h2>
         <p className="mt-6 max-w-[48ch] text-lg leading-relaxed opacity-75">
-          ${site.price.amount} once for your whole team, every future update included. Founder spots close when 100 are gone.
+          $29 for the first 20, then $59 up to 100, both with every future update. After that it&rsquo;s $99 without future updates.
         </p>
         <a
-          href={betaHref}
+          href="/buy"
           className="mt-10 inline-flex h-13 items-center rounded-full bg-canvas px-8 text-base font-semibold text-text shadow-pop transition-opacity hover:opacity-90"
         >
-          Join the beta
+          Buy for ${price}
         </a>
       </div>
     </section>
@@ -443,24 +516,21 @@ export function SiteFooter() {
         <div className="grid grid-cols-2 gap-x-16 gap-y-3 text-sm">
           <p className="font-semibold">Product</p>
           <p className="font-semibold">Company</p>
-          <a href="/#how" className="text-muted hover:text-text">
+          <Link href="/#how" className="text-muted hover:text-text">
             Features
-          </a>
+          </Link>
           <Link href="/privacy" className="text-muted hover:text-text">
             Privacy
           </Link>
-          <a href="/#pricing" className="text-muted hover:text-text">
+          <Link href="/#pricing" className="text-muted hover:text-text">
             Pricing
-          </a>
+          </Link>
           <Link href="/terms" className="text-muted hover:text-text">
             Terms
           </Link>
-          <a href="/#faq" className="text-muted hover:text-text">
+          <Link href="/#faq" className="text-muted hover:text-text">
             FAQ
-          </a>
-          <a href={`mailto:${site.contactEmail}`} className="text-muted hover:text-text">
-            Contact
-          </a>
+          </Link>
           <Link href="/roadmap" className="text-muted hover:text-text">
             Roadmap
           </Link>

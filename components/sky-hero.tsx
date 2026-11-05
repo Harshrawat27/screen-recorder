@@ -1,10 +1,9 @@
 import { LibraryMock } from '@/components/library-mock';
 import { SiteNav } from '@/components/site-nav';
 import { buttonClass } from '@/components/ui';
-import { betaHref, site } from '@/lib/site';
 import './sky-hero.css';
 
-export function SkyHero() {
+export function SkyHero({ price }: { price: number }) {
   return (
     <section className='sky relative isolate overflow-hidden'>
       <SiteNav />
@@ -12,7 +11,7 @@ export function SkyHero() {
       <div className='relative mx-auto flex max-w-5xl flex-col items-center px-5 pt-20 text-center sm:px-8 sm:pt-28'>
         <p className='sky-glass inline-flex items-center gap-2 whitespace-nowrap rounded-full py-1.5 pl-3.5 pr-4 text-[13px] font-medium sm:text-sm'>
           <span className='live-dot' aria-hidden />
-          Pre-launch: the first 100 get lifetime updates
+          Early pricing: the first 100 get lifetime updates
         </p>
 
         <h1
@@ -29,10 +28,10 @@ export function SkyHero() {
 
         <div className='mt-9 flex flex-wrap justify-center gap-3'>
           <a
-            href={betaHref}
+            href='/buy'
             className={buttonClass('primary', 'lg', 'rounded-full px-7')}
           >
-            Join the beta
+            Buy for ${price}
           </a>
           <a
             href='#how'
@@ -42,7 +41,7 @@ export function SkyHero() {
           </a>
         </div>
         <p className='mt-5 text-sm text-muted'>
-          ${site.price.amount}/lifetime for your whole team. No subscription
+          One payment for your whole team. No subscription
         </p>
       </div>
 

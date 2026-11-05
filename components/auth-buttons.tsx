@@ -16,7 +16,7 @@ function GoogleIcon() {
   );
 }
 
-export function GoogleSignInButton() {
+export function GoogleSignInButton({ callbackURL = "/dashboard" }: { callbackURL?: string }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
 
@@ -25,8 +25,8 @@ export function GoogleSignInButton() {
     setError("");
     const { error } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/dashboard",
-      errorCallbackURL: "/login?error=google",
+      callbackURL,
+      errorCallbackURL: `/login?error=google&next=${encodeURIComponent(callbackURL)}`,
     });
     if (error) {
       setError(error.message || "Google sign-in didn’t start. Try again.");

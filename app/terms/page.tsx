@@ -13,8 +13,18 @@ export default function Terms() {
 
       <h2>Your license</h2>
       <p>
-        Your one-time payment gives your team a license to use {site.name}, including future updates, for as long as
-        the product exists.
+        {site.name} is a one-time purchase, not a subscription. Your payment gives your team a license to use{" "}
+        {site.name} for as long as the product exists.
+      </p>
+      <p>
+        Purchases made at the early prices (the first 100 customers) include every future update. Purchases made after
+        that include the version available at the time of purchase, without future updates; that version keeps working.
+      </p>
+
+      <h2>Payments</h2>
+      <p>
+        Payments are processed by Dodo Payments, which acts as the merchant of record and handles billing, taxes and
+        receipts. Prices are shown in US dollars on our pricing page.
       </p>
 
       <h2>Your Cloudflare account</h2>
@@ -40,7 +50,6 @@ export default function Terms() {
         Questions? Email <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>.
       </p>
 
-      <p className="mt-10 text-sm">This is an early draft and will be reviewed before launch.</p>
     </LegalPage>
   );
 }

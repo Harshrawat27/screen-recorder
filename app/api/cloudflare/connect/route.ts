@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { SetupError, WORKER_VERSION, exchangeCode, provision, waitForWorker } from "@/lib/cloudflare";
 import { saveWorkspace } from "@/lib/db";
 import { getSession } from "@/lib/session";
+import { getAccess } from "@/lib/billing";
 
 export const maxDuration = 60;
 
@@ -10,6 +11,9 @@ export const maxDuration = 60;
 export async function POST(request: Request) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!(await getAccess(session.user)).paid) {
+    return NextResponse.json({ error: "Buy Showthrough to connect Cloudflare." }, { status: 402 });
+  }
 
   const body = (await request.json().catch(() => null)) as { code?: string; verifier?: string; redirectUri?: string } | null;
   if (!body?.code || !body.verifier || !body.redirectUri) {

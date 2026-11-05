@@ -7,11 +7,14 @@ import { MEDIA_URL } from "@/lib/config";
 import { getWorkspace } from "@/lib/db";
 import { requestOrigin } from "@/lib/origin";
 import { requireSession } from "@/lib/session";
+import { getAccess } from "@/lib/billing";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = { title: "Connect the extension", robots: { index: false } };
 
 export default async function ExtensionConnectPage() {
   const { user } = await requireSession();
+  if (!(await getAccess(user)).paid) redirect("/pricing?locked");
   const workspace = await getWorkspace(user.id);
   const origin = await requestOrigin();
 

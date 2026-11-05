@@ -9,6 +9,7 @@ import { MEDIA_URL } from "@/lib/config";
 import { getWorkspace } from "@/lib/db";
 import { type LibraryFolder, type LibraryVideo, LibraryActions, LibraryView } from "@/components/library-ui";
 import { requireSession } from "@/lib/session";
+import { getAccess, syncPayment } from "@/lib/billing";
 
 export const metadata: Metadata = { title: "Library", robots: { index: false } };
 
@@ -51,8 +52,23 @@ const exampleFolders: LibraryFolder[] = [
   { id: "weekly", name: "Weekly updates", videos: 2, people: ["Sam"] },
 ];
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: PageProps<"/dashboard">) {
   const { user } = await requireSession();
+  const params = await searchParams;
+
+  // Back from Dodo checkout: confirm the payment with Dodo right away rather than waiting for the webhook.
+  const returning = params.checkout === "done";
+  let access = await getAccess(user);
+  if (returning && !access.paid && typeof params.payment_id === "string") {
+    try {
+      if (await syncPayment(params.payment_id, user.id)) access = await getAccess(user);
+    } catch (err) {
+      console.error("Could not confirm payment on return", err);
+    }
+  }
+
+  if (!access.paid) return <LockedLibrary pending={returning} />;
+
   const workspace = await getWorkspace(user.id);
   const library = workspace ? await listVideos(workspace.worker_url, workspace.upload_key) : { videos: [], reachable: true };
   const videos = library.videos;
@@ -67,6 +83,12 @@ export default async function DashboardPage() {
         <PageHeader title={pages.library.title} description={pages.library.description}>
           <LibraryActions />
         </PageHeader>
+
+        {returning && (
+          <p role="status" className="mt-8 max-w-3xl rounded-control border border-line bg-surface px-4 py-3 text-sm">
+            <span className="font-semibold">Payment received. Thank you!</span> Connect Cloudflare below to start recording.
+          </p>
+        )}
 
         {!setupDone && (
           <section aria-labelledby="setup" className="mt-10 max-w-3xl rounded-panel border border-line bg-surface p-6 sm:p-8">
@@ -143,6 +165,42 @@ export default async function DashboardPage() {
             Need to reconnect? <ConnectInline />
           </p>
         )}
+    </main>
+  );
+}
+
+// Before purchase: the dashboard is visible, but nothing works yet. "Connect Cloudflare" leads to pricing.
+function LockedLibrary({ pending }: { pending: boolean }) {
+  return (
+    <main className="px-5 py-8 sm:px-10 sm:py-10">
+      <PageHeader title={pages.library.title} description={pages.library.description} />
+
+      {pending && (
+        <p role="status" className="mt-8 max-w-3xl rounded-control border border-line bg-surface px-4 py-3 text-sm">
+          <span className="font-semibold">We&rsquo;re confirming your payment.</span> This usually takes a few seconds. Refresh the page if this
+          message stays.
+        </p>
+      )}
+
+      <section aria-labelledby="setup" className="mt-10 max-w-3xl rounded-panel border border-line bg-surface p-6 sm:p-8">
+        <h2 id="setup" className="text-xl font-bold tracking-tight">
+          Get ready to record
+        </h2>
+        <p className="mt-1 text-muted">Three steps. You only do this once.</p>
+        <ol className="mt-6 divide-y divide-line">
+          <Step n={1} done={false} title="Connect your Cloudflare" body="Sets up private storage for your videos in your own account. About 30 seconds.">
+            <a href="/pricing?locked" className={buttonClass("primary", "md")}>
+              Connect Cloudflare
+            </a>
+          </Step>
+          <Step n={2} done={false} title="Connect the Chrome extension" body="So it knows where to save your recordings. No keys to copy.">
+            <Pill>After step 1</Pill>
+          </Step>
+          <Step n={3} done={false} title="Record your first video" body="Click the Showthrough icon, record, stop. The link is copied for you.">
+            <Pill>After step 2</Pill>
+          </Step>
+        </ol>
+      </section>
     </main>
   );
 }

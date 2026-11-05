@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { betaHref, site } from "@/lib/site";
+import { site } from "@/lib/site";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LogoMark, buttonClass } from "@/components/ui";
 
@@ -30,9 +30,9 @@ export function Header() {
           <Link href="/login" className={buttonClass("ghost", "sm")}>
             Sign in
           </Link>
-          <a href={betaHref} className={buttonClass("primary", "sm", "ml-1")}>
-            Join the beta
-          </a>
+          <Link href="/#pricing" className={buttonClass("primary", "sm", "ml-1")}>
+            Get {site.name}
+          </Link>
         </nav>
       </div>
     </header>
@@ -51,9 +51,9 @@ export function Footer() {
           <Link href="/terms" className="hover:text-text">
             Terms
           </Link>
-          <a href={`mailto:${site.contactEmail}`} className="hover:text-text">
-            Contact
-          </a>
+          <Link href="/#pricing" className="hover:text-text">
+            Pricing
+          </Link>
         </nav>
         <p>© {new Date().getFullYear()} {site.name}</p>
       </div>

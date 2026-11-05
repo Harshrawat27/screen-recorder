@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { FinalCta, SiteFooter } from "@/components/home-sections";
+import { currentOffer } from "@/lib/billing";
 import { SiteNav } from "@/components/site-nav";
 import { CheckIcon } from "@/components/ui";
 import { site } from "@/lib/site";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Roadmap",
@@ -94,7 +97,8 @@ const more: { title: string; body: string }[] = [
   { title: "Mac app", body: "Record without opening Chrome." },
 ];
 
-export default function RoadmapPage() {
+export default async function RoadmapPage() {
+  const offer = await currentOffer();
   return (
     <>
       <SiteNav />
@@ -149,16 +153,9 @@ export default function RoadmapPage() {
               </div>
             ))}
           </div>
-          <p className="mt-8 text-center text-muted">
-            Missing something?{" "}
-            <a href={`mailto:${site.contactEmail}?subject=${encodeURIComponent("Feature request")}`} className="font-medium text-text underline underline-offset-4">
-              Send us a request
-            </a>
-            .
-          </p>
         </section>
 
-        <FinalCta />
+        <FinalCta price={offer.price} />
       </main>
       <SiteFooter />
     </>
