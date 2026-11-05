@@ -1,19 +1,12 @@
+import { PageHeader } from "@/components/dashboard-ui";
+import { type DashboardPage, pages } from "@/lib/dashboard-pages";
 import "./skeleton.css";
 
-// Loading placeholders for the dashboard. Each one has the shape of what it stands in for,
-// so nothing jumps when the real content arrives.
+// Loading screens for the dashboard. The page heading is real (it never changes); only the
+// parts that wait for data are placeholders, shaped like what they stand in for.
 
 function Block({ className = "" }: { className?: string }) {
   return <div aria-hidden className={`skeleton rounded-md ${className}`} />;
-}
-
-export function PageHeaderSkeleton() {
-  return (
-    <div>
-      <Block className="h-10 w-52 rounded-lg" />
-      <Block className="mt-3 h-4 w-80 max-w-full" />
-    </div>
-  );
 }
 
 export function VideoCardSkeleton() {
@@ -38,10 +31,10 @@ export function VideoGridSkeleton({ count = 6 }: { count?: number }) {
 }
 
 /** For pages that list videos: Recent and Watch later. */
-export function VideoPageSkeleton() {
+export function VideoPageSkeleton({ page }: { page: DashboardPage }) {
   return (
-    <main className="px-5 py-8 sm:px-10 sm:py-10" aria-busy="true" aria-label="Loading">
-      <PageHeaderSkeleton />
+    <main className="px-5 py-8 sm:px-10 sm:py-10" aria-busy="true">
+      <PageHeader title={pages[page].title} description={pages[page].description} />
       <VideoGridSkeleton />
     </main>
   );
@@ -50,18 +43,18 @@ export function VideoPageSkeleton() {
 /** The library. Kept separate so it can grow (stats on top, filters) without touching the others. */
 export function LibrarySkeleton() {
   return (
-    <main className="px-5 py-8 sm:px-10 sm:py-10" aria-busy="true" aria-label="Loading your library">
-      <PageHeaderSkeleton />
+    <main className="px-5 py-8 sm:px-10 sm:py-10" aria-busy="true">
+      <PageHeader title={pages.library.title} description={pages.library.description} />
       <VideoGridSkeleton />
     </main>
   );
 }
 
 /** For settings-style pages: Manage team and Billing. */
-export function PanelPageSkeleton() {
+export function PanelPageSkeleton({ page }: { page: DashboardPage }) {
   return (
-    <main className="px-5 py-8 sm:px-10 sm:py-10" aria-busy="true" aria-label="Loading">
-      <PageHeaderSkeleton />
+    <main className="px-5 py-8 sm:px-10 sm:py-10" aria-busy="true">
+      <PageHeader title={pages[page].title} description={pages[page].description} />
       <Block className="mt-10 h-72 w-full rounded-[24px]" />
     </main>
   );

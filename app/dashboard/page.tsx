@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ConnectCloudflareButton } from "@/components/connect-cloudflare";
 import { ConnectionCheck } from "@/components/connection-check";
 import { PageHeader } from "@/components/dashboard-ui";
+import { pages } from "@/lib/dashboard-pages";
 import { CheckIcon, Pill, buttonClass } from "@/components/ui";
 import { type VideoSummary, listVideos } from "@/lib/cloudflare";
 import { MEDIA_URL } from "@/lib/config";
@@ -68,7 +69,6 @@ function VideoCard({ video, href, thumb }: { video: VideoSummary; href: string; 
 
 export default async function DashboardPage() {
   const { user } = await requireSession();
-  const firstName = user.name?.split(" ")[0] || "there";
   const workspace = await getWorkspace(user.id);
   const library = workspace ? await listVideos(workspace.worker_url, workspace.upload_key) : { videos: [], reachable: true };
   const videos = library.videos;
@@ -80,14 +80,7 @@ export default async function DashboardPage() {
 
   return (
     <main className="px-5 py-8 sm:px-10 sm:py-10">
-        <PageHeader
-          title="Library"
-          description={
-            recorded
-              ? `All ${videos.length} recording${videos.length === 1 ? "" : "s"}, stored in your Cloudflare.`
-              : `Welcome, ${firstName}. Your recordings will show up here.`
-          }
-        />
+        <PageHeader title={pages.library.title} description={pages.library.description} />
 
         {!setupDone && (
           <section aria-labelledby="setup" className="mt-10 max-w-3xl rounded-panel border border-line bg-surface p-6 sm:p-8">

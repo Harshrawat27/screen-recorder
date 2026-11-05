@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { EmptyState, PageHeader, emptyIcon } from "@/components/dashboard-ui";
+import { pages } from "@/lib/dashboard-pages";
 
-export const metadata: Metadata = { title: "Recent", robots: { index: false } };
+export const metadata: Metadata = { title: pages.recent.title, robots: { index: false } };
 
 export default function RecentPage() {
   return (
     <main className="px-5 py-8 sm:px-10 sm:py-10">
-      <PageHeader title="Recent" description="Videos you recorded or watched lately." />
+      <PageHeader title={pages.recent.title} description={pages.recent.description} />
       <EmptyState
         icon={emptyIcon(<><circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.7" /><path d="M12 7.5V12l3 2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></>)}
         title="Nothing here yet"
