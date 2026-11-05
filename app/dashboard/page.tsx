@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SignOutButton } from "@/components/auth-buttons";
 import { ConnectCloudflareButton } from "@/components/connect-cloudflare";
 import { ConnectionCheck } from "@/components/connection-check";
-import { Logo } from "@/components/header";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { PageHeader } from "@/components/dashboard-ui";
 import { CheckIcon, Pill, buttonClass } from "@/components/ui";
 import { type VideoSummary, listVideos } from "@/lib/cloudflare";
 import { MEDIA_URL } from "@/lib/config";
@@ -13,18 +11,6 @@ import { VideoThumb } from "@/components/video-thumb";
 import { requireSession } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Library", robots: { index: false } };
-
-function Avatar({ name, image }: { name: string; image?: string | null }) {
-  if (image) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={image} alt="" referrerPolicy="no-referrer" className="size-9 rounded-full object-cover" />;
-  }
-  return (
-    <span aria-hidden className="grid size-9 place-items-center rounded-full bg-brand-soft text-sm font-bold text-brand-ink">
-      {name.trim().charAt(0).toUpperCase() || "?"}
-    </span>
-  );
-}
 
 function duration(sec: number | null) {
   if (!sec) return null;
@@ -93,53 +79,15 @@ export default async function DashboardPage() {
   const setupDone = connected && extension && recorded;
 
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[256px_1fr]">
-      <aside className="flex flex-col border-b border-line bg-surface lg:min-h-screen lg:border-b-0 lg:border-r">
-        <div className="flex items-center justify-between px-5 py-5">
-          <Logo />
-          <div className="lg:hidden">
-            <ThemeToggle />
-          </div>
-        </div>
-        <nav className="hidden flex-1 px-3 lg:block" aria-label="Main">
-          <a
-            href="/dashboard"
-            aria-current="page"
-            className="flex items-center gap-3 rounded-control bg-brand-soft px-3 py-2.5 text-[15px] font-semibold text-brand-ink"
-          >
-            <svg viewBox="0 0 20 20" fill="none" aria-hidden className="size-[18px]">
-              <rect x="3" y="4" width="14" height="12" rx="2.5" stroke="currentColor" strokeWidth="1.6" />
-              <path d="M8.5 7.8v4.4L12.3 10z" fill="currentColor" />
-            </svg>
-            Library
-          </a>
-        </nav>
-        <div className="hidden items-center gap-3 border-t border-line px-5 py-4 lg:flex">
-          <Avatar name={user.name} image={user.image} />
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">{user.name}</p>
-            <p className="truncate text-xs text-muted">{user.email}</p>
-          </div>
-          <ThemeToggle />
-        </div>
-      </aside>
-
-      <main className="px-5 py-8 sm:px-10 sm:py-10">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h1 className="text-[28px] font-bold tracking-[-0.02em]">Your library</h1>
-            <p className="mt-1 text-muted">
-              {recorded ? `${videos.length} recording${videos.length === 1 ? "" : "s"}, stored in your Cloudflare.` : `Welcome, ${firstName}. Your recordings will show up here.`}
-            </p>
-          </div>
-          <div className="flex items-center gap-2 lg:hidden">
-            <Avatar name={user.name} image={user.image} />
-            <SignOutButton />
-          </div>
-          <div className="hidden lg:block">
-            <SignOutButton />
-          </div>
-        </div>
+    <main className="px-5 py-8 sm:px-10 sm:py-10">
+        <PageHeader
+          title="Library"
+          description={
+            recorded
+              ? `All ${videos.length} recording${videos.length === 1 ? "" : "s"}, stored in your Cloudflare.`
+              : `Welcome, ${firstName}. Your recordings will show up here.`
+          }
+        />
 
         {!setupDone && (
           <section aria-labelledby="setup" className="mt-10 max-w-3xl rounded-panel border border-line bg-surface p-6 sm:p-8">
@@ -207,8 +155,7 @@ export default async function DashboardPage() {
             Need to reconnect? <ConnectInline />
           </p>
         )}
-      </main>
-    </div>
+    </main>
   );
 }
 
