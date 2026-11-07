@@ -40,8 +40,10 @@ export async function generateMetadata({ params }: PageProps<"/v/[space]/[id]">)
 
 // Short share links: /v/<space>/<id>. The video streams from media.showthrough.com,
 // which fetches it from the sender's own Cloudflare account.
-export default async function SharedVideoPage({ params }: PageProps<"/v/[space]/[id]">) {
+export default async function SharedVideoPage({ params, searchParams }: PageProps<"/v/[space]/[id]">) {
   const { space, id } = await params;
+  // Opened by the extension the moment recording finished: the last seconds may still be uploading.
+  const finishing = (await searchParams).finishing !== undefined;
   if (!SPACE.test(space) || !ID.test(id)) notFound();
   const base = `${MEDIA_URL}/${space}/videos/${id}`;
 
@@ -52,7 +54,7 @@ export default async function SharedVideoPage({ params }: PageProps<"/v/[space]/
         <ThemeToggle />
       </header>
       <main className="mx-auto max-w-6xl px-5 pb-16 sm:px-8">
-        <Player src={`${base}/master.m3u8`} metaUrl={`${base}/meta.json`} poster={`${base}/thumb.jpg`} />
+        <Player src={`${base}/master.m3u8`} metaUrl={`${base}/meta.json`} poster={`${base}/thumb.jpg`} finishing={finishing} />
       </main>
     </div>
   );
