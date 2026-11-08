@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { buttonClass } from "@/components/ui";
+import { site } from "@/lib/site";
 
 export type ExtensionConfig = {
   version: 1;
@@ -69,14 +70,10 @@ export function ExtensionHandoff({ config }: { config: ExtensionConfig }) {
       ) : (
         <>
           <p className="mt-2 text-muted">We couldn&rsquo;t find the Showthrough extension in this browser. Install it, then this page connects it automatically.</p>
-          <ol className="mt-6 list-decimal space-y-2 pl-5 text-sm text-muted">
-            <li>
-              Open <code className="rounded bg-sunken px-1.5 py-0.5 text-text">chrome://extensions</code> and turn on Developer mode.
-            </li>
-            <li>Click Load unpacked and choose the extension folder (or reload it if it&rsquo;s already there).</li>
-            <li>Come back and refresh this page.</li>
-          </ol>
-          <p className="mt-6 text-xs text-faint">Once it&rsquo;s in the Chrome Web Store, this will be a single Add to Chrome button.</p>
+          <a href={site.chromeStoreUrl} target="_blank" rel="noopener noreferrer" className={buttonClass("primary", "md", "mt-8")}>
+            Add to Chrome
+          </a>
+          <p className="mt-4 text-sm text-muted">Once it&rsquo;s added, come back and refresh this page.</p>
         </>
       )}
     </div>

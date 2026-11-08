@@ -1,3 +1,4 @@
+import { site } from "@/lib/site";
 import type { Metadata } from "next";
 import { ConnectCloudflareButton } from "@/components/connect-cloudflare";
 import { ConnectionCheck } from "@/components/connection-check";
@@ -29,7 +30,7 @@ function when(ms: number | null) {
   return new Date(ms).toLocaleDateString(undefined, { day: "numeric", month: "short" });
 }
 
-function Step({ n, done, title, body, children }: { n: number; done: boolean; title: string; body: string; children?: React.ReactNode }) {
+function Step({ n, done, title, body, children }: { n: number; done: boolean; title: string; body: React.ReactNode; children?: React.ReactNode }) {
   return (
     <li className="flex flex-wrap items-start gap-4 py-5 first:pt-0 last:pb-0 sm:flex-nowrap">
       <span
@@ -109,7 +110,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
               >
                 {connected ? <Pill>Done</Pill> : <ConnectCloudflareButton />}
               </Step>
-              <Step n={2} done={extension} title="Connect the Chrome extension" body="So it knows where to save your recordings. No keys to copy.">
+              <Step n={2} done={extension} title="Connect the Chrome extension" body={extensionBody}>
                 {extension ? (
                   <Pill>Done</Pill>
                 ) : connected ? (
@@ -193,7 +194,7 @@ function LockedLibrary({ pending }: { pending: boolean }) {
               Connect Cloudflare
             </a>
           </Step>
-          <Step n={2} done={false} title="Connect the Chrome extension" body="So it knows where to save your recordings. No keys to copy.">
+          <Step n={2} done={false} title="Connect the Chrome extension" body={extensionBody}>
             <Pill>After step 1</Pill>
           </Step>
           <Step n={3} done={false} title="Record your first video" body="Click the Showthrough icon, record, stop. The link is copied for you.">
@@ -214,3 +215,12 @@ function ConnectInline() {
     </>
   );
 }
+
+const extensionBody = (
+  <>
+    <a href={site.chromeStoreUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-text">
+      Add it from the Chrome Web Store
+    </a>
+    , then connect it so it knows where to save your recordings. No keys to copy.
+  </>
+);

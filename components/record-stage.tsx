@@ -35,20 +35,12 @@ export function RecordStage() {
           We couldn&rsquo;t find the {site.name} extension in this browser.
         </p>
         <div className="mt-8 flex justify-center gap-2">
-          {site.chromeStoreUrl ? (
-            <a
-              href={site.chromeStoreUrl}
-              className={buttonClass("primary", "md")}
-            >
-              Add to Chrome
-            </a>
-          ) : null}
+          <a href={site.chromeStoreUrl} className={buttonClass("primary", "md")}>
+            Add to Chrome
+          </a>
           <Link
             href="/dashboard"
-            className={buttonClass(
-              site.chromeStoreUrl ? "ghost" : "primary",
-              "md",
-            )}
+            className={buttonClass("ghost", "md")}
           >
             Go to dashboard
           </Link>

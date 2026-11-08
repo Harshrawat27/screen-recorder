@@ -413,7 +413,7 @@ export function Pricing({ sold, price, notice }: { sold: number; price: number; 
 
 /* ---------- FAQ ---------- */
 
-const faqs: { q: string; a: string }[] = [
+const faqs: { q: string; a: React.ReactNode }[] = [
   {
     q: "Do I need a Cloudflare account?",
     a: "Yes, a free one. You sign in to Cloudflare, click Allow, and we create the storage and video address for you in about 30 seconds. Nothing to configure, no keys to copy.",
@@ -432,7 +432,15 @@ const faqs: { q: string; a: string }[] = [
   },
   {
     q: "Does it work on Windows and Chromebooks?",
-    a: "Yes. Showthrough is a Chrome extension, so it works anywhere Chrome runs: Mac, Windows, Linux and ChromeOS.",
+    a: (
+      <>
+        Yes. Showthrough is a{" "}
+        <a href={site.chromeStoreUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-text">
+          Chrome extension
+        </a>
+        , so it works anywhere Chrome runs: Mac, Windows, Linux and ChromeOS.
+      </>
+    ),
   },
   {
     q: "Why are there three prices?",
@@ -444,7 +452,15 @@ const faqs: { q: string; a: string }[] = [
   },
   {
     q: "When can I start recording?",
-    a: "The Chrome extension is in review on the Chrome Web Store. As soon as it's approved, it works for every account that has bought.",
+    a: (
+      <>
+        Right after you buy. Add the{" "}
+        <a href={site.chromeStoreUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-text">
+          Chrome extension
+        </a>
+        , connect your Cloudflare from the dashboard, and click the Showthrough icon to record.
+      </>
+    ),
   },
 ];
 

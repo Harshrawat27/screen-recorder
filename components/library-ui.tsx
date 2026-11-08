@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { VideoThumb } from '@/components/video-thumb';
+import { site } from '@/lib/site';
 
 // The library: tabs, view toggle, folders and video cards.
 // Folders, starring, archive and the per-video stats are front-end only for now; they get
@@ -576,7 +577,7 @@ function FolderCard({
   );
 }
 
-function Empty({ title, body }: { title: string; body: string }) {
+function Empty({ title, body }: { title: string; body: React.ReactNode }) {
   return (
     <div className='rounded-[18px] border border-dashed border-line-strong px-6 py-16 text-center'>
       <p className='font-semibold'>{title}</p>
@@ -660,7 +661,15 @@ export function LibraryView({
             ) : (
               <Empty
                 title='No videos yet'
-                body='Record with the Chrome extension and your videos show up here.'
+                body={
+                  <>
+                    Record with the{' '}
+                    <a href={site.chromeStoreUrl} target='_blank' rel='noopener noreferrer' className='underline underline-offset-2 hover:text-text'>
+                      Chrome extension
+                    </a>{' '}
+                    and your videos show up here.
+                  </>
+                }
               />
             )
           ) : view === 'grid' ? (

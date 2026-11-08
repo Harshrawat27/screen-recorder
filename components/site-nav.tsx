@@ -32,9 +32,10 @@ export function SiteNav() {
               </a>
             </li>
           ))}
-          <li className="flex items-center gap-2">
-            <span>Chrome extension</span>
-            <span className="rounded-full bg-brand-soft px-2 py-0.5 text-xs font-semibold text-brand-ink">In review</span>
+          <li>
+            <a href={site.chromeStoreUrl} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-muted">
+              Chrome extension
+            </a>
           </li>
         </ul>
 

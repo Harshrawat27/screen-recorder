@@ -12,6 +12,6 @@ export const site = {
     planName: "Loom Business, billed monthly",
     checked: "September 2026",
   },
-  chromeStoreUrl: null as string | null,
+  chromeStoreUrl: "https://chromewebstore.google.com/detail/showthrough-screen-record/ngiiiademidnkjamgbaoijmfiphlmlpe",
 } as const;
 
