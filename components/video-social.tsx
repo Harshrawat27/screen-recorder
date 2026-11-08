@@ -462,7 +462,7 @@ export function VideoSocial({
                 submit();
               }}
             >
-              <div className="rounded-[14px] border border-line bg-canvas focus-within:border-line-strong">
+              <div className="rounded-[14px] border border-line bg-canvas transition-colors focus-within:border-text/40">
                 {draftAt !== null && (
                   <div className="flex items-center gap-1.5 px-3 pt-2.5 text-xs text-muted">
                     <span className="tabular rounded-md bg-sunken px-1.5 py-0.5 font-semibold text-text">
@@ -503,7 +503,7 @@ export function VideoSocial({
                       : "Add a comment… (you'll sign in to post)"
                   }
                   aria-label="Add a comment"
-                  className="block w-full resize-none bg-transparent px-3 py-2.5 text-[15px] outline-none placeholder:text-faint"
+                  className="block w-full resize-none bg-transparent px-3 py-2.5 text-[15px] outline-none! placeholder:text-faint"
                 />
               </div>
               <div className="mt-2 flex items-center justify-between gap-3">
