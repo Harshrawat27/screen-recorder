@@ -28,12 +28,18 @@ export function buttonClass(variant: Variant = "primary", size: Size = "md", ext
   return `${base} ${variants[variant]} ${sizes[size]} ${extra}`;
 }
 
+// The mark: a white "record" dot with a soft halo on the orange tile. Flat shapes only (no
+// gradients or filters with ids), so any number of copies can sit on one page, even hidden ones.
+// app/icon.svg is the detailed version of the same mark, with texture and shading.
 export function LogoMark({ className = "size-7" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 32 32" aria-hidden className={className}>
-      <rect width="32" height="32" rx="8" fill="var(--brand)" />
-      <rect x="7" y="8" width="18" height="13" rx="3" fill="var(--canvas)" />
-      <circle cx="11.5" cy="21" r="4.5" fill="var(--brand)" stroke="var(--brand)" strokeWidth="2" />
+    <svg viewBox="0 0 64 64" aria-hidden className={className}>
+      <rect width="64" height="64" rx="16" fill="#F35733" />
+      <rect x="0.6" y="0.6" width="62.8" height="62.8" rx="15.4" fill="none" stroke="#fff" strokeOpacity=".22" strokeWidth="1.2" />
+      <circle cx="32" cy="32" r="19.5" fill="#fff" fillOpacity=".28" />
+      <circle cx="32" cy="32" r="19.5" fill="none" stroke="#fff" strokeOpacity=".32" strokeWidth=".8" />
+      <circle cx="32" cy="33.4" r="15.3" fill="#8A2410" fillOpacity=".2" />
+      <circle cx="32" cy="32" r="15" fill="#fff" />
     </svg>
   );
 }
