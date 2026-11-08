@@ -79,7 +79,10 @@ Only the recording dot loops. Everything else moves in response to the user (men
 
 ## Logo
 
-The mark is a screen with a camera bubble in its corner, on an orange tile: the product in one shape. Use it with the wordmark in Instrument Sans Bold. Minimum size 16px. Don't recolor the tile, outline it, or place it on orange.
+The mark is a white "record" dot with a soft white halo, centred on the orange (#F35733) tile. It echoes the pulsing dot on the site. Use it with the wordmark in Instrument Sans Bold. Minimum size 16px. Don't recolor the tile or the dot, outline it, or place it on orange.
+
+- In the UI: `LogoMark` (flat shapes, crisp at any size).
+- Browser tab and home-screen icons: `app/icon.svg` (detailed: shaded tile, faint grain, highlight and soft shadow on the dot), with `app/favicon.ico` and `app/apple-icon.png` rendered from it.
 
 ## Dashboard direction
 
