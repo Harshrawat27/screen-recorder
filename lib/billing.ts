@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { pool } from "@/lib/db";
+import { WORKER_VERSION } from "@/lib/cloudflare";
 import { type Tier, type TierId, openTier, tiers } from "@/lib/pricing";
 
 // Payments with Dodo. A purchase row means the account has paid; that is what unlocks the
@@ -21,6 +22,8 @@ create table if not exists purchase (
   updated_at timestamptz not null default now()
 );
 create index if not exists purchase_user_idx on purchase (user_id);
+-- The last Worker version this purchase includes. Empty = every future version (early buyers).
+alter table purchase add column if not exists updates_until integer;
 `;
 
 function ensureSchema() {
@@ -53,6 +56,8 @@ export type Purchase = {
   amount: number;
   currency: string;
   status: "paid" | "refunded";
+  /** Last Worker version included; null = all future versions (first 100 customers). */
+  updates_until: number | null;
   created_at: Date;
 };
 
@@ -147,11 +152,13 @@ export async function recordPayment(payment: DodoPayment) {
     console.warn("Dodo payment without a Showthrough user or product", payment.payment_id);
     return false;
   }
+  // Early buyers (first 100) get every future version; later buyers get the version available today.
+  const updatesUntil = tiers.find((t) => t.id === tier)?.updates.startsWith("Lifetime") ? null : WORKER_VERSION;
   await pool.query(
-    `insert into purchase (payment_id, user_id, tier, product_id, amount, currency)
-     values ($1, $2, $3, $4, $5, $6)
+    `insert into purchase (payment_id, user_id, tier, product_id, amount, currency, updates_until)
+     values ($1, $2, $3, $4, $5, $6, $7)
      on conflict (payment_id) do nothing`,
-    [payment.payment_id, userId, tier, productId, payment.total_amount ?? 0, payment.currency ?? "USD"],
+    [payment.payment_id, userId, tier, productId, payment.total_amount ?? 0, payment.currency ?? "USD", updatesUntil],
   );
   return true;
 }

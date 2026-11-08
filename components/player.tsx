@@ -64,7 +64,21 @@ export function Player({
   metaUrl,
   poster,
   finishing = false,
-}: { src?: string; metaUrl?: string; poster?: string; finishing?: boolean } = {}) {
+  onVideo,
+  stats,
+  belowVideo,
+}: {
+  src?: string;
+  metaUrl?: string;
+  poster?: string;
+  finishing?: boolean;
+  /** Receives the <video> element, e.g. so comments can read and jump to the current time. */
+  onVideo?: (video: HTMLVideoElement | null) => void;
+  /** Shown under the title (views, comments). */
+  stats?: React.ReactNode;
+  /** Shown right under the video (reactions). */
+  belowVideo?: React.ReactNode;
+} = {}) {
   const hash = useSyncExternalStore(subscribeHash, () => window.location.hash, () => null);
   const src = srcProp ?? readSource(hash);
   const [meta, setMeta] = useState<Meta | null>(null);
@@ -170,10 +184,14 @@ export function Player({
 
   return (
     <div>
-      {meta?.title && (
+      {(meta?.title || stats) && (
         <div className="mb-5">
-          <h1 className="text-[28px] font-bold leading-tight tracking-[-0.02em]">{meta.title}</h1>
-          {meta.createdAt && <p className="mt-1 text-sm text-muted">Recorded {recordedAgo(meta.createdAt)}</p>}
+          {meta?.title && <h1 className="text-[28px] font-bold leading-tight tracking-[-0.02em]">{meta.title}</h1>}
+          <p className="mt-1 flex flex-wrap items-center gap-x-2 text-sm text-muted">
+            {meta?.createdAt && <span>Recorded {recordedAgo(meta.createdAt)}</span>}
+            {meta?.createdAt && stats && <span aria-hidden>·</span>}
+            {stats}
+          </p>
         </div>
       )}
       <div className="relative aspect-video overflow-hidden rounded-panel bg-stage">
@@ -186,7 +204,10 @@ export function Player({
           </div>
         ) : (
           <video
-            ref={videoRef}
+            ref={(el) => {
+              videoRef.current = el;
+              onVideo?.(el);
+            }}
             controls
             playsInline
             preload="auto"
@@ -217,6 +238,8 @@ export function Player({
             </span>
           ))}
       </div>
+
+      {belowVideo}
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
         <p className="text-sm text-muted">

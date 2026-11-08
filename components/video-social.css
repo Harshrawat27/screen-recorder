@@ -1,0 +1,13 @@
+/* A reaction floats up from its button when tapped. */
+.reaction-burst {
+  animation: reaction-burst 0.9s ease-out forwards;
+  transform: translate(-50%, 0);
+}
+@keyframes reaction-burst {
+  0% { opacity: 0; transform: translate(-50%, 6px) scale(0.6); }
+  25% { opacity: 1; transform: translate(-50%, -10px) scale(1.25); }
+  100% { opacity: 0; transform: translate(-50%, -46px) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reaction-burst { animation: none; display: none; }
+}

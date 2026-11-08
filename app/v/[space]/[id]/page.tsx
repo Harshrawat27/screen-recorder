@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Logo } from "@/components/header";
-import { Player } from "@/components/player";
+import { VideoSocial } from "@/components/video-social";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MEDIA_URL } from "@/lib/config";
 
@@ -49,12 +49,19 @@ export default async function SharedVideoPage({ params, searchParams }: PageProp
 
   return (
     <div className="min-h-screen">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
+      <header className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-8">
         <Logo />
         <ThemeToggle />
       </header>
-      <main className="mx-auto max-w-6xl px-5 pb-16 sm:px-8">
-        <Player src={`${base}/master.m3u8`} metaUrl={`${base}/meta.json`} poster={`${base}/thumb.jpg`} finishing={finishing} />
+      <main className="mx-auto max-w-7xl px-5 pb-16 sm:px-8">
+        <VideoSocial
+          space={space}
+          id={id}
+          src={`${base}/master.m3u8`}
+          metaUrl={`${base}/meta.json`}
+          poster={`${base}/thumb.jpg`}
+          finishing={finishing}
+        />
       </main>
     </div>
   );

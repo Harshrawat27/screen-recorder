@@ -61,9 +61,19 @@ export async function saveWorkspace(w: Omit<Workspace, "id" | "created_at" | "ex
      on conflict (owner_id) do update set
        cf_account_id = excluded.cf_account_id, cf_account_name = excluded.cf_account_name, space = excluded.space,
        worker_url = excluded.worker_url, bucket = excluded.bucket, upload_key = excluded.upload_key,
-       worker_version = excluded.worker_version, extension_connected_at = null, updated_at = now()`,
+       worker_version = excluded.worker_version,
+       -- An update keeps the same upload key, so the extension stays connected.
+       extension_connected_at = case when workspace.upload_key = excluded.upload_key then workspace.extension_connected_at else null end,
+       updated_at = now()`,
     [crypto.randomUUID(), w.owner_id, w.cf_account_id, w.cf_account_name, w.space, w.worker_url, w.bucket, w.upload_key, w.worker_version],
   );
+}
+
+/** The workspace behind a share link (/v/<space>/<id>). */
+export async function getWorkspaceBySpace(space: string): Promise<Workspace | null> {
+  await ensureSchema();
+  const { rows } = await pool.query<Workspace>("select * from workspace where space = $1 limit 1", [space]);
+  return rows[0] ?? null;
 }
 
 export async function markExtensionConnected(userId: string) {

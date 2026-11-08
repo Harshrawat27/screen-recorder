@@ -12,7 +12,10 @@ const WORKER_URL_TEMPLATE = process.env.WORKER_URL_TEMPLATE ?? "https://showthro
 
 export const SCRIPT_NAME = "showthrough";
 export const BUCKET_NAME = "showthrough-videos";
-export const WORKER_VERSION = 1;
+export const DATABASE_NAME = "showthrough";
+// The version of worker/video-worker.mjs. Raise it whenever the Worker changes: users on an
+// older version then see "New version available" in the dashboard (see lib/updates.ts).
+export const WORKER_VERSION = 2;
 
 export class SetupError extends Error {
   constructor(
@@ -79,6 +82,7 @@ function friendly(step: string, code?: number, message = "") {
   const steps: Record<string, string> = {
     account: "We couldn’t find your Cloudflare account.",
     bucket: "We couldn’t create your video storage.",
+    database: "We couldn’t create the database for comments and views.",
     worker: "We couldn’t set up your video backend.",
     subdomain: "We couldn’t turn on your video address.",
   };
@@ -98,8 +102,21 @@ export type Provisioned = {
   uploadKey: string;
 };
 
-/** Creates (or reuses) the bucket, deploys the video Worker and turns on its workers.dev address. */
-export async function provision(token: string): Promise<Provisioned> {
+/** Finds the Showthrough D1 database in the account, or creates it. Returns its id. */
+async function ensureDatabase(token: string, base: string): Promise<string> {
+  const existing = await cf<{ uuid: string; name: string }[]>(token, "database", "GET", `${base}/d1/database?name=${DATABASE_NAME}`);
+  const found = existing.result?.find((db) => db.name === DATABASE_NAME);
+  if (found) return found.uuid;
+  const created = await cf<{ uuid: string }>(token, "database", "POST", `${base}/d1/database`, { name: DATABASE_NAME });
+  return created.result.uuid;
+}
+
+/**
+ * Creates (or reuses) the bucket and database, deploys the video Worker and turns on its
+ * workers.dev address. Running it again updates an existing setup: pass the current upload
+ * key so the extension stays connected (it's kept when the Cloudflare account is the same).
+ */
+export async function provision(token: string, current?: { accountId: string; uploadKey: string } | null): Promise<Provisioned> {
   // 1. Which account
   const accounts = await cf<{ id: string; name: string }[]>(token, "account", "GET", "/accounts?per_page=50");
   const account = accounts.result?.[0];
@@ -114,8 +131,12 @@ export async function provision(token: string): Promise<Provisioned> {
     if (!(e.code === 10004 || /already exists|already own/i.test(e.detail ?? ""))) throw err;
   }
 
-  // 3. Video backend Worker with the bucket bound and a fresh upload key
-  const uploadKey = randomBytes(32).toString("base64url");
+  // 3. Database for comments, reactions and views (reuse if it already exists)
+  const databaseId = await ensureDatabase(token, base);
+
+  // 4. Video backend Worker with the bucket and database bound. Same account: keep the
+  //    upload key, so the extension keeps working after an update.
+  const uploadKey = current && current.accountId === account.id ? current.uploadKey : randomBytes(32).toString("base64url");
   const form = new FormData();
   form.append(
     "metadata",
@@ -126,6 +147,7 @@ export async function provision(token: string): Promise<Provisioned> {
           compatibility_date: "2025-09-01",
           bindings: [
             { type: "r2_bucket", name: "VIDEOS", bucket_name: BUCKET_NAME },
+            { type: "d1", name: "DB", id: databaseId },
             { type: "secret_text", name: "UPLOAD_KEY", text: uploadKey },
           ],
         }),
@@ -136,7 +158,7 @@ export async function provision(token: string): Promise<Provisioned> {
   form.append("worker.mjs", new Blob([workerSource()], { type: "application/javascript+module" }), "worker.mjs");
   await cf(token, "worker", "PUT", `${base}/workers/scripts/${SCRIPT_NAME}`, form);
 
-  // 4. The account's workers.dev subdomain (new accounts don't have one yet)
+  // 5. The account's workers.dev subdomain (new accounts don't have one yet)
   let space: string | undefined;
   try {
     const sub = await cf<{ subdomain: string }>(token, "subdomain", "GET", `${base}/workers/subdomain`);
@@ -155,7 +177,7 @@ export async function provision(token: string): Promise<Provisioned> {
   }
   if (!space) throw new SetupError("We couldn’t turn on your video address.", "subdomain");
 
-  // 5. Serve this Worker on workers.dev
+  // 6. Serve this Worker on workers.dev
   await cf(token, "subdomain", "POST", `${base}/workers/scripts/${SCRIPT_NAME}/subdomain`, { enabled: true, previews_enabled: false });
 
   return {
@@ -168,13 +190,14 @@ export async function provision(token: string): Promise<Provisioned> {
   };
 }
 
-/** New workers.dev addresses can take a little while to answer. */
-export async function waitForWorker(workerUrl: string, timeoutMs = 25_000) {
+/** New workers.dev addresses can take a little while to answer (and a redeploy a moment to go live). */
+export async function waitForWorker(workerUrl: string, timeoutMs = 25_000, version = 0) {
   const until = Date.now() + timeoutMs;
   while (Date.now() < until) {
     try {
       const res = await fetch(`${workerUrl}/health`, { cache: "no-store" });
-      if (res.ok) return true;
+      const data = res.ok ? ((await res.json().catch(() => ({}))) as { version?: number }) : null;
+      if (data && (data.version ?? 0) >= version) return true;
     } catch {
       // not reachable yet
     }
@@ -183,7 +206,17 @@ export async function waitForWorker(workerUrl: string, timeoutMs = 25_000) {
   return false;
 }
 
-export type VideoSummary = { id: string; title: string | null; createdAt: number | null; durationSec: number | null; ready: boolean };
+export type VideoSummary = {
+  id: string;
+  title: string | null;
+  createdAt: number | null;
+  durationSec: number | null;
+  ready: boolean;
+  // From version 2 of the Worker; missing on older ones.
+  views?: number;
+  comments?: number;
+  reactions?: number;
+};
 
 export async function listVideos(workerUrl: string, uploadKey: string): Promise<{ videos: VideoSummary[]; reachable: boolean }> {
   try {

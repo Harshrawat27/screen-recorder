@@ -3,12 +3,18 @@ import { MobileNav, SidebarNav } from "@/components/dashboard-nav";
 import { Avatar } from "@/components/dashboard-ui";
 import { Logo } from "@/components/header";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { UpdateBox } from "@/components/update-box";
+import { getAccess } from "@/lib/billing";
+import { getWorkspace } from "@/lib/db";
 import { requireSession } from "@/lib/session";
+import { availableUpdate } from "@/lib/updates";
 
 // The dashboard frame. The sidebar is exactly the height of the window and stays put;
 // only the page content on the right scrolls.
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user } = await requireSession();
+  const [access, workspace] = await Promise.all([getAccess(user), getWorkspace(user.id)]);
+  const update = availableUpdate(workspace, access);
 
   return (
     <div className="lg:flex">
@@ -19,6 +25,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <div className="min-h-0 flex-1 overflow-y-auto px-3">
           <SidebarNav />
         </div>
+        {update && <UpdateBox {...update} />}
         <div className="flex items-center gap-1 border-t border-line p-3">
           <div className="min-w-0 flex-1">
             <AccountMenu name={user.name} email={user.email} avatar={<Avatar name={user.name} image={user.image} size="sm" />} />

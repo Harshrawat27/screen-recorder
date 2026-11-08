@@ -147,10 +147,10 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
                 length: duration(video.durationSec),
                 when: when(video.createdAt),
                 ready: video.ready,
-                // Not tracked yet.
-                views: 0,
-                comments: 0,
-                reactions: 0,
+                // From the Worker's database (version 2+); 0 on older Workers.
+                views: video.views ?? 0,
+                comments: video.comments ?? 0,
+                reactions: video.reactions ?? 0,
               }),
             )}
           />
