@@ -1,7 +1,8 @@
 import type { Workspace } from "@/lib/db";
 
-// Renaming and deleting recordings. Both go through the upload endpoints every Worker already
-// has (PUT and DELETE a file with the upload key), so they work without a Worker update.
+// Renaming and deleting recordings. Version 3 Workers do both themselves (and keep D1 in
+// step). Older ones are handled through the upload endpoints every Worker has (PUT and
+// DELETE a file with the upload key), so they work without a Worker update.
 
 export const VIDEO_ID = /^[a-z0-9]{8,64}$/;
 const FILE_NAME = /^[A-Za-z0-9._-]{1,100}$/;
@@ -18,8 +19,23 @@ async function readText(ws: Workspace, id: string, name: string): Promise<string
   return res.text();
 }
 
+async function workerCall(ws: Workspace, id: string, method: "PATCH" | "DELETE", body?: unknown) {
+  return fetch(`${ws.worker_url}/api/videos/${id}`, {
+    method,
+    headers: { ...auth(ws), "content-type": "application/json" },
+    body: body === undefined ? undefined : JSON.stringify(body),
+    signal: AbortSignal.timeout(20000),
+  });
+}
+
 /** Changes the title saved in the video's meta.json. Returns false if the video doesn't exist. */
 export async function renameVideo(ws: Workspace, id: string, title: string): Promise<boolean> {
+  if (ws.worker_version >= 3) {
+    const res = await workerCall(ws, id, "PATCH", { title });
+    if (res.status === 404) return false;
+    if (!res.ok) throw new Error(`Could not save the title (${res.status})`);
+    return true;
+  }
   const text = await readText(ws, id, "meta.json");
   if (text === null) return false;
   const meta = { ...(JSON.parse(text) as Record<string, unknown>), title };
@@ -49,6 +65,11 @@ function playlistFiles(text: string): string[] {
 
 /** Deletes every file of a recording from the user's bucket. */
 export async function deleteVideo(ws: Workspace, id: string): Promise<void> {
+  if (ws.worker_version >= 3) {
+    const res = await workerCall(ws, id, "DELETE");
+    if (!res.ok) throw new Error(`Could not delete the video (${res.status})`);
+    return;
+  }
   // Work out the file list from the playlists before removing anything.
   const master = await readText(ws, id, "master.m3u8");
   const playlists = master ? playlistFiles(master).filter((n) => n.endsWith(".m3u8")) : [];

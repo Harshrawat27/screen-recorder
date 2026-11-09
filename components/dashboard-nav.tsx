@@ -67,6 +67,9 @@ const workspace: Item[] = [
   },
 ];
 
+/** Every dashboard page, for search. */
+export const dashboardPages = [...library, ...workspace].map(({ href, label, icon }) => ({ href, label, icon }));
+
 function isActive(pathname: string, href: string) {
   return href === "/dashboard" ? pathname === "/dashboard" : pathname === href || pathname.startsWith(`${href}/`);
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getWorkspace } from "@/lib/db";
+import { clearSearchCache } from "@/lib/search";
 import { getSession } from "@/lib/session";
 import { TITLE_MAX, VIDEO_ID, deleteVideo, renameVideo } from "@/lib/video-files";
 
@@ -28,6 +29,7 @@ export async function PATCH(request: Request, { params }: Params) {
   if (title.length > TITLE_MAX) return NextResponse.json({ error: "too_long" }, { status: 400 });
   try {
     const ok = await renameVideo(found.ws, found.id, title);
+    clearSearchCache(found.ws.id);
     return ok ? NextResponse.json({ title }) : NextResponse.json({ error: "not_found" }, { status: 404 });
   } catch (err) {
     console.error("Rename failed", err);
@@ -40,6 +42,7 @@ export async function DELETE(_request: Request, { params }: Params) {
   if ("error" in found) return found.error;
   try {
     await deleteVideo(found.ws, found.id);
+    clearSearchCache(found.ws.id);
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("Delete failed", err);

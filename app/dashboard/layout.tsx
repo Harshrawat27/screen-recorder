@@ -1,5 +1,6 @@
 import { AccountMenu } from "@/components/account-menu";
 import { MobileNav, SidebarNav } from "@/components/dashboard-nav";
+import { DashboardSearch } from "@/components/dashboard-search";
 import { Avatar } from "@/components/dashboard-ui";
 import { Logo } from "@/components/header";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -39,6 +40,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <div className="flex items-center justify-between gap-3 pb-3">
           <Logo />
           <div className="flex items-center gap-1">
+            <DashboardSearch compact />
             <ThemeToggle />
             <AccountMenu compact name={user.name} email={user.email} avatar={<Avatar name={user.name} image={user.image} size="sm" />} />
           </div>
@@ -46,7 +48,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <MobileNav />
       </header>
 
-      <div className="min-w-0 flex-1">{children}</div>
+      <div className="min-w-0 flex-1">
+        {/* Top bar on large screens: search in the middle */}
+        <div className="sticky top-0 z-20 hidden h-16 items-center justify-center border-b border-line bg-canvas/85 px-8 backdrop-blur lg:flex">
+          <DashboardSearch />
+        </div>
+        {children}
+      </div>
     </div>
   );
 }
