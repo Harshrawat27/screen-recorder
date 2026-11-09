@@ -372,7 +372,7 @@ function VideoMenu({
             disabled={!foldersEnabled}
             onClick={() => setDialog('move')}
           >
-            Move to folder
+            Add to folder
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setDialog('rename')}>
             Rename
@@ -833,7 +833,7 @@ export function LibraryView({
   /** Folder cards shown above the videos (the library's top level only). */
   folders: LibraryFolder[];
   author: LibraryAuthor;
-  /** Every folder, for "Move to folder". */
+  /** Every folder, for "Add to folder". */
   folderOptions?: FolderOption[];
   foldersEnabled?: boolean;
   /** The folder being shown, or null for the library's top level. */
@@ -865,8 +865,9 @@ export function LibraryView({
   const all = videos
     .filter((v) => !removed.has(v.id))
     .map((v) => (v.id in movedTo ? { ...v, folderId: movedTo[v.id] } : v))
-    // A video moved somewhere else leaves this view right away.
-    .filter((v) => v.folderId === scope)
+    // The library shows every video; a folder shows only its own. A video taken out of the
+    // folder being shown leaves it right away.
+    .filter((v) => scope === null || v.folderId === scope)
     .map((v) => (titles[v.id] ? { ...v, title: titles[v.id] } : v));
 
   const toggleStar = (id: string) =>
@@ -914,9 +915,7 @@ export function LibraryView({
                 ? 'Archived videos'
                 : scope
                   ? 'Videos in this folder'
-                  : folders.length > 0
-                    ? 'Videos'
-                    : 'All videos'
+                  : 'All videos'
           }
           count={shown.length}
         />
@@ -935,7 +934,7 @@ export function LibraryView({
             ) : scope ? (
               <Empty
                 title='This folder is empty'
-                body='Open the menu on any video and choose Move to folder to add it here.'
+                body='Open the menu on any video in your library and choose Add to folder.'
               />
             ) : (
               <Empty

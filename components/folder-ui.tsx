@@ -5,7 +5,8 @@ import { useState } from "react";
 import { buttonClass } from "@/components/ui";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-// Folders: create, rename, delete, and move a video into one. Everything is stored in the
+// Folders: create, rename, delete, and add a video to one. Videos always stay in the library
+// too; a folder is just another place to find them. Everything is stored in the
 // user's own Cloudflare (D1) through /api/folders and /api/videos.
 
 export type FolderOption = { id: string; name: string };
@@ -207,7 +208,7 @@ export function FolderActions({ id, name }: { id: string; name: string }) {
           <DialogHeader>
             <DialogTitle>Delete “{name}”?</DialogTitle>
             <DialogDescription>
-              Only the folder is deleted. The videos in it move back to your library, and their links keep working.
+              Only the folder is deleted. Its videos stay in your library, and their links keep working.
             </DialogDescription>
           </DialogHeader>
           {error && (
@@ -262,7 +263,7 @@ export function MoveDialog({
       onMoved(folderId, name);
       onClose();
     } catch {
-      setError("Couldn’t move the video. Please try again.");
+      setError("Couldn’t update the folder. Please try again.");
     } finally {
       setBusy(null);
     }
@@ -297,7 +298,7 @@ export function MoveDialog({
         >
           <span className="text-muted">{icon}</span>
           <span className="min-w-0 flex-1 truncate">{name}</span>
-          {here && <span className="text-xs font-normal text-muted">Here now</span>}
+          {here && <span className="text-xs font-normal text-muted">{id ? "Added" : "Current"}</span>}
         </button>
       </li>
     );
@@ -316,16 +317,19 @@ export function MoveDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Move to folder</DialogTitle>
-          <DialogDescription className="truncate">{videoTitle}</DialogDescription>
+          <DialogTitle>Add to folder</DialogTitle>
+          <DialogDescription>
+            <span className="block truncate">{videoTitle}</span>
+            <span className="mt-1 block text-sm">It stays in your library too. A video can be in one folder at a time.</span>
+          </DialogDescription>
         </DialogHeader>
         <ul className="-mx-2 mt-4 max-h-[min(320px,45vh)] space-y-0.5 overflow-y-auto">
           {option(
             null,
-            "Library (no folder)",
+            "No folder",
             <svg viewBox="0 0 20 20" fill="none" aria-hidden className="size-[18px]">
-              <rect x="3" y="4" width="14" height="12" rx="2.5" stroke="currentColor" strokeWidth="1.6" />
-              <path d="M8.5 7.8v4.4L12.3 10z" fill="currentColor" />
+              <circle cx="10" cy="10" r="6.5" stroke="currentColor" strokeWidth="1.6" />
+              <path d="M5.5 14.5l9-9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
             </svg>,
           )}
           {folders.map((f) => option(f.id, f.name, <FolderIcon />))}
@@ -340,7 +344,7 @@ export function MoveDialog({
             className={inputClass}
           />
           <button type="submit" disabled={!clean || Boolean(busy)} className={buttonClass("secondary", "md", "shrink-0 disabled:opacity-50")}>
-            {busy === "new" ? "Creating…" : "Create & move"}
+            {busy === "new" ? "Creating…" : "Create & add"}
           </button>
         </form>
         {error && (
