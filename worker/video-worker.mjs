@@ -8,6 +8,7 @@
 //   GET    /api/search?q=…                  search recordings by title (needs UPLOAD_KEY)
 //   PATCH  /api/videos/<id>                 rename a recording (needs UPLOAD_KEY)
 //   DELETE /api/videos/<id>                 delete a recording and everything about it (needs UPLOAD_KEY)
+//   GET    /api/usage                       storage used, requests and storage operations (needs UPLOAD_KEY)
 //   GET    /api/social/<id>                 comments, reactions and views of a video (needs UPLOAD_KEY)
 //   POST   /api/social/<id>/comments        add a comment (needs UPLOAD_KEY)
 //   DELETE /api/social/<id>/comments/<cid>  delete a comment (needs UPLOAD_KEY)
@@ -92,6 +93,10 @@ const SCHEMA = [
      status text not null default 'uploading', updated_at integer not null)`,
   `create index if not exists videos_created on videos (created_at desc)`,
   `create table if not exists settings (key text primary key, value text)`,
+  // Version 3: this Worker's own count of its requests and storage operations, per UTC day.
+  `create table if not exists usage_daily (
+     day text primary key, requests integer not null default 0, class_a integer not null default 0,
+     class_b integer not null default 0)`,
 ];
 // Full-text index over titles (trigram, so any part of a word matches). Kept separate so a
 // database without it still works: search then falls back to a plain scan.
@@ -397,6 +402,126 @@ async function handleVideo(request, env, id) {
   return json({ error: "not_found" }, 404);
 }
 
+// ---- Usage -------------------------------------------------------------------------------
+//
+// Cloudflare's free plan limits Worker requests per day and storage operations per month. The
+// Worker counts its own requests and the storage calls it makes, in memory, and adds them to
+// D1 every half minute or so (one small write), so counting costs almost nothing. Counts from
+// an instance that shuts down before its next write are lost, so the numbers are close, not
+// exact; Cloudflare's dashboard has the exact ones.
+
+const tally = { day: "", requests: 0, classA: 0, classB: 0, lastWrite: Date.now() };
+const today = () => new Date().toISOString().slice(0, 10);
+
+function count(field, n = 1) {
+  const day = today();
+  if (tally.day !== day) {
+    // A new day: whatever is still pending belongs to the previous one.
+    if (tally.day && (tally.requests || tally.classA || tally.classB)) tally.carry = { ...tally };
+    Object.assign(tally, { day, requests: 0, classA: 0, classB: 0 });
+  }
+  tally[field] += n;
+}
+
+/** The bucket, with every call counted the way R2 bills it (deletes are free). */
+function countedBucket(bucket) {
+  const classA = new Set(["put", "list", "createMultipartUpload", "resumeMultipartUpload"]);
+  const classB = new Set(["get", "head"]);
+  return new Proxy(bucket, {
+    get(target, prop) {
+      const value = target[prop];
+      if (typeof value !== "function") return value;
+      return (...args) => {
+        if (classA.has(prop)) count("classA");
+        else if (classB.has(prop)) count("classB");
+        return value.apply(target, args);
+      };
+    },
+  });
+}
+
+async function writeTally(env) {
+  if (!env.DB) return;
+  const batches = [];
+  if (tally.carry) {
+    batches.push(tally.carry);
+    delete tally.carry;
+  }
+  if (tally.requests || tally.classA || tally.classB) batches.push({ ...tally });
+  Object.assign(tally, { requests: 0, classA: 0, classB: 0, lastWrite: Date.now() });
+  if (!batches.length) return;
+  await ensureSchema(env);
+  await env.DB.batch(
+    batches.map((t) =>
+      env.DB.prepare(
+        `insert into usage_daily (day, requests, class_a, class_b) values (?, ?, ?, ?)
+         on conflict (day) do update set requests = requests + excluded.requests,
+           class_a = class_a + excluded.class_a, class_b = class_b + excluded.class_b`,
+      ).bind(t.day, t.requests, t.classA, t.classB),
+    ),
+  );
+}
+
+const STORAGE_TTL_MS = 10 * 60 * 1000;
+
+/** Adds up every file in the bucket, per recording. Kept for ten minutes. */
+async function measureStorage(env, fresh) {
+  if (!fresh) {
+    const saved = await env.DB.prepare("select value from settings where key = 'storage'").first();
+    if (saved) {
+      const value = JSON.parse(saved.value);
+      if (Date.now() - value.measuredAt < STORAGE_TTL_MS) return value;
+    }
+  }
+  const perVideo = new Map();
+  let bytes = 0;
+  let objects = 0;
+  let cursor;
+  do {
+    const page = await env.VIDEOS.list({ prefix: "videos/", cursor, limit: 1000 });
+    for (const object of page.objects) {
+      bytes += object.size;
+      objects++;
+      const id = object.key.split("/")[1];
+      perVideo.set(id, (perVideo.get(id) ?? 0) + object.size);
+    }
+    cursor = page.truncated ? page.cursor : undefined;
+  } while (cursor);
+  const value = { bytes, objects, perVideo: Object.fromEntries(perVideo), measuredAt: Date.now() };
+  await env.DB.prepare("insert or replace into settings (key, value) values ('storage', ?)").bind(JSON.stringify(value)).run();
+  return value;
+}
+
+async function usage(env, fresh) {
+  await ensureIndexed(env);
+  await writeTally(env); // include this instance's latest counts
+  const day = today();
+  const month = day.slice(0, 7);
+  const [storage, rows, size, first] = await Promise.all([
+    measureStorage(env, fresh),
+    env.DB.prepare("select day, requests, class_a, class_b from usage_daily where day >= ? order by day").bind(`${month}-01`).all(),
+    env.DB.prepare("select count(*) as n from videos").run(),
+    env.DB.prepare("select min(day) as day from usage_daily").first(),
+  ]);
+  const days = rows.results;
+  const sum = (field) => days.reduce((total, row) => total + row[field], 0);
+  const todayRow = days.find((row) => row.day === day);
+  const titles = await env.DB.prepare("select id, title, created_at from videos").all();
+  const byId = new Map(titles.results.map((row) => [row.id, row]));
+  const largest = Object.entries(storage.perVideo)
+    .filter(([id]) => byId.has(id))
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([id, bytes]) => ({ id, title: byId.get(id).title, createdAt: byId.get(id).created_at, bytes }));
+  return {
+    storage: { bytes: storage.bytes, objects: storage.objects, recordings: Object.keys(storage.perVideo).length, measuredAt: storage.measuredAt, largest },
+    today: { day, requests: todayRow?.requests ?? 0, classA: todayRow?.class_a ?? 0, classB: todayRow?.class_b ?? 0 },
+    month: { month, requests: sum("requests"), classA: sum("class_a"), classB: sum("class_b"), days },
+    database: { bytes: size.meta?.size_after ?? null },
+    countingSince: first?.day ?? day,
+  };
+}
+
 async function handleSocial(request, env, path) {
   if (!env.DB) return json({ error: "no_database" }, 501);
   const parts = path.slice("/api/social/".length).split("/");
@@ -424,69 +549,82 @@ async function handleSocial(request, env, path) {
 }
 
 const worker = {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-    const path = decodeURIComponent(url.pathname);
-    const method = request.method;
-
-    if (method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
-    if (path === "/health") return json({ ok: true, version: VERSION });
-
-    if (path.startsWith("/api/")) {
-      if (!authorized(request, env)) return json({ error: "unauthorized" }, 401);
-
-      if (path === "/api/videos" && method === "GET") {
-        const [videos, stats] = await Promise.all([listRecordings(env), counts(env).catch(() => ({}))]);
-        return json({ videos: videos.map((v) => ({ ...v, ...(stats[v.id] ?? { views: 0, comments: 0, reactions: 0 }) })) });
-      }
-      if ((path === "/api/search" || path.startsWith("/api/videos/")) && !env.DB) return json({ error: "no_database" }, 501);
-      if (path === "/api/search" && method === "GET") {
-        const limit = Math.min(Math.max(Number(url.searchParams.get("limit")) || 8, 1), 50);
-        return json({ videos: await searchRecordings(env, url.searchParams.get("q") || "", limit) });
-      }
-      if (path.startsWith("/api/videos/")) return handleVideo(request, env, path.slice("/api/videos/".length));
-      if (path.startsWith("/api/social/")) return handleSocial(request, env, path);
-
-      if (path.startsWith("/api/upload/")) {
-        const key = path.slice("/api/upload/".length);
-        if (!FILE.test(key)) return json({ error: "bad_key" }, 400);
-        if (method === "PUT") {
-          const body = await request.arrayBuffer();
-          await env.VIDEOS.put(key, body, {
-            httpMetadata: {
-              contentType: request.headers.get("content-type") || "application/octet-stream",
-              cacheControl: request.headers.get("cache-control") || undefined,
-            },
-          });
-          // The upload has succeeded either way; a database hiccup must not fail it.
-          await afterUpload(env, key, method, body).catch((err) => console.error("Could not update D1", err));
-          return json({ ok: true, size: body.byteLength });
-        }
-        if (method === "DELETE") {
-          await env.VIDEOS.delete(key);
-          await afterUpload(env, key, method).catch((err) => console.error("Could not update D1", err));
-          return json({ ok: true });
-        }
-      }
-      return json({ error: "not_found" }, 404);
+  async fetch(request, rawEnv, ctx) {
+    count("requests");
+    const env = { ...rawEnv, VIDEOS: countedBucket(rawEnv.VIDEOS) };
+    if (env.DB && ctx?.waitUntil && Date.now() - tally.lastWrite > 30_000) {
+      ctx.waitUntil(writeTally(env).catch((err) => console.error("Could not save usage", err)));
     }
-
-    if ((method === "GET" || method === "HEAD") && path.startsWith("/videos/")) {
-      const key = path.slice(1);
-      if (!FILE.test(key)) return json({ error: "not_found" }, 404);
-      const object = method === "HEAD" ? await env.VIDEOS.head(key) : await env.VIDEOS.get(key);
-      if (!object) {
-        return new Response("Not found", { status: 404, headers: { ...CORS, "cache-control": "no-store" } });
-      }
-      const headers = new Headers(CORS);
-      object.writeHttpMetadata(headers);
-      headers.set("etag", object.httpEtag);
-      if (!headers.has("cache-control")) headers.set("cache-control", "public, max-age=60");
-      return new Response(method === "HEAD" ? null : object.body, { headers });
-    }
-
-    return json({ error: "not_found" }, 404);
+    return route(request, env);
   },
 };
+
+async function route(request, env) {
+  const url = new URL(request.url);
+  const path = decodeURIComponent(url.pathname);
+  const method = request.method;
+
+  if (method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
+  if (path === "/health") return json({ ok: true, version: VERSION });
+
+  if (path.startsWith("/api/")) {
+    if (!authorized(request, env)) return json({ error: "unauthorized" }, 401);
+
+    if (path === "/api/videos" && method === "GET") {
+      const [videos, stats] = await Promise.all([listRecordings(env), counts(env).catch(() => ({}))]);
+      return json({ videos: videos.map((v) => ({ ...v, ...(stats[v.id] ?? { views: 0, comments: 0, reactions: 0 }) })) });
+    }
+    if ((path === "/api/search" || path.startsWith("/api/videos/")) && !env.DB) return json({ error: "no_database" }, 501);
+    if (path === "/api/usage" && method === "GET") {
+      if (!env.DB) return json({ error: "no_database" }, 501);
+      return json(await usage(env, url.searchParams.get("fresh") === "1"));
+    }
+    if (path === "/api/search" && method === "GET") {
+      const limit = Math.min(Math.max(Number(url.searchParams.get("limit")) || 8, 1), 50);
+      return json({ videos: await searchRecordings(env, url.searchParams.get("q") || "", limit) });
+    }
+    if (path.startsWith("/api/videos/")) return handleVideo(request, env, path.slice("/api/videos/".length));
+    if (path.startsWith("/api/social/")) return handleSocial(request, env, path);
+
+    if (path.startsWith("/api/upload/")) {
+      const key = path.slice("/api/upload/".length);
+      if (!FILE.test(key)) return json({ error: "bad_key" }, 400);
+      if (method === "PUT") {
+        const body = await request.arrayBuffer();
+        await env.VIDEOS.put(key, body, {
+          httpMetadata: {
+            contentType: request.headers.get("content-type") || "application/octet-stream",
+            cacheControl: request.headers.get("cache-control") || undefined,
+          },
+        });
+        // The upload has succeeded either way; a database hiccup must not fail it.
+        await afterUpload(env, key, method, body).catch((err) => console.error("Could not update D1", err));
+        return json({ ok: true, size: body.byteLength });
+      }
+      if (method === "DELETE") {
+        await env.VIDEOS.delete(key);
+        await afterUpload(env, key, method).catch((err) => console.error("Could not update D1", err));
+        return json({ ok: true });
+      }
+    }
+    return json({ error: "not_found" }, 404);
+  }
+
+  if ((method === "GET" || method === "HEAD") && path.startsWith("/videos/")) {
+    const key = path.slice(1);
+    if (!FILE.test(key)) return json({ error: "not_found" }, 404);
+    const object = method === "HEAD" ? await env.VIDEOS.head(key) : await env.VIDEOS.get(key);
+    if (!object) {
+      return new Response("Not found", { status: 404, headers: { ...CORS, "cache-control": "no-store" } });
+    }
+    const headers = new Headers(CORS);
+    object.writeHttpMetadata(headers);
+    headers.set("etag", object.httpEtag);
+    if (!headers.has("cache-control")) headers.set("cache-control", "public, max-age=60");
+    return new Response(method === "HEAD" ? null : object.body, { headers });
+  }
+
+  return json({ error: "not_found" }, 404);
+}
 
 export default worker;

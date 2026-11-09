@@ -56,6 +56,18 @@ const workspace: Item[] = [
     ),
   },
   {
+    href: "/dashboard/usage",
+    label: "Usage",
+    icon: icon(
+      <>
+        <path d="M3.5 16.5h13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        <rect x="4.5" y="10" width="2.8" height="4.5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <rect x="8.6" y="6.5" width="2.8" height="8" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <rect x="12.7" y="3.5" width="2.8" height="11" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      </>,
+    ),
+  },
+  {
     href: "/dashboard/billing",
     label: "Billing",
     icon: icon(
