@@ -110,9 +110,15 @@ export function VideoSocial({
   const api = `/api/v/${space}/${id}/social`;
   const pendingKey = `showthrough:pending:${space}/${id}`;
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const watched = useRef(new WeakSet<HTMLVideoElement>());
   const [social, setSocial] = useState<Social | null>(null);
   const [draft, setDraft] = useState("");
   const [draftAt, setDraftAt] = useState<number | null>(null);
+  // The video's listeners outlive renders, so they read the draft from here.
+  const draftRef = useRef("");
+  useEffect(() => {
+    draftRef.current = draft;
+  }, [draft]);
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState("");
   const [signInOpen, setSignInOpen] = useState(false);
@@ -176,7 +182,20 @@ export function VideoSocial({
           })
           .catch(() => {});
       };
+      // While a comment is started but still empty: playing again drops its time (the next
+      // comment gets a fresh one), and moving the video while paused moves the time with it.
+      const onResume = () => {
+        if (!draftRef.current.trim()) setDraftAt(null);
+      };
+      const onSeeked = () => {
+        if (!draftRef.current.trim() && video.paused) setDraftAt((at) => (at === null ? at : now()));
+      };
+      // The player hands over the same element on every render; listen to it only once.
+      if (watched.current.has(video)) return;
+      watched.current.add(video);
       video.addEventListener("play", onPlay);
+      video.addEventListener("play", onResume);
+      video.addEventListener("seeked", onSeeked);
     },
     [api],
   );
@@ -246,8 +265,12 @@ export function VideoSocial({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [social, pendingKey]);
 
+  // Starting a comment pauses the video and pins the comment to that moment.
   function startDraft() {
-    if (draftAt === null && !draft) setDraftAt(now());
+    if (draftAt !== null || draft) return;
+    const video = videoRef.current;
+    if (video && !video.paused) video.pause();
+    setDraftAt(now());
   }
 
   function seek(sec: number) {
@@ -485,6 +508,8 @@ export function VideoSocial({
                     setDraft(e.target.value);
                   }}
                   onFocus={startDraft}
+                  // Also on click: the box may still have focus after the video was played again.
+                  onPointerDown={startDraft}
                   onKeyDown={(e) => {
                     if (
                       e.key === "Enter" &&
