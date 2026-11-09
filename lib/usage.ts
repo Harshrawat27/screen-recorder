@@ -1,6 +1,6 @@
 import type { Workspace } from "@/lib/db";
 
-// Usage of the user's own Cloudflare, as counted by their Worker (version 3+), compared with
+// Usage of the user's own Cloudflare, as counted by their Worker (version 4+), compared with
 // Cloudflare's free plan. Limits and prices from developers.cloudflare.com, November 2026.
 
 export const FREE = {
@@ -15,7 +15,8 @@ export const PRICE = { storagePerGbMonth: 0.015, classAPerMillion: 4.5, classBPe
 export type Usage = {
   storage: {
     bytes: number;
-    objects: number;
+    /** Older recordings whose size hasn't been measured yet. */
+    pending: number;
     recordings: number;
     measuredAt: number;
     largest: { id: string; title: string | null; createdAt: number | null; bytes: number }[];
@@ -26,15 +27,20 @@ export type Usage = {
   countingSince: string;
 };
 
-export async function getUsage(ws: Workspace, fresh = false): Promise<Usage | null> {
+/** The usage, or what went wrong (shown on the page so problems can be fixed, not guessed). */
+export async function getUsage(ws: Workspace): Promise<{ usage: Usage } | { error: string }> {
   try {
-    const res = await fetch(`${ws.worker_url}/api/usage${fresh ? "?fresh=1" : ""}`, {
+    const res = await fetch(`${ws.worker_url}/api/usage`, {
       headers: { authorization: `Bearer ${ws.upload_key}` },
       cache: "no-store",
       signal: AbortSignal.timeout(15000),
     });
-    return res.ok ? ((await res.json()) as Usage) : null;
-  } catch {
-    return null;
+    if (!res.ok) {
+      const body = (await res.text().catch(() => "")).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 160);
+      return { error: `Error ${res.status}${body ? `: ${body}` : ""}` };
+    }
+    return { usage: (await res.json()) as Usage };
+  } catch (err) {
+    return { error: err instanceof Error && err.name === "TimeoutError" ? "It took longer than 15 seconds to answer." : "It couldn’t be reached." };
   }
 }

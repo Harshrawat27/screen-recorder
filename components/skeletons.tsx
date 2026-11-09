@@ -6,7 +6,7 @@ import "./skeleton.css";
 // Loading screens for the dashboard. The page heading is real (it never changes); only the
 // parts that wait for data are placeholders, shaped like what they stand in for.
 
-function Block({ className = "" }: { className?: string }) {
+export function Block({ className = "" }: { className?: string }) {
   return <div aria-hidden className={`skeleton rounded-md ${className}`} />;
 }
 

@@ -18,7 +18,8 @@ export type SearchVideo = {
   createdAt: number | null;
   durationSec: number | null;
 };
-export type SearchResults = { videos: SearchVideo[] };
+export type SearchFolder = { id: string; name: string; href: string; videos: number };
+export type SearchResults = { videos: SearchVideo[]; folders?: SearchFolder[] };
 
 const CACHE_MS = 15_000;
 const cache = new Map<string, { at: number; videos: SearchVideo[] }>();
@@ -65,8 +66,12 @@ async function searchInD1(ws: Workspace, query: string, limit: number): Promise<
   const url = `${ws.worker_url}/api/search?q=${encodeURIComponent(query)}&limit=${limit}`;
   const res = await fetch(url, { headers: { authorization: `Bearer ${ws.upload_key}` }, cache: "no-store", signal: AbortSignal.timeout(6000) });
   if (!res.ok) throw new Error(`Search failed (${res.status})`);
-  const data = (await res.json()) as { videos: { id: string; title: string | null; createdAt: number | null; durationSec: number | null }[] };
+  const data = (await res.json()) as {
+    videos: { id: string; title: string | null; createdAt: number | null; durationSec: number | null }[];
+    folders?: { id: string; name: string; videos: number }[];
+  };
   return {
+    folders: (data.folders ?? []).map((f) => ({ ...f, href: `/dashboard/folders/${f.id}` })),
     videos: data.videos
       .filter((v) => !v.id.startsWith("stcheck"))
       .map((v) => ({

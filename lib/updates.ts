@@ -5,7 +5,8 @@ import type { Workspace } from "@/lib/db";
 // What each version of the user's Worker adds. Shown in the "New version available" box.
 export const WORKER_RELEASES: Record<number, string> = {
   2: "Comments, reactions and view counts on your videos.",
-  3: "Instant search, a faster library and a Usage page. Deleting a video also removes its comments and views.",
+  3: "Instant search and a faster library. Deleting a video also removes its comments and views.",
+  4: "Folders, and a Usage page that shows how much of Cloudflare's free plan you use.",
 };
 
 /** Whether this account's purchase includes a given Worker version. */
@@ -22,7 +23,12 @@ export function availableUpdate(workspace: Workspace | null, access: Access): Up
   if (!workspace || !access.paid || workspace.worker_version >= WORKER_VERSION) return null;
   return {
     version: WORKER_VERSION,
-    notes: WORKER_RELEASES[WORKER_VERSION] ?? "Improvements to your video backend.",
+    // Everything new since the version this workspace runs, oldest first.
+    notes:
+      Object.entries(WORKER_RELEASES)
+        .filter(([version]) => Number(version) > workspace.worker_version)
+        .map(([, note]) => note)
+        .join(" ") || "Improvements to your video backend.",
     included: includesVersion(access),
   };
 }

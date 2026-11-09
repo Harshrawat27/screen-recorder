@@ -21,6 +21,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { buttonClass } from '@/components/ui';
+import {
+  type FolderOption,
+  MoveDialog,
+  NewFolderButton,
+} from '@/components/folder-ui';
 import { VideoThumb } from '@/components/video-thumb';
 import { site } from '@/lib/site';
 
@@ -39,6 +44,7 @@ export type LibraryVideo = {
   views: number;
   comments: number;
   reactions: number;
+  folderId: string | null;
 };
 
 export type LibraryFolder = {
@@ -46,6 +52,7 @@ export type LibraryFolder = {
   name: string;
   videos: number;
   people: string[];
+  href: string;
 };
 export type LibraryAuthor = { name: string; image?: string | null };
 
@@ -56,10 +63,16 @@ type Tab = 'videos' | 'starred' | 'archive';
 type VideoActions = {
   renamed: (id: string, title: string) => void;
   deleted: (id: string) => void;
+  moved: (id: string, folderId: string | null) => void;
+  folders: FolderOption[];
+  foldersEnabled: boolean;
 };
 const Actions = createContext<VideoActions>({
   renamed: () => {},
   deleted: () => {},
+  moved: () => {},
+  folders: [],
+  foldersEnabled: false,
 });
 type View = 'grid' | 'list';
 
@@ -336,7 +349,10 @@ function VideoMenu({
   video: LibraryVideo;
   trigger: string;
 }) {
-  const [dialog, setDialog] = useState<'rename' | 'delete' | null>(null);
+  const [dialog, setDialog] = useState<'rename' | 'delete' | 'move' | null>(
+    null
+  );
+  const { folders, foldersEnabled, moved } = useContext(Actions);
   const copy = () =>
     navigator.clipboard?.writeText(
       new URL(video.href, window.location.origin).toString()
@@ -352,7 +368,12 @@ function VideoMenu({
           <DropdownMenuItem onClick={() => window.open(video.href, '_blank')}>
             Open in new tab
           </DropdownMenuItem>
-          <DropdownMenuItem disabled>Move to folder</DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={!foldersEnabled}
+            onClick={() => setDialog('move')}
+          >
+            Move to folder
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setDialog('rename')}>
             Rename
           </DropdownMenuItem>
@@ -375,6 +396,17 @@ function VideoMenu({
         open={dialog === 'delete'}
         onClose={() => setDialog(null)}
       />
+      {foldersEnabled && (
+        <MoveDialog
+          open={dialog === 'move'}
+          onClose={() => setDialog(null)}
+          videoId={video.id}
+          videoTitle={video.title}
+          current={video.folderId}
+          folders={folders}
+          onMoved={(folderId) => moved(video.id, folderId)}
+        />
+      )}
     </>
   );
 }
@@ -717,7 +749,7 @@ function FolderCard({
 }) {
   const people = [author.name, ...folder.people];
   return (
-    <div className='group relative cursor-pointer pt-4'>
+    <Link href={folder.href} className='group relative block pt-4'>
       {/* The sheet behind */}
       <span
         aria-hidden
@@ -776,7 +808,7 @@ function FolderCard({
           className='stroke-line transition-colors group-hover:stroke-line-strong'
         />
       </svg>
-    </div>
+    </Link>
   );
 }
 
@@ -793,18 +825,34 @@ export function LibraryView({
   videos,
   folders,
   author,
+  folderOptions = [],
+  foldersEnabled = false,
+  scope = null,
 }: {
   videos: LibraryVideo[];
+  /** Folder cards shown above the videos (the library's top level only). */
   folders: LibraryFolder[];
   author: LibraryAuthor;
+  /** Every folder, for "Move to folder". */
+  folderOptions?: FolderOption[];
+  foldersEnabled?: boolean;
+  /** The folder being shown, or null for the library's top level. */
+  scope?: string | null;
 }) {
   const [tab, setTab] = useState<Tab>('videos');
   const [view, setView] = useState<View>('grid');
   const [stars, setStars] = useState<Set<string>>(() => new Set());
   const [titles, setTitles] = useState<Record<string, string>>({});
   const [removed, setRemoved] = useState<Set<string>>(() => new Set());
+  const [movedTo, setMovedTo] = useState<Record<string, string | null>>({});
   const router = useRouter();
   const actions: VideoActions = {
+    folders: folderOptions,
+    foldersEnabled,
+    moved: (id, folderId) => {
+      setMovedTo((prev) => ({ ...prev, [id]: folderId }));
+      router.refresh();
+    },
     renamed: (id, title) => {
       setTitles((prev) => ({ ...prev, [id]: title }));
       router.refresh();
@@ -816,6 +864,9 @@ export function LibraryView({
   };
   const all = videos
     .filter((v) => !removed.has(v.id))
+    .map((v) => (v.id in movedTo ? { ...v, folderId: movedTo[v.id] } : v))
+    // A video moved somewhere else leaves this view right away.
+    .filter((v) => v.folderId === scope)
     .map((v) => (titles[v.id] ? { ...v, title: titles[v.id] } : v));
 
   const toggleStar = (id: string) =>
@@ -861,7 +912,11 @@ export function LibraryView({
               ? 'Starred videos'
               : tab === 'archive'
                 ? 'Archived videos'
-                : 'All videos'
+                : scope
+                  ? 'Videos in this folder'
+                  : folders.length > 0
+                    ? 'Videos'
+                    : 'All videos'
           }
           count={shown.length}
         />
@@ -876,6 +931,11 @@ export function LibraryView({
               <Empty
                 title='Nothing archived'
                 body='Videos you archive leave your library but are not deleted.'
+              />
+            ) : scope ? (
+              <Empty
+                title='This folder is empty'
+                body='Open the menu on any video and choose Move to folder to add it here.'
               />
             ) : (
               <Empty
@@ -928,16 +988,17 @@ export function LibraryView({
 }
 
 /** The two buttons beside the page title. Front-end only for now. */
-export function LibraryActions() {
+export function LibraryActions({
+  foldersEnabled = false,
+}: {
+  foldersEnabled?: boolean;
+}) {
   return (
     <div className='flex items-center gap-2'>
-      <button
-        type='button'
+      <NewFolderButton
+        enabled={foldersEnabled}
         className='inline-flex h-10 items-center gap-2 rounded-control border border-line bg-surface px-4 text-sm font-semibold transition-colors hover:border-line-strong hover:bg-sunken'
-      >
-        {icons.folder}
-        New folder
-      </button>
+      />
       <button
         type='button'
         className='btn-primary inline-flex h-10 items-center gap-2 rounded-control bg-text px-4 text-sm font-semibold text-canvas transition-colors hover:bg-text/85'

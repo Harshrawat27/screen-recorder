@@ -28,6 +28,13 @@ async function workerCall(ws: Workspace, id: string, method: "PATCH" | "DELETE",
   });
 }
 
+/** Moves a recording into a folder (version 3 Workers), or back to the library with null. */
+export async function moveVideo(ws: Workspace, id: string, folderId: string | null): Promise<number> {
+  const res = await workerCall(ws, id, "PATCH", { folderId });
+  if (!res.ok && res.status !== 404) throw new Error(`Could not move the video (${res.status})`);
+  return res.status;
+}
+
 /** Changes the title saved in the video's meta.json. Returns false if the video doesn't exist. */
 export async function renameVideo(ws: Workspace, id: string, title: string): Promise<boolean> {
   if (ws.worker_version >= 3) {

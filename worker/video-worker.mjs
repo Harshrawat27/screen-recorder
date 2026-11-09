@@ -9,6 +9,10 @@
 //   PATCH  /api/videos/<id>                 rename a recording (needs UPLOAD_KEY)
 //   DELETE /api/videos/<id>                 delete a recording and everything about it (needs UPLOAD_KEY)
 //   GET    /api/usage                       storage used, requests and storage operations (needs UPLOAD_KEY)
+//   GET    /api/folders                     folders with their video counts (needs UPLOAD_KEY)
+//   POST   /api/folders                     create a folder (needs UPLOAD_KEY)
+//   PATCH  /api/folders/<id>                rename a folder (needs UPLOAD_KEY)
+//   DELETE /api/folders/<id>                delete a folder; its videos go back to the library (needs UPLOAD_KEY)
 //   GET    /api/social/<id>                 comments, reactions and views of a video (needs UPLOAD_KEY)
 //   POST   /api/social/<id>/comments        add a comment (needs UPLOAD_KEY)
 //   DELETE /api/social/<id>/comments/<cid>  delete a comment (needs UPLOAD_KEY)
@@ -26,7 +30,7 @@
 // endpoints are only called by the Showthrough website, which checks who is signed in and
 // passes their name along. Viewers never talk to these endpoints directly.
 
-const VERSION = 3;
+const VERSION = 4;
 const VIDEO_ID = /^[a-z0-9]{8,64}$/;
 const EMOJIS = ["👍", "❤️", "😂", "🎉", "😮", "🔥"];
 const FILE = /^videos\/[a-z0-9]{8,64}\/[A-Za-z0-9._-]{1,100}$/;
@@ -90,9 +94,10 @@ const SCHEMA = [
   // Version 3: one row per recording. status is 'uploading' until meta.json arrives.
   `create table if not exists videos (
      id text primary key, title text, created_at integer, duration_sec real, thumbnail text,
-     status text not null default 'uploading', updated_at integer not null)`,
+     status text not null default 'uploading', updated_at integer not null, folder_id text, bytes integer)`,
   `create index if not exists videos_created on videos (created_at desc)`,
   `create table if not exists settings (key text primary key, value text)`,
+  `create table if not exists folders (id text primary key, name text not null, created_at integer not null, updated_at integer not null)`,
   // Version 3: this Worker's own count of its requests and storage operations, per UTC day.
   `create table if not exists usage_daily (
      day text primary key, requests integer not null default 0, class_a integer not null default 0,
@@ -106,6 +111,10 @@ let schemaReady = null;
 let hasFts = false;
 function ensureSchema(env) {
   schemaReady ??= env.DB.batch(SCHEMA.map((sql) => env.DB.prepare(sql)))
+    // Databases made by an early build of version 3 have no folder column yet.
+    .then(() => env.DB.prepare("alter table videos add column folder_id text").run().catch(() => {}))
+    .then(() => env.DB.prepare("alter table videos add column bytes integer").run().catch(() => {}))
+    .then(() => env.DB.prepare("create index if not exists videos_folder on videos (folder_id)").run())
     .then(() =>
       env.DB.prepare(FTS_SCHEMA)
         .run()
@@ -229,6 +238,7 @@ function videoRow(row) {
     durationSec: row.duration_sec,
     thumbnail: row.thumbnail,
     ready: row.status === "ready",
+    folderId: row.folder_id ?? null,
   };
 }
 
@@ -375,6 +385,8 @@ async function afterUpload(env, key, method, body) {
   if (method === "PUT" && file === "meta.json") {
     await ensureSchema(env);
     await env.DB.batch(saveVideoStatements(env, id, JSON.parse(new TextDecoder().decode(body))));
+    // The recording is complete: note its size once, for the Usage page.
+    await measureVideo(env, id);
   } else if (method === "PUT" && file === "master.m3u8") {
     // A recording has started: show it as uploading until meta.json arrives.
     await ensureSchema(env);
@@ -391,6 +403,18 @@ async function handleVideo(request, env, id) {
   if (!VIDEO_ID.test(id)) return json({ error: "bad_id" }, 400);
   if (request.method === "PATCH") {
     const input = await request.json().catch(() => ({}));
+    // Move to a folder (or back to the library with null).
+    if ("folderId" in input) {
+      await ensureIndexed(env);
+      const folderId = input.folderId === null ? null : String(input.folderId);
+      if (folderId && !(await env.DB.prepare("select id from folders where id = ?").bind(folderId).first())) {
+        return json({ error: "no_folder" }, 404);
+      }
+      const moved = await env.DB.prepare("update videos set folder_id = ? where id = ?").bind(folderId, id).run();
+      if (moved.meta && moved.meta.changes === 0) return json({ error: "not_found" }, 404);
+      if (folderId) await env.DB.prepare("update folders set updated_at = ? where id = ?").bind(Date.now(), folderId).run();
+      if (input.title === undefined) return json({ folderId });
+    }
     const title = cleanTitle(input.title);
     if (!title) return json({ error: "empty" }, 400);
     return (await renameRecording(env, id, title)) ? json({ title }) : json({ error: "not_found" }, 404);
@@ -400,6 +424,71 @@ async function handleVideo(request, env, id) {
     return json({ ok: true });
   }
   return json({ error: "not_found" }, 404);
+}
+
+// ---- Folders -----------------------------------------------------------------------------
+//
+// One level of folders. A recording is in at most one folder (videos.folder_id); deleting a
+// folder puts its recordings back in the library, it never deletes them.
+
+const FOLDER_ID = /^[a-z0-9]{8,64}$/;
+const cleanName = (value) => clean(value, 80).replace(/\s+/g, " ");
+
+async function listFolders(env) {
+  await ensureIndexed(env);
+  const { results } = await env.DB.prepare(
+    `select f.id, f.name, f.created_at, f.updated_at, count(v.id) as videos
+     from folders f left join videos v on v.folder_id = f.id and v.status = 'ready'
+     group by f.id order by lower(f.name)`,
+  ).all();
+  return results.map((r) => ({ id: r.id, name: r.name, createdAt: r.created_at, updatedAt: r.updated_at, videos: r.videos }));
+}
+
+async function handleFolders(request, env, path) {
+  const id = path.slice("/api/folders".length).replace(/^\//, "");
+  const method = request.method;
+  await ensureIndexed(env);
+  if (!id && method === "GET") return json({ folders: await listFolders(env) });
+  if (!id && method === "POST") {
+    const name = cleanName((await request.json().catch(() => ({}))).name);
+    if (!name) return json({ error: "empty" }, 400);
+    const now = Date.now();
+    const folder = { id: crypto.randomUUID().replace(/-/g, "").slice(0, 20), name, createdAt: now, updatedAt: now, videos: 0 };
+    await env.DB.prepare("insert into folders (id, name, created_at, updated_at) values (?, ?, ?, ?)").bind(folder.id, name, now, now).run();
+    return json({ folder });
+  }
+  if (!FOLDER_ID.test(id)) return json({ error: "bad_id" }, 400);
+  const exists = await env.DB.prepare("select id from folders where id = ?").bind(id).first();
+  if (!exists) return json({ error: "not_found" }, 404);
+  if (method === "PATCH") {
+    const name = cleanName((await request.json().catch(() => ({}))).name);
+    if (!name) return json({ error: "empty" }, 400);
+    await env.DB.prepare("update folders set name = ?, updated_at = ? where id = ?").bind(name, Date.now(), id).run();
+    return json({ name });
+  }
+  if (method === "DELETE") {
+    await env.DB.batch([
+      env.DB.prepare("update videos set folder_id = null where folder_id = ?").bind(id),
+      env.DB.prepare("delete from folders where id = ?").bind(id),
+    ]);
+    return json({ ok: true });
+  }
+  return json({ error: "not_found" }, 404);
+}
+
+/** Folders whose name contains every word of the query. */
+async function searchFolders(env, query, limit) {
+  const words = [...new Set(clean(query, 200).toLowerCase().split(/\s+/).filter(Boolean))].slice(0, 8);
+  if (!words.length) return [];
+  await ensureIndexed(env);
+  const like = (w) => `%${w.replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
+  const { results } = await env.DB.prepare(
+    `select f.id, f.name, (select count(*) from videos v where v.folder_id = f.id and v.status = 'ready') as videos
+     from folders f where ${words.map(() => "lower(f.name) like ? escape '\\'").join(" and ")} order by lower(f.name) limit ?`,
+  )
+    .bind(...words.map(like), limit)
+    .all();
+  return results.map((r) => ({ id: r.id, name: r.name, videos: r.videos }));
 }
 
 // ---- Usage -------------------------------------------------------------------------------
@@ -462,43 +551,40 @@ async function writeTally(env) {
   );
 }
 
-const STORAGE_TTL_MS = 10 * 60 * 1000;
-
-/** Adds up every file in the bucket, per recording. Kept for ten minutes. */
-async function measureStorage(env, fresh) {
-  if (!fresh) {
-    const saved = await env.DB.prepare("select value from settings where key = 'storage'").first();
-    if (saved) {
-      const value = JSON.parse(saved.value);
-      if (Date.now() - value.measuredAt < STORAGE_TTL_MS) return value;
-    }
-  }
-  const perVideo = new Map();
+/**
+ * Adds up one recording's files and saves the total. Done once per recording, when it
+ * finishes, so the Usage page only has to add up numbers. (Listing the whole bucket in one
+ * request would run past the free plan's CPU limit once there are a few thousand files.)
+ */
+async function measureVideo(env, id) {
   let bytes = 0;
-  let objects = 0;
   let cursor;
   do {
-    const page = await env.VIDEOS.list({ prefix: "videos/", cursor, limit: 1000 });
-    for (const object of page.objects) {
-      bytes += object.size;
-      objects++;
-      const id = object.key.split("/")[1];
-      perVideo.set(id, (perVideo.get(id) ?? 0) + object.size);
-    }
+    const page = await env.VIDEOS.list({ prefix: `videos/${id}/`, cursor, limit: 1000 });
+    for (const object of page.objects) bytes += object.size;
     cursor = page.truncated ? page.cursor : undefined;
   } while (cursor);
-  const value = { bytes, objects, perVideo: Object.fromEntries(perVideo), measuredAt: Date.now() };
-  await env.DB.prepare("insert or replace into settings (key, value) values ('storage', ?)").bind(JSON.stringify(value)).run();
-  return value;
+  await env.DB.prepare("update videos set bytes = ? where id = ?").bind(bytes, id).run();
+  return bytes;
 }
 
-async function usage(env, fresh) {
+// Recordings made before sizes were saved are measured a few at a time, on each Usage visit.
+const MEASURE_PER_VISIT = 4;
+
+async function usage(env) {
   await ensureIndexed(env);
   await writeTally(env); // include this instance's latest counts
+  const unmeasured = await env.DB.prepare("select id from videos where status = 'ready' and bytes is null limit ?").bind(MEASURE_PER_VISIT).all();
+  for (const row of unmeasured.results) await measureVideo(env, row.id);
+
   const day = today();
   const month = day.slice(0, 7);
-  const [storage, rows, size, first] = await Promise.all([
-    measureStorage(env, fresh),
+  const [totals, largest, rows, size, first] = await Promise.all([
+    env.DB.prepare(
+      `select coalesce(sum(bytes), 0) as bytes, count(*) as recordings, sum(case when bytes is null then 1 else 0 end) as pending
+       from videos where status = 'ready'`,
+    ).first(),
+    env.DB.prepare("select id, title, created_at, bytes from videos where bytes is not null order by bytes desc limit 8").all(),
     env.DB.prepare("select day, requests, class_a, class_b from usage_daily where day >= ? order by day").bind(`${month}-01`).all(),
     env.DB.prepare("select count(*) as n from videos").run(),
     env.DB.prepare("select min(day) as day from usage_daily").first(),
@@ -506,15 +592,15 @@ async function usage(env, fresh) {
   const days = rows.results;
   const sum = (field) => days.reduce((total, row) => total + row[field], 0);
   const todayRow = days.find((row) => row.day === day);
-  const titles = await env.DB.prepare("select id, title, created_at from videos").all();
-  const byId = new Map(titles.results.map((row) => [row.id, row]));
-  const largest = Object.entries(storage.perVideo)
-    .filter(([id]) => byId.has(id))
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 8)
-    .map(([id, bytes]) => ({ id, title: byId.get(id).title, createdAt: byId.get(id).created_at, bytes }));
   return {
-    storage: { bytes: storage.bytes, objects: storage.objects, recordings: Object.keys(storage.perVideo).length, measuredAt: storage.measuredAt, largest },
+    storage: {
+      bytes: totals.bytes,
+      recordings: totals.recordings,
+      // Older recordings not measured yet; each visit measures a few more.
+      pending: totals.pending ?? 0,
+      measuredAt: Date.now(),
+      largest: largest.results.map((r) => ({ id: r.id, title: r.title, createdAt: r.created_at, bytes: r.bytes })),
+    },
     today: { day, requests: todayRow?.requests ?? 0, classA: todayRow?.class_a ?? 0, classB: todayRow?.class_b ?? 0 },
     month: { month, requests: sum("requests"), classA: sum("class_a"), classB: sum("class_b"), days },
     database: { bytes: size.meta?.size_after ?? null },
@@ -574,15 +660,20 @@ async function route(request, env) {
       const [videos, stats] = await Promise.all([listRecordings(env), counts(env).catch(() => ({}))]);
       return json({ videos: videos.map((v) => ({ ...v, ...(stats[v.id] ?? { views: 0, comments: 0, reactions: 0 }) })) });
     }
-    if ((path === "/api/search" || path.startsWith("/api/videos/")) && !env.DB) return json({ error: "no_database" }, 501);
+    if ((path === "/api/search" || path.startsWith("/api/videos/") || path.startsWith("/api/folders")) && !env.DB) {
+      return json({ error: "no_database" }, 501);
+    }
     if (path === "/api/usage" && method === "GET") {
       if (!env.DB) return json({ error: "no_database" }, 501);
-      return json(await usage(env, url.searchParams.get("fresh") === "1"));
+      return json(await usage(env));
     }
     if (path === "/api/search" && method === "GET") {
       const limit = Math.min(Math.max(Number(url.searchParams.get("limit")) || 8, 1), 50);
-      return json({ videos: await searchRecordings(env, url.searchParams.get("q") || "", limit) });
+      const q = url.searchParams.get("q") || "";
+      const [videos, folders] = await Promise.all([searchRecordings(env, q, limit), searchFolders(env, q, 5)]);
+      return json({ videos, folders });
     }
+    if (path === "/api/folders" || path.startsWith("/api/folders/")) return handleFolders(request, env, path);
     if (path.startsWith("/api/videos/")) return handleVideo(request, env, path.slice("/api/videos/".length));
     if (path.startsWith("/api/social/")) return handleSocial(request, env, path);
 

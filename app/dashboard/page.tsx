@@ -8,27 +8,13 @@ import { CheckIcon, Pill, buttonClass } from "@/components/ui";
 import { listVideos } from "@/lib/cloudflare";
 import { MEDIA_URL } from "@/lib/config";
 import { getWorkspace } from "@/lib/db";
-import { type LibraryFolder, type LibraryVideo, LibraryActions, LibraryView } from "@/components/library-ui";
+import { LibraryActions, LibraryView } from "@/components/library-ui";
+import { foldersEnabled, listFolders } from "@/lib/folders";
+import { toLibraryVideos } from "@/lib/library";
 import { requireSession } from "@/lib/session";
 import { getAccess, syncPayment } from "@/lib/billing";
 
 export const metadata: Metadata = { title: "Library", robots: { index: false } };
-
-function duration(sec: number | null) {
-  if (!sec) return null;
-  const s = Math.round(sec);
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
-}
-
-function when(ms: number | null) {
-  if (!ms) return "";
-  const minutes = Math.round((Date.now() - ms) / 60000);
-  if (minutes < 1) return "Just now";
-  if (minutes < 60) return `${minutes} min ago`;
-  const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
-  return new Date(ms).toLocaleDateString(undefined, { day: "numeric", month: "short" });
-}
 
 function Step({ n, done, title, body, children }: { n: number; done: boolean; title: string; body: React.ReactNode; children?: React.ReactNode }) {
   return (
@@ -46,12 +32,6 @@ function Step({ n, done, title, body, children }: { n: number; done: boolean; ti
     </li>
   );
 }
-
-// Sample folders so the layout can be shown before folders are built.
-const exampleFolders: LibraryFolder[] = [
-  { id: "product", name: "Product walkthroughs", videos: 4, people: ["Maya", "Leo"] },
-  { id: "weekly", name: "Weekly updates", videos: 2, people: ["Sam"] },
-];
 
 export default async function DashboardPage({ searchParams }: PageProps<"/dashboard">) {
   const { user } = await requireSession();
@@ -71,7 +51,11 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
   if (!access.paid) return <LockedLibrary pending={returning} />;
 
   const workspace = await getWorkspace(user.id);
-  const library = workspace ? await listVideos(workspace.worker_url, workspace.upload_key) : { videos: [], reachable: true };
+  const [library, folders] = await Promise.all([
+    workspace ? listVideos(workspace.worker_url, workspace.upload_key) : { videos: [], reachable: true },
+    listFolders(workspace),
+  ]);
+  const canFolder = foldersEnabled(workspace);
   const videos = library.videos;
 
   const connected = Boolean(workspace);
@@ -82,7 +66,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
   return (
     <main className="px-5 py-8 sm:px-10 sm:py-10">
         <PageHeader title={pages.library.title} description={pages.library.description}>
-          <LibraryActions />
+          <LibraryActions foldersEnabled={canFolder} />
         </PageHeader>
 
         {returning && (
@@ -138,22 +122,11 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
         {setupDone && workspace ? (
           <LibraryView
             author={{ name: user.name, image: user.image }}
-            folders={exampleFolders}
-            videos={videos.map(
-              (video): LibraryVideo => ({
-                id: video.id,
-                title: video.title || "Untitled recording",
-                href: `/v/${workspace.space}/${video.id}`,
-                thumb: `${MEDIA_URL}/${workspace.space}/videos/${video.id}/thumb-small.jpg`,
-                length: duration(video.durationSec),
-                when: when(video.createdAt),
-                ready: video.ready,
-                // From the Worker's database (version 2+); 0 on older Workers.
-                views: video.views ?? 0,
-                comments: video.comments ?? 0,
-                reactions: video.reactions ?? 0,
-              }),
-            )}
+            folders={folders.map((f) => ({ id: f.id, name: f.name, videos: f.videos, people: [], href: `/dashboard/folders/${f.id}` }))}
+            folderOptions={folders.map((f) => ({ id: f.id, name: f.name }))}
+            foldersEnabled={canFolder}
+            scope={null}
+            videos={toLibraryVideos(videos, workspace)}
           />
         ) : null}
 

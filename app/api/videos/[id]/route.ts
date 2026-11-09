@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { getWorkspace } from "@/lib/db";
+import { FOLDER_ID, foldersEnabled } from "@/lib/folders";
 import { clearSearchCache } from "@/lib/search";
 import { getSession } from "@/lib/session";
-import { TITLE_MAX, VIDEO_ID, deleteVideo, renameVideo } from "@/lib/video-files";
+import { TITLE_MAX, VIDEO_ID, deleteVideo, moveVideo, renameVideo } from "@/lib/video-files";
 
 // Rename (PATCH) or delete (DELETE) one of your own recordings.
 
@@ -23,7 +24,22 @@ async function ownWorkspace(params: Params["params"]) {
 export async function PATCH(request: Request, { params }: Params) {
   const found = await ownWorkspace(params);
   if ("error" in found) return found.error;
-  const input = (await request.json().catch(() => ({}))) as { title?: unknown };
+  const input = (await request.json().catch(() => ({}))) as { title?: unknown; folderId?: unknown };
+
+  // Move to a folder, or back to the library with folderId: null.
+  if ("folderId" in input) {
+    const folderId = input.folderId === null ? null : String(input.folderId);
+    if (folderId !== null && !FOLDER_ID.test(folderId)) return NextResponse.json({ error: "bad_folder" }, { status: 400 });
+    if (!foldersEnabled(found.ws)) return NextResponse.json({ error: "update_needed" }, { status: 409 });
+    try {
+      const status = await moveVideo(found.ws, found.id, folderId);
+      return status === 200 ? NextResponse.json({ folderId }) : NextResponse.json({ error: "not_found" }, { status: 404 });
+    } catch (err) {
+      console.error("Move failed", err);
+      return NextResponse.json({ error: "failed" }, { status: 502 });
+    }
+  }
+
   const title = String(input.title ?? "").replace(/\s+/g, " ").trim();
   if (!title) return NextResponse.json({ error: "empty" }, { status: 400 });
   if (title.length > TITLE_MAX) return NextResponse.json({ error: "too_long" }, { status: 400 });

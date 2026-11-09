@@ -71,7 +71,7 @@ function Message({ title, body, action }: { title: string; body: string; action?
   );
 }
 
-export default async function UsagePage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+export default async function UsagePage() {
   const { user } = await requireSession();
   const workspace = await getWorkspace(user.id);
   const header = <PageHeader title={pages.usage.title} description={pages.usage.description} />;
@@ -92,7 +92,7 @@ export default async function UsagePage({ searchParams }: { searchParams: Promis
       </main>
     );
   }
-  if (workspace.worker_version < 3) {
+  if (workspace.worker_version < 4) {
     return (
       <main className="px-5 py-8 sm:px-10 sm:py-10">
         {header}
@@ -104,20 +104,23 @@ export default async function UsagePage({ searchParams }: { searchParams: Promis
     );
   }
 
-  const fresh = (await searchParams).fresh !== undefined;
-  const [usage, library] = await Promise.all([getUsage(workspace, fresh), listVideos(workspace.worker_url, workspace.upload_key)]);
-  if (!usage) {
+  const [result, library] = await Promise.all([getUsage(workspace), listVideos(workspace.worker_url, workspace.upload_key)]);
+  if ("error" in result) {
     return (
       <main className="px-5 py-8 sm:px-10 sm:py-10">
         {header}
-        <Message title="Couldn’t load your usage" body="Your video backend didn’t answer just now. Refresh the page in a moment." />
+        <Message
+          title="Couldn’t load your usage"
+          body={`Your video backend didn’t answer properly. Refresh the page in a moment. If it keeps happening, send us this: ${result.error}`}
+        />
       </main>
     );
   }
+  const { usage } = result;
 
   const { storage, today, month } = usage;
   const recordedSec = library.videos.reduce((total, v) => total + (v.durationSec ?? 0), 0);
-  const bytesPerSec = recordedSec > 60 ? storage.bytes / recordedSec : null;
+  const bytesPerSec = recordedSec > 60 && storage.pending === 0 ? storage.bytes / recordedSec : null;
   const freeLeft = FREE.storageBytes - storage.bytes;
   const overGb = Math.max(0, storage.bytes - FREE.storageBytes) / 1e9;
   const extraA = Math.max(0, month.classA - FREE.classAPerMonth);
@@ -131,7 +134,7 @@ export default async function UsagePage({ searchParams }: { searchParams: Promis
   return (
     <main className="px-5 py-8 sm:px-10 sm:py-10">
       <PageHeader title={pages.usage.title} description={pages.usage.description}>
-        <a href="/dashboard/usage?fresh" className={buttonClass("secondary", "md")}>
+        <a href="/dashboard/usage" className={buttonClass("secondary", "md")}>
           Refresh
         </a>
       </PageHeader>
@@ -151,7 +154,9 @@ export default async function UsagePage({ searchParams }: { searchParams: Promis
           <Meter used={storage.bytes} limit={FREE.storageBytes} />
           <Note>
             {number(storage.recordings)} recording{storage.recordings === 1 ? "" : "s"}.{" "}
-            {freeLeft > 0
+            {storage.pending > 0
+              ? `Still measuring ${number(storage.pending)} older recording${storage.pending === 1 ? "" : "s"}; refresh to measure more.`
+              : freeLeft > 0
               ? bytesPerSec
                 ? `About ${hours(freeLeft / bytesPerSec)} more recording before you pass the free 10 GB.`
                 : "Plenty of room left."
@@ -215,7 +220,7 @@ export default async function UsagePage({ searchParams }: { searchParams: Promis
       )}
 
       <p className="mt-8 max-w-5xl text-sm leading-relaxed text-faint">
-        Storage was measured {new Date(storage.measuredAt).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })}
+        Each recording&rsquo;s size is measured when it finishes
         {usage.database.bytes !== null && `, and your database uses ${size(usage.database.bytes)} of its free 5 GB`}. Requests and operations
         are counted by your video backend since {new Date(`${usage.countingSince}T00:00:00Z`).toLocaleDateString("en-US", { dateStyle: "medium", timeZone: "UTC" })}, so they&rsquo;re close but not exact. Cloudflare has the exact numbers:{" "}
         <a href={`${dash}/r2/overview`} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-text">

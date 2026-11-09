@@ -103,8 +103,9 @@ export function DashboardSearch({ compact = false }: { compact?: boolean }) {
   const q = query.trim().toLowerCase();
   const pages = dashboardPages.filter((page) => !q || page.label.toLowerCase().includes(q));
   const videos = results?.videos ?? [];
+  const folders = q ? (results?.folders ?? []) : [];
   // Keep the highlight on the best match as results arrive, not on whatever was first before.
-  const first = videos[0] ? `video-${videos[0].id}` : pages[0] ? `page-${pages[0].href}` : "";
+  const first = videos[0] ? `video-${videos[0].id}` : folders[0] ? `folder-${folders[0].id}` : pages[0] ? `page-${pages[0].href}` : "";
   const [selected, setSelected] = useState("");
   const [shownFirst, setShownFirst] = useState("");
   if (first !== shownFirst) {
@@ -153,7 +154,7 @@ export function DashboardSearch({ compact = false }: { compact?: boolean }) {
       >
         {/* The server does the matching for videos, so cmdk's own filter is off. */}
         <Command shouldFilter={false} loop value={selected} onValueChange={setSelected}>
-          <CommandInput value={query} onValueChange={setQuery} placeholder="Search your videos…" autoFocus />
+          <CommandInput value={query} onValueChange={setQuery} placeholder="Search videos and folders…" autoFocus />
           <CommandList>
             {videos.length > 0 && (
               <CommandGroup heading={q ? "Videos" : "Recent videos"}>
@@ -173,6 +174,29 @@ export function DashboardSearch({ compact = false }: { compact?: boolean }) {
               </CommandGroup>
             )}
 
+            {folders.length > 0 && (
+              <CommandGroup heading="Folders">
+                {folders.map((folder) => (
+                  <CommandItem key={folder.id} value={`folder-${folder.id}`} onSelect={() => go(() => router.push(folder.href))}>
+                    <span className="grid size-7 place-items-center text-muted">
+                      <svg viewBox="0 0 20 20" fill="none" aria-hidden className="size-[18px]">
+                        <path
+                          d="M2.8 6.2c0-1 .8-1.7 1.7-1.7h3.2l1.6 1.8h6.2c1 0 1.7.8 1.7 1.7v6.6c0 1-.8 1.7-1.7 1.7H4.5c-1 0-1.7-.8-1.7-1.7z"
+                          stroke="currentColor"
+                          strokeWidth="1.6"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                    <span className="min-w-0 flex-1 truncate">{folder.name}</span>
+                    <span className="tabular text-xs text-muted">
+                      {folder.videos} video{folder.videos === 1 ? "" : "s"}
+                    </span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
+
             {pages.length > 0 && (
               <CommandGroup heading="Go to">
                 {pages.map((page) => (
@@ -184,12 +208,12 @@ export function DashboardSearch({ compact = false }: { compact?: boolean }) {
               </CommandGroup>
             )}
 
-            {videos.length === 0 && pages.length === 0 && (
+            {videos.length === 0 && folders.length === 0 && pages.length === 0 && (
               <CommandEmpty>
                 {loading ? "Searching…" : failed ? "Search isn’t available right now. Try again in a moment." : `Nothing matches “${query.trim()}”.`}
               </CommandEmpty>
             )}
-            {loading && (videos.length > 0 || pages.length > 0) && <p className="px-2.5 pb-1 pt-2 text-xs text-faint">Searching…</p>}
+            {loading && (videos.length > 0 || folders.length > 0 || pages.length > 0) && <p className="px-2.5 pb-1 pt-2 text-xs text-faint">Searching…</p>}
           </CommandList>
         </Command>
       </CommandDialog>
