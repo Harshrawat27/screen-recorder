@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createContext, useContext, useState } from 'react';
 import { LibrarySort } from '@/components/library-sort';
 import {
   DropdownMenu,
@@ -10,12 +11,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { buttonClass } from '@/components/ui';
 import { VideoThumb } from '@/components/video-thumb';
 import { site } from '@/lib/site';
 
 // The library: tabs, view toggle, folders and video cards.
-// Folders, starring, archive and the per-video stats are front-end only for now; they get
-// real storage later. Everything here is plain props so the server page stays in charge of data.
+// Rename and delete are real (see app/api/videos). Folders, starring and archive are
+// front-end only for now; they get real storage later. Everything here is plain props so the server page stays in charge of data.
 
 export type LibraryVideo = {
   id: string;
@@ -39,6 +50,17 @@ export type LibraryFolder = {
 export type LibraryAuthor = { name: string; image?: string | null };
 
 type Tab = 'videos' | 'starred' | 'archive';
+
+// Rename and delete, shared with every card and row. The library updates right away and the
+// server page refreshes behind it.
+type VideoActions = {
+  renamed: (id: string, title: string) => void;
+  deleted: (id: string) => void;
+};
+const Actions = createContext<VideoActions>({
+  renamed: () => {},
+  deleted: () => {},
+});
 type View = 'grid' | 'list';
 
 const svg = (children: React.ReactNode, className = 'size-4') => (
@@ -314,28 +336,209 @@ function VideoMenu({
   video: LibraryVideo;
   trigger: string;
 }) {
+  const [dialog, setDialog] = useState<'rename' | 'delete' | null>(null);
   const copy = () =>
     navigator.clipboard?.writeText(
       new URL(video.href, window.location.origin).toString()
     );
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger aria-label='More actions' className={trigger}>
-        {icons.dots}
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align='end' className='w-48'>
-        <DropdownMenuItem onClick={copy}>Copy link</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => window.open(video.href, '_blank')}>
-          Open in new tab
-        </DropdownMenuItem>
-        <DropdownMenuItem disabled>Move to folder</DropdownMenuItem>
-        <DropdownMenuItem disabled>Rename</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem disabled variant='destructive'>
-          Delete
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger aria-label='More actions' className={trigger}>
+          {icons.dots}
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align='end' className='w-48'>
+          <DropdownMenuItem onClick={copy}>Copy link</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => window.open(video.href, '_blank')}>
+            Open in new tab
+          </DropdownMenuItem>
+          <DropdownMenuItem disabled>Move to folder</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setDialog('rename')}>
+            Rename
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            variant='destructive'
+            onClick={() => setDialog('delete')}
+          >
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <RenameDialog
+        video={video}
+        open={dialog === 'rename'}
+        onClose={() => setDialog(null)}
+      />
+      <DeleteDialog
+        video={video}
+        open={dialog === 'delete'}
+        onClose={() => setDialog(null)}
+      />
+    </>
+  );
+}
+
+const TITLE_MAX = 120;
+
+function RenameDialog({
+  video,
+  open,
+  onClose,
+}: {
+  video: LibraryVideo;
+  open: boolean;
+  onClose: () => void;
+}) {
+  const { renamed } = useContext(Actions);
+  const [title, setTitle] = useState(video.title);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const clean = title.replace(/\s+/g, ' ').trim();
+
+  async function save(event: React.FormEvent) {
+    event.preventDefault();
+    if (!clean || busy) return;
+    if (clean === video.title) return onClose();
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/videos/${video.id}`, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ title: clean }),
+      });
+      if (!res.ok) throw new Error();
+      renamed(video.id, clean);
+      onClose();
+    } catch {
+      setError('Couldn’t rename the video. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (next) return;
+        onClose();
+      }}
+      onOpenChangeComplete={(isOpen) => {
+        if (!isOpen) {
+          setTitle(video.title);
+          setError(null);
+        }
+      }}
+    >
+      <DialogContent>
+        <form onSubmit={save}>
+          <DialogHeader>
+            <DialogTitle>Rename video</DialogTitle>
+            <DialogDescription>
+              The new name shows in your library and on the share page.
+            </DialogDescription>
+          </DialogHeader>
+          <input
+            autoFocus
+            value={title}
+            maxLength={TITLE_MAX}
+            onChange={(e) => setTitle(e.target.value)}
+            onFocus={(e) => e.currentTarget.select()}
+            aria-label='Video name'
+            className='mt-5 h-11 w-full rounded-xl border border-line bg-canvas px-3.5 text-[15px] outline-none! transition-colors focus:border-text'
+          />
+          {error && (
+            <p role='alert' className='mt-2 text-sm text-brand-ink'>
+              {error}
+            </p>
+          )}
+          <DialogFooter>
+            <DialogClose className={buttonClass('ghost', 'md')}>
+              Cancel
+            </DialogClose>
+            <button
+              type='submit'
+              disabled={!clean || busy}
+              className={buttonClass('primary', 'md', 'disabled:opacity-50')}
+            >
+              {busy ? 'Saving…' : 'Save'}
+            </button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function DeleteDialog({
+  video,
+  open,
+  onClose,
+}: {
+  video: LibraryVideo;
+  open: boolean;
+  onClose: () => void;
+}) {
+  const { deleted } = useContext(Actions);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function remove() {
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/videos/${video.id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error();
+      onClose();
+      deleted(video.id);
+    } catch {
+      setError('Couldn’t delete the video. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next && !busy) onClose();
+      }}
+      onOpenChangeComplete={(isOpen) => {
+        if (!isOpen) setError(null);
+      }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Delete this video?</DialogTitle>
+          <DialogDescription>
+            &ldquo;{video.title}&rdquo; will be deleted from your Cloudflare and
+            its share link will stop working. This can&rsquo;t be undone.
+          </DialogDescription>
+        </DialogHeader>
+        {error && (
+          <p role='alert' className='mt-4 text-sm text-brand-ink'>
+            {error}
+          </p>
+        )}
+        <DialogFooter>
+          <DialogClose disabled={busy} className={buttonClass('ghost', 'md')}>
+            Cancel
+          </DialogClose>
+          <button
+            type='button'
+            onClick={remove}
+            disabled={busy}
+            className={buttonClass('primary', 'md', 'disabled:opacity-60')}
+          >
+            {busy ? 'Deleting…' : 'Delete video'}
+          </button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -598,6 +801,22 @@ export function LibraryView({
   const [tab, setTab] = useState<Tab>('videos');
   const [view, setView] = useState<View>('grid');
   const [stars, setStars] = useState<Set<string>>(() => new Set());
+  const [titles, setTitles] = useState<Record<string, string>>({});
+  const [removed, setRemoved] = useState<Set<string>>(() => new Set());
+  const router = useRouter();
+  const actions: VideoActions = {
+    renamed: (id, title) => {
+      setTitles((prev) => ({ ...prev, [id]: title }));
+      router.refresh();
+    },
+    deleted: (id) => {
+      setRemoved((prev) => new Set(prev).add(id));
+      router.refresh();
+    },
+  };
+  const all = videos
+    .filter((v) => !removed.has(v.id))
+    .map((v) => (titles[v.id] ? { ...v, title: titles[v.id] } : v));
 
   const toggleStar = (id: string) =>
     setStars((prev) => {
@@ -609,13 +828,13 @@ export function LibraryView({
 
   const shown =
     tab === 'starred'
-      ? videos.filter((v) => stars.has(v.id))
+      ? all.filter((v) => stars.has(v.id))
       : tab === 'archive'
-      ? []
-      : videos;
+        ? []
+        : all;
 
   return (
-    <>
+    <Actions.Provider value={actions}>
       <div className='mt-8 flex flex-wrap items-center justify-between gap-3'>
         <Tabs tab={tab} onChange={setTab} starred={stars.size} />
         <div className='flex items-center gap-2'>
@@ -641,8 +860,8 @@ export function LibraryView({
             tab === 'starred'
               ? 'Starred videos'
               : tab === 'archive'
-              ? 'Archived videos'
-              : 'All videos'
+                ? 'Archived videos'
+                : 'All videos'
           }
           count={shown.length}
         />
@@ -664,7 +883,12 @@ export function LibraryView({
                 body={
                   <>
                     Record with the{' '}
-                    <a href={site.chromeStoreUrl} target='_blank' rel='noopener noreferrer' className='underline underline-offset-2 hover:text-text'>
+                    <a
+                      href={site.chromeStoreUrl}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='underline underline-offset-2 hover:text-text'
+                    >
                       Chrome extension
                     </a>{' '}
                     and your videos show up here.
@@ -699,7 +923,7 @@ export function LibraryView({
           )}
         </div>
       </section>
-    </>
+    </Actions.Provider>
   );
 }
 

@@ -21,16 +21,26 @@ const instrumentSans = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name}: ${site.tagline}`,
+    default: `${site.name}: Record your screen, share the link instantly`,
     template: `%s | ${site.name}`,
   },
-  description: site.description,
+  description:
+    'Record your screen, voice and camera in one click from Chrome. The link is copied the moment you stop. Videos live in your own Cloudflare, and you pay once.',
+  applicationName: site.name,
+  keywords: ['screen recorder', 'Loom alternative', 'Chrome screen recorder', 'record screen and camera', 'video messages', 'Cloudflare'],
   openGraph: {
-    title: site.name,
-    description: site.description,
+    title: `${site.name}: Record in one click. Share the moment you stop.`,
+    description: 'Screen, voice and camera from Chrome. The link is ready the moment you stop. Videos live in your own Cloudflare. Pay once.',
     url: site.url,
     siteName: site.name,
     type: 'website',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${site.name}: Record in one click. Share the moment you stop.`,
+    description: 'Screen, voice and camera from Chrome. The link is ready the moment you stop. Videos live in your own Cloudflare. Pay once.',
+    creator: '@Harshrwt27',
   },
 };
 

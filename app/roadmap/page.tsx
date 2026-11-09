@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Roadmap",
-  description: `What's coming to ${site.name}: team members, AI titles and chapters, comments and reactions, and a video editor.`,
+  description: `What's coming to ${site.name}: team members, AI titles and chapters, and a video editor.`,
 };
 
 const big: { title: string; body: string; points: string[]; icon: React.ReactNode }[] = [
@@ -43,27 +43,6 @@ const big: { title: string; body: string; points: string[]; icon: React.ReactNod
       <svg viewBox="0 0 24 24" fill="none" className="size-5" aria-hidden>
         <path d="M12 3l1.8 4.6L18.5 9.5l-4.7 1.9L12 16l-1.8-4.6L5.5 9.5l4.7-1.9z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
         <path d="M18.5 15.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    title: "Comments and reactions",
-    body: "Viewers can react with an emoji or leave a comment pinned to the exact moment in the video, so feedback lands where it belongs instead of in a long thread.",
-    points: [
-      "Comments pinned to a timestamp",
-      "Emoji reactions on the timeline",
-      "Choose per video who can comment",
-      "Stored in your Cloudflare, like your videos",
-    ],
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="size-5" aria-hidden>
-        <path
-          d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"
-          stroke="currentColor"
-          strokeWidth="1.7"
-          strokeLinejoin="round"
-        />
-        <path d="M8 10h8M8 13h5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
       </svg>
     ),
   },

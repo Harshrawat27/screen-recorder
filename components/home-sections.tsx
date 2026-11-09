@@ -175,15 +175,14 @@ function SafeVisual() {
 
 function TalkVisual() {
   const comments = [
-    { who: "Priya", at: "1:12", text: "Can we keep the old button color here?", left: "22%" },
-    { who: "Marco", at: "2:40", text: "This flow is so much clearer. Ship it.", left: "58%" },
+    { who: "Priya", at: "1:12", text: "Can we keep the old button color here?" },
+    { who: "Marco", at: "2:40", text: "This flow is so much clearer. Ship it." },
   ];
   const reactions = [
-    { emoji: "👍", left: "12%" },
-    { emoji: "👀", left: "34%" },
-    { emoji: "❤️", left: "49%" },
-    { emoji: "🎉", left: "66%" },
-    { emoji: "👍", left: "81%" },
+    { emoji: "👍", count: 6, mine: true },
+    { emoji: "❤️", count: 3, mine: false },
+    { emoji: "🎉", count: 4, mine: false },
+    { emoji: "🔥", count: 2, mine: false },
   ];
   return (
     <div className="flex h-full min-h-[240px] flex-col justify-center gap-6 px-1 sm:px-6">
@@ -199,26 +198,17 @@ function TalkVisual() {
           </div>
         ))}
       </div>
-      <div className="relative pt-9">
-        {reactions.map((r, i) => (
+      <div className="flex flex-wrap items-center gap-2">
+        {reactions.map((r) => (
           <span
-            key={i}
-            className="absolute top-0 grid size-8 -translate-x-1/2 place-items-center rounded-full border border-line bg-surface text-[15px] shadow-pop"
-            style={{ left: r.left }}
+            key={r.emoji}
+            className={`tabular inline-flex h-9 items-center gap-1.5 rounded-full border px-3 text-sm shadow-pop ${r.mine ? "border-text bg-surface font-semibold" : "border-line bg-surface text-muted"}`}
           >
-            {r.emoji}
+            <span className="text-[15px]">{r.emoji}</span>
+            {r.count}
           </span>
         ))}
-        <div className="relative h-1.5 rounded-full bg-line">
-          <div className="h-full w-[64%] rounded-full bg-text" />
-          {comments.map((c) => (
-            <span key={c.at} className="absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-surface bg-text" style={{ left: c.left }} />
-          ))}
-        </div>
-        <div className="tabular mt-2 flex justify-between text-xs text-muted">
-          <span>2:41</span>
-          <span>4:12</span>
-        </div>
+        <span className="tabular ml-auto text-sm text-muted">128 views</span>
       </div>
     </div>
   );
@@ -264,10 +254,9 @@ export function Features({ price }: { price: number }) {
           <SafeVisual />
         </Tile>
         <Tile
-          soon
           className="md:col-span-2 lg:col-span-4"
           title="Comments and reactions"
-          body="Viewers react with an emoji or leave a comment pinned to the exact moment in the video, so feedback lands where it belongs. Stored in your Cloudflare, like your videos."
+          body="Viewers sign in with Google to comment at the exact moment in the video or react with an emoji, and you see the views on every video. All stored in your Cloudflare, like your videos."
         >
           <TalkVisual />
         </Tile>
