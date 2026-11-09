@@ -2,7 +2,7 @@
 // so the real title and description show instantly while the rest loads.
 export const pages = {
   library: { title: "My library", description: "All your recordings, stored in your own Cloudflare." },
-  recent: { title: "Recent", description: "Videos you recorded or watched lately." },
+  recent: { title: "Recent", description: "The last 25 videos you watched, newest first." },
   watchLater: { title: "Watch later", description: "Videos you saved to come back to." },
   team: { title: "Manage team", description: "Invite people to record into your shared library." },
   billing: { title: "Billing", description: "Your plan, receipts and updates." },

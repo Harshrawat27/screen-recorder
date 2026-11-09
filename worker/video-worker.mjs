@@ -9,6 +9,9 @@
 //   PATCH  /api/videos/<id>                 rename a recording (needs UPLOAD_KEY)
 //   DELETE /api/videos/<id>                 delete a recording and everything about it (needs UPLOAD_KEY)
 //   GET    /api/usage                       storage used, requests and storage operations (needs UPLOAD_KEY)
+//   GET    /api/personal?user=…&kind=…     someone's Recent or Watch later list (needs UPLOAD_KEY)
+//   POST   /api/personal                    add to Recent or Watch later (needs UPLOAD_KEY)
+//   DELETE /api/personal                    remove from Watch later (needs UPLOAD_KEY)
 //   GET    /api/folders                     folders with their video counts (needs UPLOAD_KEY)
 //   POST   /api/folders                     create a folder (needs UPLOAD_KEY)
 //   PATCH  /api/folders/<id>                rename a folder (needs UPLOAD_KEY)
@@ -30,7 +33,7 @@
 // endpoints are only called by the Showthrough website, which checks who is signed in and
 // passes their name along. Viewers never talk to these endpoints directly.
 
-const VERSION = 4;
+const VERSION = 5;
 const VIDEO_ID = /^[a-z0-9]{8,64}$/;
 const EMOJIS = ["👍", "❤️", "😂", "🎉", "😮", "🔥"];
 const FILE = /^videos\/[a-z0-9]{8,64}\/[A-Za-z0-9._-]{1,100}$/;
@@ -98,6 +101,12 @@ const SCHEMA = [
   `create index if not exists videos_created on videos (created_at desc)`,
   `create table if not exists settings (key text primary key, value text)`,
   `create table if not exists folders (id text primary key, name text not null, created_at integer not null, updated_at integer not null)`,
+  // Version 5: each person's Recent and Watch later. Videos can be from any workspace, so they
+  // are stored by space and id. Keyed by account, so team members each keep their own lists.
+  `create table if not exists personal (
+     user_id text not null, kind text not null, space text not null, video_id text not null, at integer not null,
+     primary key (user_id, kind, space, video_id))`,
+  `create index if not exists personal_recent on personal (user_id, kind, at desc)`,
   // Version 3: this Worker's own count of its requests and storage operations, per UTC day.
   `create table if not exists usage_daily (
      day text primary key, requests integer not null default 0, class_a integer not null default 0,
@@ -491,6 +500,49 @@ async function searchFolders(env, query, limit) {
   return results.map((r) => ({ id: r.id, name: r.name, videos: r.videos }));
 }
 
+// ---- Recent and Watch later ----------------------------------------------------------------
+
+const KINDS = new Set(["recent", "watch_later"]);
+const LIMITS = { recent: 25, watch_later: 500 };
+const SPACE = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
+const USER_ID = /^[A-Za-z0-9_-]{1,100}$/;
+
+async function handlePersonal(request, env, url) {
+  await ensureSchema(env);
+  if (request.method === "GET") {
+    const user = url.searchParams.get("user") || "";
+    const kind = url.searchParams.get("kind") || "";
+    if (!USER_ID.test(user) || !KINDS.has(kind)) return json({ error: "bad_request" }, 400);
+    const { results } = await env.DB.prepare("select space, video_id, at from personal where user_id = ? and kind = ? order by at desc limit ?")
+      .bind(user, kind, LIMITS[kind])
+      .all();
+    return json({ items: results.map((r) => ({ space: r.space, videoId: r.video_id, at: r.at })) });
+  }
+  const input = await request.json().catch(() => ({}));
+  const { userId, kind, space, videoId } = input;
+  if (!USER_ID.test(String(userId)) || !KINDS.has(kind) || !SPACE.test(String(space)) || !VIDEO_ID.test(String(videoId))) {
+    return json({ error: "bad_request" }, 400);
+  }
+  if (request.method === "POST") {
+    await env.DB.batch([
+      env.DB.prepare(
+        "insert into personal (user_id, kind, space, video_id, at) values (?, ?, ?, ?, ?) on conflict (user_id, kind, space, video_id) do update set at = excluded.at",
+      ).bind(userId, kind, space, videoId, Date.now()),
+      // Keep each list to its limit: Recent holds the last 25 videos.
+      env.DB.prepare(
+        `delete from personal where rowid in (
+           select rowid from personal where user_id = ? and kind = ? order by at desc limit -1 offset ?)`,
+      ).bind(userId, kind, LIMITS[kind]),
+    ]);
+    return json({ ok: true });
+  }
+  if (request.method === "DELETE") {
+    await env.DB.prepare("delete from personal where user_id = ? and kind = ? and space = ? and video_id = ?").bind(userId, kind, space, videoId).run();
+    return json({ ok: true });
+  }
+  return json({ error: "not_found" }, 404);
+}
+
 // ---- Usage -------------------------------------------------------------------------------
 //
 // Cloudflare's free plan limits Worker requests per day and storage operations per month. The
@@ -660,7 +712,7 @@ async function route(request, env) {
       const [videos, stats] = await Promise.all([listRecordings(env), counts(env).catch(() => ({}))]);
       return json({ videos: videos.map((v) => ({ ...v, ...(stats[v.id] ?? { views: 0, comments: 0, reactions: 0 }) })) });
     }
-    if ((path === "/api/search" || path.startsWith("/api/videos/") || path.startsWith("/api/folders")) && !env.DB) {
+    if ((path === "/api/search" || path.startsWith("/api/videos/") || path.startsWith("/api/folders") || path === "/api/personal") && !env.DB) {
       return json({ error: "no_database" }, 501);
     }
     if (path === "/api/usage" && method === "GET") {
@@ -674,6 +726,7 @@ async function route(request, env) {
       return json({ videos, folders });
     }
     if (path === "/api/folders" || path.startsWith("/api/folders/")) return handleFolders(request, env, path);
+    if (path === "/api/personal") return handlePersonal(request, env, url);
     if (path.startsWith("/api/videos/")) return handleVideo(request, env, path.slice("/api/videos/".length));
     if (path.startsWith("/api/social/")) return handleSocial(request, env, path);
 

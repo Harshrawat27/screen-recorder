@@ -66,6 +66,9 @@ type VideoActions = {
   moved: (id: string, folderId: string | null) => void;
   folders: FolderOption[];
   foldersEnabled: boolean;
+  /** Videos in the viewer's Watch later; null when Watch later isn't available yet. */
+  later: Set<string> | null;
+  toggleLater: (id: string) => void;
 };
 const Actions = createContext<VideoActions>({
   renamed: () => {},
@@ -73,6 +76,8 @@ const Actions = createContext<VideoActions>({
   moved: () => {},
   folders: [],
   foldersEnabled: false,
+  later: null,
+  toggleLater: () => {},
 });
 type View = 'grid' | 'list';
 
@@ -352,7 +357,8 @@ function VideoMenu({
   const [dialog, setDialog] = useState<'rename' | 'delete' | 'move' | null>(
     null
   );
-  const { folders, foldersEnabled, moved } = useContext(Actions);
+  const { folders, foldersEnabled, moved, later, toggleLater } =
+    useContext(Actions);
   const copy = () =>
     navigator.clipboard?.writeText(
       new URL(video.href, window.location.origin).toString()
@@ -367,6 +373,12 @@ function VideoMenu({
           <DropdownMenuItem onClick={copy}>Copy link</DropdownMenuItem>
           <DropdownMenuItem onClick={() => window.open(video.href, '_blank')}>
             Open in new tab
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={!later}
+            onClick={() => toggleLater(video.id)}
+          >
+            {later?.has(video.id) ? 'Remove from Watch later' : 'Watch later'}
           </DropdownMenuItem>
           <DropdownMenuItem
             disabled={!foldersEnabled}
@@ -828,6 +840,8 @@ export function LibraryView({
   folderOptions = [],
   foldersEnabled = false,
   scope = null,
+  space,
+  watchLater,
 }: {
   videos: LibraryVideo[];
   /** Folder cards shown above the videos (the library's top level only). */
@@ -838,6 +852,10 @@ export function LibraryView({
   foldersEnabled?: boolean;
   /** The folder being shown, or null for the library's top level. */
   scope?: string | null;
+  /** This workspace's space, for Watch later. */
+  space?: string;
+  /** Ids of this library's videos in the viewer's Watch later; leave out when it isn't available. */
+  watchLater?: string[];
 }) {
   const [tab, setTab] = useState<Tab>('videos');
   const [view, setView] = useState<View>('grid');
@@ -845,8 +863,30 @@ export function LibraryView({
   const [titles, setTitles] = useState<Record<string, string>>({});
   const [removed, setRemoved] = useState<Set<string>>(() => new Set());
   const [movedTo, setMovedTo] = useState<Record<string, string | null>>({});
+  const [later, setLater] = useState<Set<string> | null>(() =>
+    watchLater && space ? new Set(watchLater) : null
+  );
   const router = useRouter();
   const actions: VideoActions = {
+    later,
+    toggleLater: async (id) => {
+      if (!later || !space) return;
+      const saving = !later.has(id);
+      const flip = (on: boolean) =>
+        setLater((prev) => {
+          const next = new Set(prev);
+          if (on) next.add(id);
+          else next.delete(id);
+          return next;
+        });
+      flip(saving);
+      const res = await fetch('/api/watch-later', {
+        method: saving ? 'POST' : 'DELETE',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ space, videoId: id }),
+      }).catch(() => null);
+      if (!res?.ok) flip(!saving);
+    },
     folders: folderOptions,
     foldersEnabled,
     moved: (id, folderId) => {

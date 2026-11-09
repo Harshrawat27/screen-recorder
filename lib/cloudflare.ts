@@ -15,7 +15,7 @@ export const BUCKET_NAME = "showthrough-videos";
 export const DATABASE_NAME = "showthrough";
 // The version of worker/video-worker.mjs. Raise it whenever the Worker changes: users on an
 // older version then see "New version available" in the dashboard (see lib/updates.ts).
-export const WORKER_VERSION = 4;
+export const WORKER_VERSION = 5;
 
 export class SetupError extends Error {
   constructor(

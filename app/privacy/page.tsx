@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Privacy" };
 
 export default function Privacy() {
   return (
-    <LegalPage title="Privacy" updated="8 November 2026">
+    <LegalPage title="Privacy" updated="9 November 2026">
       <p>
         {site.name} is a screen recorder (a website and a Chrome extension) built so that your recordings live in your
         own Cloudflare account, not ours. This page explains what we keep, what passes through our services, and what
@@ -75,6 +75,10 @@ export default function Privacy() {
           doesn&rsquo;t keep a copy.
         </li>
         <li>You can delete your own comments, and the video owner can delete any comment on their videos.</li>
+        <li>
+          If you have a {site.name} workspace, the last 25 videos you watched and the videos you save to Watch later
+          are kept in your own Cloudflare database, so you can find them again. We don&rsquo;t keep them.
+        </li>
         <li>
           To count views, we set a cookie for 30 minutes after someone plays a video, so the same browser isn&rsquo;t
           counted twice. View counts are just numbers; we don&rsquo;t record who watched.

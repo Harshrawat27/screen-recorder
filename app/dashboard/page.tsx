@@ -11,6 +11,7 @@ import { getWorkspace } from "@/lib/db";
 import { LibraryActions, LibraryView } from "@/components/library-ui";
 import { foldersEnabled, listFolders } from "@/lib/folders";
 import { toLibraryVideos } from "@/lib/library";
+import { getPersonal, personalEnabled } from "@/lib/personal";
 import { requireSession } from "@/lib/session";
 import { getAccess, syncPayment } from "@/lib/billing";
 
@@ -51,9 +52,10 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
   if (!access.paid) return <LockedLibrary pending={returning} />;
 
   const workspace = await getWorkspace(user.id);
-  const [library, folders] = await Promise.all([
+  const [library, folders, later] = await Promise.all([
     workspace ? listVideos(workspace.worker_url, workspace.upload_key) : { videos: [], reachable: true },
     listFolders(workspace),
+    personalEnabled(workspace) ? getPersonal(workspace, user.id, "watch_later") : null,
   ]);
   const canFolder = foldersEnabled(workspace);
   const videos = library.videos;
@@ -126,6 +128,8 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
             folderOptions={folders.map((f) => ({ id: f.id, name: f.name }))}
             foldersEnabled={canFolder}
             scope={null}
+            space={workspace.space}
+            watchLater={later?.filter((i) => i.space === workspace.space).map((i) => i.videoId)}
             videos={toLibraryVideos(videos, workspace)}
           />
         ) : null}

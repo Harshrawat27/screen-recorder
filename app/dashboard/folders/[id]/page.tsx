@@ -8,6 +8,7 @@ import { listVideos } from "@/lib/cloudflare";
 import { getWorkspace } from "@/lib/db";
 import { FOLDER_ID, foldersEnabled, listFolders } from "@/lib/folders";
 import { toLibraryVideos } from "@/lib/library";
+import { getPersonal, personalEnabled } from "@/lib/personal";
 import { requireSession } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Folder", robots: { index: false } };
@@ -19,7 +20,11 @@ export default async function FolderPage({ params }: { params: Promise<{ id: str
   const workspace = await getWorkspace(user.id);
   if (!workspace || !foldersEnabled(workspace)) notFound();
 
-  const [folders, library] = await Promise.all([listFolders(workspace), listVideos(workspace.worker_url, workspace.upload_key)]);
+  const [folders, library, later] = await Promise.all([
+    listFolders(workspace),
+    listVideos(workspace.worker_url, workspace.upload_key),
+    personalEnabled(workspace) ? getPersonal(workspace, user.id, "watch_later") : null,
+  ]);
   const folder = folders.find((f) => f.id === id);
   if (!folder) notFound();
 
@@ -50,6 +55,8 @@ export default async function FolderPage({ params }: { params: Promise<{ id: str
         folderOptions={folders.map((f) => ({ id: f.id, name: f.name }))}
         foldersEnabled
         scope={folder.id}
+        space={workspace.space}
+        watchLater={later?.filter((i) => i.space === workspace.space).map((i) => i.videoId)}
         videos={toLibraryVideos(library.videos, workspace)}
       />
     </main>

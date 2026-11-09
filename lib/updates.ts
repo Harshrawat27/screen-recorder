@@ -7,6 +7,7 @@ export const WORKER_RELEASES: Record<number, string> = {
   2: "Comments, reactions and view counts on your videos.",
   3: "Instant search and a faster library. Deleting a video also removes its comments and views.",
   4: "Folders, and a Usage page that shows how much of Cloudflare's free plan you use.",
+  5: "Recent and Watch later: find videos you watched or saved for later.",
 };
 
 /** Whether this account's purchase includes a given Worker version. */

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
-import { type Workspace, getWorkspaceBySpace } from "@/lib/db";
+import { NextResponse, after } from "next/server";
+import { type Workspace, getWorkspace, getWorkspaceBySpace } from "@/lib/db";
+import { addPersonal, personalEnabled } from "@/lib/personal";
 import { getSession } from "@/lib/session";
 
 // Comments, reactions and views for a shared video. They're stored in the video owner's own
@@ -98,6 +99,15 @@ export async function POST(request: Request, { params }: Params) {
 
   // Views: anyone, counted once per browser per half hour. The owner's own plays don't count.
   if (input.action === "view") {
+    // Every play by a signed-in person also goes into their Recent (in their own workspace),
+    // after the answer is sent.
+    if (session) {
+      const viewerId = session.user.id;
+      after(async () => {
+        const mine = session.user.id === ws.owner_id ? ws : await getWorkspace(viewerId);
+        if (personalEnabled(mine)) await addPersonal(mine, viewerId, "recent", ws.space, id).catch(() => {});
+      });
+    }
     if (session?.user.id === ws.owner_id) return NextResponse.json({ counted: false });
     const jar = await cookies();
     const cookie = `stv_${id}`;

@@ -112,6 +112,32 @@ export function VideoSocial({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const watched = useRef(new WeakSet<HTMLVideoElement>());
   const [social, setSocial] = useState<Social | null>(null);
+  // Watch later: only for signed-in people whose own workspace can keep the list.
+  const [later, setLater] = useState<{ enabled: boolean; saved: boolean } | null>(null);
+  const signedIn = Boolean(social?.me);
+  useEffect(() => {
+    if (!signedIn) return;
+    let cancelled = false;
+    fetch(`/api/watch-later?space=${space}&videoId=${id}`)
+      .then((res) => res.json())
+      .then((data: { enabled: boolean; saved: boolean }) => !cancelled && setLater(data))
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [signedIn, space, id]);
+
+  async function toggleLater() {
+    if (!later) return;
+    const saved = !later.saved;
+    setLater({ ...later, saved });
+    const res = await fetch("/api/watch-later", {
+      method: saved ? "POST" : "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ space, videoId: id }),
+    }).catch(() => null);
+    if (!res?.ok) setLater({ ...later, saved: !saved });
+  }
   const [draft, setDraft] = useState("");
   const [draftAt, setDraftAt] = useState<number | null>(null);
   // The video's listeners outlive renders, so they read the draft from here.
@@ -386,6 +412,28 @@ export function VideoSocial({
           )}
         </button>
       ))}
+      {later?.enabled && (
+        <button
+          type="button"
+          onClick={toggleLater}
+          aria-pressed={later.saved}
+          className={`ml-auto inline-flex h-10 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-colors ${
+            later.saved
+              ? "border-text bg-sunken"
+              : "border-line bg-surface hover:border-line-strong hover:bg-sunken"
+          }`}
+        >
+          <svg viewBox="0 0 24 24" fill={later.saved ? "currentColor" : "none"} aria-hidden className="size-4">
+            <path
+              d="M7 4h10a1.2 1.2 0 0 1 1.2 1.2V20L12 16l-6.2 4V5.2A1.2 1.2 0 0 1 7 4z"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinejoin="round"
+            />
+          </svg>
+          {later.saved ? "Saved for later" : "Watch later"}
+        </button>
+      )}
     </div>
   ) : null;
 
