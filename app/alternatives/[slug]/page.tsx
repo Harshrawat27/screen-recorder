@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FinalCta, SiteFooter } from "@/components/home-sections";
 import { JsonLd } from "@/components/json-ld";
+import { RoadmapText } from "@/components/roadmap-text";
 import { SiteNav } from "@/components/site-nav";
 import { CheckIcon, buttonClass } from "@/components/ui";
 import { alternatives, getAlternative } from "@/lib/alternatives";
@@ -93,7 +94,7 @@ export default async function AlternativePage({ params }: PageProps<"/alternativ
           </h1>
           {alt.intro.map((p) => (
             <p key={p} className="mt-5 max-w-[62ch] text-lg leading-relaxed text-muted">
-              {p}
+              <RoadmapText>{p}</RoadmapText>
             </p>
           ))}
           <div className="mt-8 flex flex-wrap gap-3">
@@ -137,7 +138,9 @@ export default async function AlternativePage({ params }: PageProps<"/alternativ
                       {row.label}
                     </th>
                     <td className="px-5 py-3.5 align-top text-muted">{row.them}</td>
-                    <td className="px-5 py-3.5 align-top">{withPrice(row.us)}</td>
+                    <td className="px-5 py-3.5 align-top">
+                      <RoadmapText>{withPrice(row.us)}</RoadmapText>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -189,7 +192,9 @@ export default async function AlternativePage({ params }: PageProps<"/alternativ
               {alt.theyWin.map((point) => (
                 <li key={point} className="flex gap-3">
                   <span className="mt-2 size-1.5 shrink-0 rounded-full bg-faint" aria-hidden />
-                  {point}
+                  <span>
+                    <RoadmapText>{point}</RoadmapText>
+                  </span>
                 </li>
               ))}
             </ul>
@@ -202,7 +207,9 @@ export default async function AlternativePage({ params }: PageProps<"/alternativ
                   <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-text text-canvas">
                     <CheckIcon className="size-3" />
                   </span>
-                  {point}
+                  <span>
+                    <RoadmapText>{point}</RoadmapText>
+                  </span>
                 </li>
               ))}
             </ul>
@@ -223,7 +230,9 @@ export default async function AlternativePage({ params }: PageProps<"/alternativ
             {alt.faqs.map((item) => (
               <div key={item.q} className="py-5">
                 <h3 className="text-lg font-semibold">{item.q}</h3>
-                <p className="mt-2 max-w-[62ch] leading-relaxed text-muted">{item.a}</p>
+                <p className="mt-2 max-w-[62ch] leading-relaxed text-muted">
+                  <RoadmapText>{item.a}</RoadmapText>
+                </p>
               </div>
             ))}
           </div>

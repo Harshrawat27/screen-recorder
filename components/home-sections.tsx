@@ -38,7 +38,14 @@ function Tile({
       <div className="border-t border-line p-6">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <h3 className="text-[24px] leading-tight">{title}</h3>
-          {soon && <span className="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold text-muted">Coming soon</span>}
+          {soon && (
+            <Link
+              href="/roadmap"
+              className="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold text-muted transition-colors hover:border-line-strong hover:text-text"
+            >
+              Coming soon
+            </Link>
+          )}
         </div>
         <p className="mt-2 text-[15px] leading-relaxed text-muted">{body}</p>
       </div>
@@ -442,7 +449,16 @@ const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
   },
   {
     q: "Who can watch my videos?",
-    a: "Anyone you send the link to. Viewers don't need an account. Password-protected and private links are on the roadmap.",
+    text: "Anyone you send the link to. Viewers don't need an account. Password-protected and private links are on the roadmap.",
+    a: (
+      <>
+        Anyone you send the link to. Viewers don&rsquo;t need an account. Password-protected and private links are on the{" "}
+        <Link href="/roadmap" className="underline underline-offset-2 hover:text-text">
+          roadmap
+        </Link>
+        .
+      </>
+    ),
   },
   {
     q: "Does it work on Windows and Chromebooks?",
