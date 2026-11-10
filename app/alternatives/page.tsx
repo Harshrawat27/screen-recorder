@@ -76,7 +76,7 @@ export default async function AlternativesPage() {
                   </th>
                   <td className="px-5 py-3.5 align-top text-muted">No free plan</td>
                   <td className="px-5 py-3.5 align-top">${price} once, for the whole team</td>
-                  <td className="px-5 py-3.5 align-top text-muted">Quick videos with no limits, stored in your own Cloudflare</td>
+                  <td className="px-5 py-3.5 align-top text-muted">Quick videos with no limits, stored in your own Cloudflare (one click to connect, we handle the rest)</td>
                 </tr>
                 {alternatives.map((alt) => (
                   <tr key={alt.slug}>

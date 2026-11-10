@@ -219,7 +219,7 @@ export function Features({ price }: { price: number }) {
     <section id="how" className="mx-auto max-w-6xl scroll-mt-6 px-5 py-24 sm:px-8 sm:py-32">
       <SectionIntro
         title="Everything Loom does for async video. None of the monthly bill."
-        body="Record from Chrome, share a link, get back to work. Your recordings sit in your own Cloudflare account, so the price doesn't grow with your team."
+        body="Record from Chrome, share a link, get back to work. Your recordings sit in your own Cloudflare account, connected in one click while we handle the rest, so the price doesn't grow with your team."
       />
 
       <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -271,7 +271,7 @@ const included = [
   "Unlimited recordings and share links",
   "Screen, camera bubble, mic and tab audio",
   "Every team member, no per-seat pricing",
-  "Videos stored in your own Cloudflare",
+  "Videos stored in your own Cloudflare, connected in one click",
 ];
 
 const badge: Record<TierState, string> = {
@@ -438,7 +438,7 @@ const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
   },
   {
     q: "Where are my videos stored?",
-    a: "In a private storage bucket in your own Cloudflare account. Our servers never store your recordings. Share links play through a fast cache so videos start quickly for viewers anywhere.",
+    a: "In a private storage bucket in your own Cloudflare account. You connect it in one click and we handle the rest. Our servers never store your recordings. Share links play through a fast cache so videos start quickly for viewers anywhere.",
   },
   {
     q: "Who can watch my videos?",

@@ -19,7 +19,8 @@ export function SkyHero({ price }: { price: number }) {
 
         <p className='mt-7 max-w-[52ch] text-lg leading-relaxed text-muted'>
           Record your screen, camera and voice in one click from Chrome. Every
-          video lives in your own Cloudflare, not on our servers.
+          video lives in your own Cloudflare, not on our servers. Connecting it
+          is one click too; we handle the rest.
         </p>
 
         <div className='mt-9 flex flex-wrap justify-center gap-3'>

@@ -50,7 +50,7 @@ export const alternatives: Alternative[] = [
     h1: "A Loom alternative with no video limits and no monthly bill",
     intro: [
       "Loom made sending a quick screen recording normal. Its free Starter plan now stops at 25 videos per person and 5 minutes per screen recording, and the paid Business plan costs $18 per user every month.",
-      "Showthrough records your screen, camera and voice from Chrome and copies the link the moment you stop, like Loom. The difference is how you pay and where the videos live: one payment instead of a subscription, and every recording stored in your own Cloudflare account.",
+      "Showthrough records your screen, camera and voice from Chrome and copies the link the moment you stop, like Loom. The difference is how you pay and where the videos live: one payment instead of a subscription, and every recording stored in your own Cloudflare account, which you connect in one click while we handle the rest.",
     ],
     summary: "The best-known async video tool. Polished, with AI and apps everywhere, but billed per user every month.",
     freePlan: "25 videos per person, 5 minutes each, 720p",
@@ -68,7 +68,7 @@ export const alternatives: Alternative[] = [
       { label: "How you pay", them: "Per user, every month", us: "One payment ({price})" },
       { label: "Free plan", them: "25 videos per person, 5 minutes each", us: "No free plan" },
       { label: "Videos and length", them: "Unlimited on Business", us: "Unlimited, no time limit" },
-      { label: "Where videos are stored", them: "Loom's servers", us: "Your own Cloudflare account" },
+      { label: "Where videos are stored", them: "Loom's servers", us: "Your own Cloudflare account, connected in one click (we handle the rest)" },
       { label: "Link ready when you stop", them: "Yes", us: "Yes, the video uploads while you record" },
       { label: "Apps", them: "Mac, Windows, iOS, Android, Chrome", us: "Chrome on Mac, Windows, Linux and ChromeOS. Mac app coming soon." },
       { label: "AI titles and summaries", them: "On Business + AI", us: "Coming soon" },
@@ -86,7 +86,7 @@ export const alternatives: Alternative[] = [
     weWin: [
       "You pay once instead of per user, per month. The price doesn't grow as your team does.",
       "No cap on the number of videos or their length, ever. The only limit is your own Cloudflare storage.",
-      "Your recordings live in your own Cloudflare account. If you stop using Showthrough, the videos are still yours.",
+      "Your recordings live in your own Cloudflare account, connected in one click while we handle the rest. If you stop using Showthrough, the videos are still yours.",
       "Cloudflare's free plan includes 10 GB of storage, and viewing is always free, so most small teams pay Cloudflare nothing.",
     ],
     pickThem:
@@ -145,7 +145,7 @@ export const alternatives: Alternative[] = [
       { label: "CRM integrations", them: "Salesforce, HubSpot, Marketo, Salesloft and more", us: "None" },
       { label: "Viewer analytics", them: "Full analytics on paid plans", us: "View counts. Who watched and how far: coming soon." },
       { label: "AI videos and avatars", them: "Yes", us: "No" },
-      { label: "Where videos are stored", them: "Vidyard's servers", us: "Your own Cloudflare account" },
+      { label: "Where videos are stored", them: "Vidyard's servers", us: "Your own Cloudflare account, connected in one click (we handle the rest)" },
     ],
     theyWin: [
       "Vidyard connects to Salesforce, HubSpot and other sales tools and logs who watched. Showthrough has no CRM integrations.",
@@ -155,7 +155,7 @@ export const alternatives: Alternative[] = [
     weWin: [
       "The price is on the page and you pay it once. No seat count and no sales call.",
       "No limit on how many videos you record or how long they run.",
-      "Videos stay in your own Cloudflare account, which matters when the recordings show client work.",
+      "Videos stay in your own Cloudflare account, which matters when the recordings show client work. Connecting it is one click; we handle the rest.",
       "Fewer moving parts: click the icon, record, and the link is copied when you stop.",
     ],
     pickThem: "Pick Vidyard if you run sales outreach and need video views tracked in your CRM.",
@@ -208,7 +208,7 @@ export const alternatives: Alternative[] = [
       { label: "Watermark", them: "On the free plan", us: "Never" },
       { label: "Quizzes and assignments", them: "Yes, with LMS grade sync", us: "No" },
       { label: "Editing and captions", them: "Editing on all plans; captions on Pro", us: "Coming soon" },
-      { label: "Where videos are stored", them: "Screencastify's servers", us: "Your own Cloudflare account" },
+      { label: "Where videos are stored", them: "Screencastify's servers", us: "Your own Cloudflare account, connected in one click (we handle the rest)" },
     ],
     theyWin: [
       "Screencastify has tools for teaching: questions inside videos, assignments, and grade sync with an LMS.",
@@ -267,7 +267,7 @@ export const alternatives: Alternative[] = [
       { label: "Runs on", them: "Mac and Windows desktop app", us: "Chrome on Mac, Windows, Linux and ChromeOS" },
       { label: "Screenshots", them: "Yes, its strength", us: "No" },
       { label: "Share link", them: "Through TechSmith's hosting", us: "Copied the moment you stop" },
-      { label: "Where videos are stored", them: "Your computer or TechSmith's hosting", us: "Your own Cloudflare account" },
+      { label: "Where videos are stored", them: "Your computer or TechSmith's hosting", us: "Your own Cloudflare account, connected in one click (we handle the rest)" },
     ],
     theyWin: [
       "Snagit is one of the best screenshot tools: scrolling capture, annotation, blur, and templates for guides. Showthrough takes no screenshots.",
@@ -329,7 +329,7 @@ export const alternatives: Alternative[] = [
       { label: "Recording length", them: "6 hours per clip", us: "No limit" },
       { label: "Runs on", them: "Mac and Windows apps, Chrome extension", us: "Chrome on Mac, Windows, Linux and ChromeOS" },
       { label: "Custom domain for links", them: "On Premium", us: "Coming soon" },
-      { label: "Where videos are stored", them: "Tella's servers", us: "Your own Cloudflare account" },
+      { label: "Where videos are stored", them: "Tella's servers", us: "Your own Cloudflare account, connected in one click (we handle the rest)" },
     ],
     theyWin: [
       "Tella's editor is the main reason to use it: cut by editing the transcript, remove filler words, add layouts and zooms.",
@@ -339,7 +339,7 @@ export const alternatives: Alternative[] = [
     weWin: [
       "No editing step. Press Finish and the link is already in your clipboard.",
       "One payment instead of a yearly per-user plan.",
-      "Videos live in your own Cloudflare account.",
+      "Videos live in your own Cloudflare account, connected in one click while we handle the rest.",
     ],
     pickThem: "Pick Tella if your videos are published pieces, like product demos, launch videos or lessons, and you want to edit them.",
     pickUs: "Pick Showthrough if most of your recordings are quick updates for clients and teammates that don't need editing.",
@@ -388,7 +388,7 @@ export const alternatives: Alternative[] = [
       { label: "How you pay", them: "Per user, monthly or yearly", us: "One payment ({price})" },
       { label: "Recording length", them: "5 minutes on Free, unlimited on paid", us: "No limit" },
       { label: "Storage", them: "1 GB free, 5 GB on Create", us: "Your Cloudflare: 10 GB free, then about $0.015 per GB a month" },
-      { label: "Your own storage", them: "Custom S3 on the Scale plan only", us: "Always: your own Cloudflare account" },
+      { label: "Your own storage", them: "Custom S3 on the Scale plan only", us: "Always: your own Cloudflare account, connected in one click (we handle the rest)" },
       { label: "AI features", them: "On paid plans", us: "Coming soon" },
       { label: "Runs on", them: "Mac, Windows, iOS, Android, Chrome", us: "Chrome on Mac, Windows, Linux and ChromeOS" },
     ],
@@ -415,7 +415,7 @@ export const alternatives: Alternative[] = [
       },
       {
         q: "How much storage do I get with Showthrough?",
-        a: "Videos go to your own Cloudflare account. Cloudflare's free plan includes 10 GB, and viewing is always free. Past 10 GB, Cloudflare charges about $0.015 per GB a month.",
+        a: "Videos go to your own Cloudflare account, which you connect in one click while we handle the rest. Cloudflare's free plan includes 10 GB, and viewing is always free. Past 10 GB, Cloudflare charges about $0.015 per GB a month.",
       },
     ],
   },
@@ -450,7 +450,7 @@ export const alternatives: Alternative[] = [
       { label: "Recording length", them: "15 minutes on Free, unlimited on paid", us: "No limit" },
       { label: "Editor", them: "Yes", us: "Coming soon" },
       { label: "Quizzes and stock library", them: "Yes", us: "No" },
-      { label: "Where videos are stored", them: "ScreenPal's hosting", us: "Your own Cloudflare account" },
+      { label: "Where videos are stored", them: "ScreenPal's hosting", us: "Your own Cloudflare account, connected in one click (we handle the rest)" },
     ],
     theyWin: [
       "ScreenPal includes a video editor, a stock library, screenshots and quizzes.",
@@ -460,7 +460,7 @@ export const alternatives: Alternative[] = [
     weWin: [
       "The link works the second you stop recording, because the video uploads while you talk.",
       "Viewers comment at the exact moment and react with emoji, with no account needed to watch.",
-      "One payment and your videos stay in your own Cloudflare account.",
+      "One payment and your videos stay in your own Cloudflare account, connected in one click while we handle the rest.",
     ],
     pickThem: "Pick ScreenPal if you make edited tutorials or lessons and want the lowest monthly cost.",
     pickUs: "Pick Showthrough if you send recordings to clients and teammates and want them out the door instantly.",
@@ -526,7 +526,7 @@ export const alternatives: Alternative[] = [
     faqs: [
       {
         q: "Is Showthrough open source?",
-        a: "No. Showthrough isn't open source, but your videos, titles, comments and views live in your own Cloudflare account, not on our servers.",
+        a: "No. Showthrough isn't open source, but your videos, titles, comments and views live in your own Cloudflare account, not on our servers. Connecting it is one click; we handle the rest.",
       },
       {
         q: "Does Cap have a lifetime licence?",
