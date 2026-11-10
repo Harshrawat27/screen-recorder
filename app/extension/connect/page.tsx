@@ -41,7 +41,7 @@ export default async function ExtensionConnectPage() {
           ) : (
             <div>
               <h1 className="text-[28px] font-bold tracking-[-0.02em]">Connect Cloudflare first</h1>
-              <p className="mt-2 text-muted">The extension needs to know where to save your videos. Connect Cloudflare from your dashboard, then come back.</p>
+              <p className="mt-2 text-muted">The extension needs to know where to save your videos. Connect Cloudflare from your dashboard (just one click, we handle the rest), then come back.</p>
               <Link href="/dashboard" className={buttonClass("primary", "md", "mt-8")}>
                 Go to dashboard
               </Link>

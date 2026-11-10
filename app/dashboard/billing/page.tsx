@@ -53,7 +53,7 @@ export default async function BillingPage() {
         ) : (
           <>
             <h2 className="text-xl">No purchase yet</h2>
-            <p className="mt-2 text-muted">Showthrough is a one-time payment for your whole team. Buy it to connect Cloudflare and start recording.</p>
+            <p className="mt-2 text-muted">Showthrough is a one-time payment for your whole team. Buy it, connect Cloudflare in one click (we handle the rest) and start recording.</p>
             <a href="/pricing" className={buttonClass("primary", "md", "mt-6")}>
               See pricing
             </a>

@@ -24,7 +24,7 @@ export default async function WatchLaterPage() {
           body={
             workspace
               ? "This list is kept in your own Cloudflare. Press Update in the sidebar to add it; it takes about 30 seconds."
-              : "This list is kept in your own Cloudflare, so it starts working once you connect it from your library."
+              : "This list is kept in your own Cloudflare, so it starts working once you connect it from your library. That’s one click, and we handle the rest."
           }
         />
       </main>

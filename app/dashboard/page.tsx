@@ -91,7 +91,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
                 body={
                   connected
                     ? `Connected${workspace?.cf_account_name ? ` to ${workspace.cf_account_name}` : ""}. Your videos are stored there.`
-                    : "Sets up private storage for your videos in your own account. About 30 seconds."
+                    : "Just one click: press Allow on Cloudflare and we handle the rest, setting up private storage for your videos in your own account. About 30 seconds."
                 }
               >
                 {connected ? <Pill>Done</Pill> : <ConnectCloudflareButton />}
@@ -166,7 +166,7 @@ function LockedLibrary({ pending }: { pending: boolean }) {
         </h2>
         <p className="mt-1 text-muted">Three steps. You only do this once.</p>
         <ol className="mt-6 divide-y divide-line">
-          <Step n={1} done={false} title="Connect your Cloudflare" body="Sets up private storage for your videos in your own account. About 30 seconds.">
+          <Step n={1} done={false} title="Connect your Cloudflare" body="Just one click: press Allow on Cloudflare and we handle the rest, setting up private storage for your videos in your own account. About 30 seconds.">
             <a href="/pricing?locked" className={buttonClass("primary", "md")}>
               Connect Cloudflare
             </a>

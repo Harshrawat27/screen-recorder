@@ -233,7 +233,7 @@ export function Features({ price }: { price: number }) {
         <Tile
           className="md:col-span-2"
           title="Your videos live in your Cloudflare"
-          body="Connect a free Cloudflare account in one click and we set up private storage there. Your recordings never sit on our servers."
+          body="Connecting your free Cloudflare is one click: press Allow and we handle the rest, setting up private storage for you. Your recordings never sit on our servers."
         >
           <CloudVisual />
         </Tile>
@@ -406,7 +406,31 @@ export function Pricing({ sold, price, notice }: { sold: number; price: number; 
 const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
   {
     q: "Do I need a Cloudflare account?",
-    a: "Yes, a free one. You sign in to Cloudflare, click Allow, and we create the storage and video address for you in about 30 seconds. Nothing to configure, no keys to copy.",
+    a: "Yes, a free one, and connecting it is just one click. Sign in to Cloudflare, press Allow, and we handle the rest: your storage, database and video address are set up for you in about 30 seconds. Nothing to configure, no keys to copy. No Cloudflare account yet? Signing up is free.",
+  },
+  {
+    q: "Can Showthrough see the rest of my Cloudflare account?",
+    text: "No. What we keep: your Cloudflare account ID and name, the names and address of the storage, database and video app we created, and an upload key. That key only works with the Showthrough video app in your account, so our website can show your library and the extension can upload. What we don't keep: the access Cloudflare gives us when you press Allow (or Update). We use it for about 30 seconds to set up or update the Showthrough parts, then throw it away, so afterwards we can't reach anything else in your account. What we never see: your Cloudflare password, your card and billing, your websites, domains and DNS, or your other Workers, storage and databases. Cloudflare doesn't give us access to your password, card, websites or DNS at all, and we never open anything we didn't create.",
+    a: (
+      <>
+        No. Here&rsquo;s exactly where the line is.
+        <span className="mt-3 block">
+          <b className="text-text">What we keep:</b> your Cloudflare account ID and name, the names and address of the storage, database and
+          video app we created, and an upload key. That key only works with the Showthrough video app in your account, so our website can show
+          your library and the extension can upload.
+        </span>
+        <span className="mt-3 block">
+          <b className="text-text">What we don&rsquo;t keep:</b> the access Cloudflare gives us when you press Allow (or Update). We use it for
+          about 30 seconds to set up or update the Showthrough parts, then throw it away, so afterwards we can&rsquo;t reach anything else in
+          your account.
+        </span>
+        <span className="mt-3 block">
+          <b className="text-text">What we never see:</b> your Cloudflare password, your card and billing, your websites, domains and DNS, or
+          your other Workers, storage and databases. Cloudflare doesn&rsquo;t give us access to your password, card, websites or DNS at all,
+          and we never open anything we didn&rsquo;t create.
+        </span>
+      </>
+    ),
   },
   {
     q: "Will Cloudflare charge me?",
@@ -443,14 +467,14 @@ const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
   },
   {
     q: "When can I start recording?",
-    text: "Right after you buy. Add the Chrome extension, connect your Cloudflare from the dashboard, and click the Showthrough icon to record.",
+    text: "Right after you buy. Add the Chrome extension, connect your Cloudflare from the dashboard (one click, we handle the rest), and click the Showthrough icon to record.",
     a: (
       <>
         Right after you buy. Add the{" "}
         <a href={site.chromeStoreUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-text">
           Chrome extension
         </a>
-        , connect your Cloudflare from the dashboard, and click the Showthrough icon to record.
+        , connect your Cloudflare from the dashboard (one click, we handle the rest), and click the Showthrough icon to record.
       </>
     ),
   },

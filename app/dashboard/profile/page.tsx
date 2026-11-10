@@ -31,7 +31,7 @@ export default async function ProfilePage() {
         {header}
         <Message
           title="Connect Cloudflare first"
-          body="Your photo is kept in your own Cloudflare, next to your videos, so you can add one once it's connected."
+          body="Your photo is kept in your own Cloudflare, next to your videos, so you can add one once it's connected. Connecting is one click from your library, and we handle the rest."
           action={
             <Link href="/dashboard" className={buttonClass("primary", "md", "mt-6")}>
               Go to your library

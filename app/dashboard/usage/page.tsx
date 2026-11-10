@@ -82,7 +82,7 @@ export default async function UsagePage() {
         {header}
         <Message
           title="Connect Cloudflare first"
-          body="Your usage shows up here once your videos are stored in your own Cloudflare."
+          body="Your usage shows up here once your videos are stored in your own Cloudflare. Connecting it is one click from your library, and we handle the rest."
           action={
             <Link href="/dashboard" className={buttonClass("primary", "md", "mt-6")}>
               Go to your library

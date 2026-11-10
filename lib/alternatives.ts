@@ -534,7 +534,7 @@ export const alternatives: Alternative[] = [
       },
       {
         q: "What does Showthrough set up in my Cloudflare?",
-        a: "Private R2 storage for videos, a small video Worker, and a D1 database. Setup takes about 30 seconds with one sign-in to Cloudflare.",
+        a: "Private R2 storage for videos, a small video Worker, and a D1 database. You don't set any of it up yourself: it's one click to sign in to Cloudflare and press Allow, and we handle the rest in about 30 seconds.",
       },
     ],
   },
