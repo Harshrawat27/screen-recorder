@@ -1,4 +1,5 @@
 import { LibraryMock } from '@/components/library-mock';
+import { SayNoHeadline } from '@/components/say-no';
 import { SiteNav } from '@/components/site-nav';
 import { buttonClass } from '@/components/ui';
 import './sky-hero.css';
@@ -14,16 +15,11 @@ export function SkyHero({ price }: { price: number }) {
           Early pricing: the first 100 get lifetime updates
         </p>
 
-        <h1
-          className='mt-7 max-w-[13ch] text-[52px] leading-[0.98] sm:max-w-none sm:text-[92px]'
-          style={{ letterSpacing: '-0.03em' }}
-        >
-          Show it once. <span className='sm:block'>Skip the meeting.</span>
-        </h1>
+        <SayNoHeadline />
 
         <p className='mt-7 max-w-[52ch] text-lg leading-relaxed text-muted'>
-          Record your screen, camera and voice. The link is ready the moment you
-          stop, and your videos live in your own Cloudflare.
+          Record your screen, camera and voice in one click from Chrome. Every
+          video lives in your own Cloudflare, not on our servers.
         </p>
 
         <div className='mt-9 flex flex-wrap justify-center gap-3'>

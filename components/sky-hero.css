@@ -65,3 +65,77 @@
     box-shadow: 0 0 0 4px rgb(243 87 51 / 0.2);
   }
 }
+
+/* Headline: "Say no to …" cycles every 3.4s (see components/say-no.tsx).
+   The word rises in, a line strikes through it, the answer pill appears, then both leave. */
+.say-no-slot {
+  position: relative;
+  display: inline-block;
+  vertical-align: bottom;
+  height: 1.15em;
+  overflow: hidden;
+  text-align: left;
+  color: var(--text);
+  transition: width 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.say-no-word {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+  animation: say-no-word 3.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.say-no-strike {
+  position: absolute;
+  left: -0.04em;
+  right: -0.04em;
+  top: 54%;
+  height: 0.075em;
+  border-radius: 99px;
+  background: currentColor;
+  transform-origin: left center;
+  animation: say-no-strike 3.4s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+.say-no-yes {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  padding: 0 0.95rem 0 0.8rem;
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text);
+  animation: say-no-yes 3.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes say-no-word {
+  0% { transform: translateY(0.9em); opacity: 0; filter: blur(6px); }
+  14% { transform: translateY(0); opacity: 1; filter: blur(0); color: var(--text); }
+  30% { color: var(--text); }
+  40% { color: var(--muted); }
+  88% { transform: translateY(0); opacity: 1; filter: blur(0); color: var(--muted); }
+  100% { transform: translateY(-0.9em); opacity: 0; filter: blur(6px); color: var(--muted); }
+}
+@keyframes say-no-strike {
+  0%, 22% { transform: scaleX(0); }
+  36% { transform: scaleX(1); }
+  100% { transform: scaleX(1); }
+}
+@keyframes say-no-yes {
+  0%, 34% { transform: translateY(8px) scale(0.96); opacity: 0; }
+  44% { transform: translateY(0) scale(1); opacity: 1; }
+  88% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-6px); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .say-no-word,
+  .say-no-yes {
+    animation: none;
+  }
+  .say-no-strike {
+    animation: none;
+    transform: scaleX(1);
+  }
+  .say-no-slot {
+    transition: none;
+  }
+}
