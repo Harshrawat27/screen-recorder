@@ -8,9 +8,10 @@ const pages: { path: string; updated: string }[] = [
   { path: "/", updated: "2026-11-10" },
   { path: "/pricing", updated: "2026-11-10" },
   { path: "/roadmap", updated: "2026-11-10" },
+  { path: "/support", updated: "2026-11-10" },
   { path: "/alternatives", updated: "2026-11-10" },
   { path: "/privacy", updated: "2026-11-09" },
-  { path: "/terms", updated: "2026-11-09" },
+  { path: "/terms", updated: "2026-11-10" },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

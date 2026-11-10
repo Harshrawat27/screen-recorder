@@ -74,7 +74,7 @@ const more: { title: string; body: string }[] = [
   { title: "Hover previews", body: "Scrub through a video by hovering, like YouTube." },
   { title: "Viewer insights", body: "See who watched and how far they got." },
   { title: "Download as MP4", body: "Save any recording as a regular video file." },
-  { title: "Mac app", body: "Record without opening Chrome." },
+  { title: "Mac app", body: "Record without opening Chrome, with your camera and controls floating over every app." },
 ];
 
 export default async function RoadmapPage() {

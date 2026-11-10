@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Terms", alternates: { canonical: "/t
 
 export default function Terms() {
   return (
-    <LegalPage title="Terms" updated="8 November 2026">
+    <LegalPage title="Terms" updated="10 November 2026">
       <p>
         These terms cover {site.name}: the website, the dashboard, the share pages and the Chrome extension. By using{" "}
         {site.name} you agree to them. They are short on purpose.
@@ -28,7 +28,8 @@ export default function Terms() {
         receipts. Prices are shown in US dollars on our pricing page.
       </p>
       <p>
-        To ask for a refund, email <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a> from the address you
+        You can ask for a refund within 7 days of your purchase. After 7 days, purchases can&rsquo;t be refunded. To
+        ask, email <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a> from the address you
         bought with. Refunds are paid back through Dodo Payments to your original payment method. A refunded purchase
         ends your license.
       </p>
