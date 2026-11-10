@@ -13,7 +13,7 @@
 
 /* The library picture rises out of the hero and fades out at the fold. */
 .sky-mock {
-  max-height: 460px;
+  max-height: 560px;
   -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent);
   mask-image: linear-gradient(180deg, #000 72%, transparent);
 }

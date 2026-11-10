@@ -1,4 +1,4 @@
-import { LibraryMock } from '@/components/library-mock';
+import Image from 'next/image';
 import { SayNoHeadline } from '@/components/say-no';
 import { SiteNav } from '@/components/site-nav';
 import { buttonClass } from '@/components/ui';
@@ -43,7 +43,18 @@ export function SkyHero({ price }: { price: number }) {
       </div>
 
       <div className='sky-mock relative mt-16 px-4 sm:mt-20 sm:px-8'>
-        <LibraryMock />
+        {/* The real dashboard (public/dashboard-image.png, 1920×992). */}
+        <div className='mx-auto max-w-6xl overflow-hidden rounded-t-[20px] border border-b-0 border-line bg-canvas shadow-pop sm:rounded-t-[24px]'>
+          <Image
+            src='/dashboard-image.png'
+            alt='The Showthrough library: your recordings, folders and search, stored in your own Cloudflare'
+            width={1920}
+            height={992}
+            priority
+            sizes='(min-width: 1200px) 1152px, 100vw'
+            className='block h-auto w-full'
+          />
+        </div>
       </div>
     </section>
   );
