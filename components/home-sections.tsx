@@ -482,6 +482,24 @@ const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
     a: "No. You pay once and your whole team can use it. The only other cost is Cloudflare storage if you go past their free 10 GB, billed to your own Cloudflare account.",
   },
   {
+    q: "Can I get a refund?",
+    text: `Yes, within 7 days of buying. Email ${site.contactEmail} from the address you bought with and we'll refund you, back to your original payment method. After 7 days, purchases can't be refunded.`,
+    a: (
+      <>
+        Yes, within 7 days of buying. Email{" "}
+        <a href={`mailto:${site.contactEmail}`} className="underline underline-offset-2 hover:text-text">
+          {site.contactEmail}
+        </a>{" "}
+        from the address you bought with and we&rsquo;ll refund you, back to your original payment method. After 7 days, purchases
+        can&rsquo;t be refunded. Details are in the{" "}
+        <Link href="/terms" className="underline underline-offset-2 hover:text-text">
+          terms
+        </Link>
+        .
+      </>
+    ),
+  },
+  {
     q: "When can I start recording?",
     text: "Right after you buy. Add the Chrome extension, connect your Cloudflare from the dashboard (one click, we handle the rest), and click the Showthrough icon to record.",
     a: (
