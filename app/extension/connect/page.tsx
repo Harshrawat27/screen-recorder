@@ -30,6 +30,7 @@ export default async function ExtensionConnectPage() {
               config={{
                 version: 1,
                 email: user.email,
+                userId: user.id,
                 space: workspace.space,
                 uploadUrl: workspace.worker_url,
                 uploadKey: workspace.upload_key,

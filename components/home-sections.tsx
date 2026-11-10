@@ -402,7 +402,8 @@ export function Pricing({ sold, price, notice }: { sold: number; price: number; 
 
 /* ---------- FAQ ---------- */
 
-const faqs: { q: string; a: React.ReactNode }[] = [
+// `text` is the plain-text answer for search engines (FAQ structured data) when `a` holds links.
+const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
   {
     q: "Do I need a Cloudflare account?",
     a: "Yes, a free one. You sign in to Cloudflare, click Allow, and we create the storage and video address for you in about 30 seconds. Nothing to configure, no keys to copy.",
@@ -421,6 +422,7 @@ const faqs: { q: string; a: React.ReactNode }[] = [
   },
   {
     q: "Does it work on Windows and Chromebooks?",
+    text: "Yes. Showthrough is a Chrome extension, so it works anywhere Chrome runs: Mac, Windows, Linux and ChromeOS.",
     a: (
       <>
         Yes. Showthrough is a{" "}
@@ -441,6 +443,7 @@ const faqs: { q: string; a: React.ReactNode }[] = [
   },
   {
     q: "When can I start recording?",
+    text: "Right after you buy. Add the Chrome extension, connect your Cloudflare from the dashboard, and click the Showthrough icon to record.",
     a: (
       <>
         Right after you buy. Add the{" "}
@@ -452,6 +455,9 @@ const faqs: { q: string; a: React.ReactNode }[] = [
     ),
   },
 ];
+
+/** The FAQ as plain text, for FAQPage structured data. */
+export const faqText = faqs.map((item) => ({ q: item.q, a: item.text ?? String(item.a) }));
 
 export function Faq() {
   return (
@@ -507,6 +513,34 @@ export function FinalCta({ price }: { price: number }) {
 
 /* ---------- Footer ---------- */
 
+const footerColumns = [
+  {
+    title: "Product",
+    links: [
+      { href: "/#how", label: "Features" },
+      { href: "/pricing", label: "Pricing" },
+      { href: "/#faq", label: "FAQ" },
+      { href: "/roadmap", label: "Roadmap" },
+    ],
+  },
+  {
+    title: "Compare",
+    links: [
+      { href: "/alternatives/loom", label: "Loom alternative" },
+      { href: "/alternatives/vidyard", label: "Vidyard alternative" },
+      { href: "/alternatives/screencastify", label: "Screencastify alternative" },
+      { href: "/alternatives", label: "All alternatives" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { href: "/privacy", label: "Privacy" },
+      { href: "/terms", label: "Terms" },
+    ],
+  },
+];
+
 export function SiteFooter() {
   return (
     <footer className="mx-auto max-w-6xl px-5 pb-10 pt-16 sm:px-8">
@@ -518,34 +552,24 @@ export function SiteFooter() {
           </Link>
           <p className="mt-3 text-sm leading-relaxed text-muted">Screen recording you own. Videos live in your Cloudflare, and you pay once.</p>
         </div>
-        <div className="grid grid-cols-2 gap-x-16 gap-y-3 text-sm">
-          <p className="font-semibold">Product</p>
-          <p className="font-semibold">Company</p>
-          <Link href="/#how" className="text-muted hover:text-text">
-            Features
-          </Link>
-          <Link href="/privacy" className="text-muted hover:text-text">
-            Privacy
-          </Link>
-          <Link href="/#pricing" className="text-muted hover:text-text">
-            Pricing
-          </Link>
-          <Link href="/terms" className="text-muted hover:text-text">
-            Terms
-          </Link>
-          <Link href="/#faq" className="text-muted hover:text-text">
-            FAQ
-          </Link>
-          <Link href="/roadmap" className="text-muted hover:text-text">
-            Roadmap
-          </Link>
-        </div>
+        <nav aria-label="Footer" className="grid grid-cols-2 gap-x-12 gap-y-8 text-sm sm:grid-cols-3">
+          {footerColumns.map((column) => (
+            <div key={column.title} className="flex flex-col gap-3">
+              <p className="font-semibold">{column.title}</p>
+              {column.links.map((link) => (
+                <Link key={link.href} href={link.href} className="text-muted hover:text-text">
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          ))}
+        </nav>
       </div>
       <div className="mt-14 flex flex-col justify-between gap-2 border-t border-line pt-6 text-sm text-faint sm:flex-row">
         <p>
           © {new Date().getFullYear()} {site.name}
         </p>
-        <p>Not affiliated with Loom or Cloudflare.</p>
+        <p>Not affiliated with Cloudflare or any product we compare against.</p>
       </div>
     </footer>
   );

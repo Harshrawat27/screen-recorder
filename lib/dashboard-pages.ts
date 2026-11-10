@@ -6,6 +6,7 @@ export const pages = {
   watchLater: { title: "Watch later", description: "Videos you saved to come back to." },
   team: { title: "Manage team", description: "Invite people to record into your shared library." },
   billing: { title: "Billing", description: "Your plan, receipts and updates." },
+  profile: { title: "Profile", description: "The photo viewers see when you record without your camera." },
   usage: { title: "Usage", description: "How much of Cloudflare's free plan your videos use." },
 } as const;
 

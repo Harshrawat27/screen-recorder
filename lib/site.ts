@@ -10,7 +10,7 @@ export const site = {
   loom: {
     perUserPerMonth: 18,
     planName: "Loom Business, billed monthly",
-    checked: "September 2026",
+    checked: "November 2026",
   },
   chromeStoreUrl: "https://chromewebstore.google.com/detail/showthrough-screen-record/ngiiiademidnkjamgbaoijmfiphlmlpe",
 } as const;

@@ -12,6 +12,10 @@
 //   GET    /api/personal?user=…&kind=…     someone's Recent or Watch later list (needs UPLOAD_KEY)
 //   POST   /api/personal                    add to Recent or Watch later (needs UPLOAD_KEY)
 //   DELETE /api/personal                    remove from Watch later (needs UPLOAD_KEY)
+//   GET    /api/avatar?user=…               someone's profile photo version and address (needs UPLOAD_KEY)
+//   PUT    /api/avatar/<userId>             save a profile photo (WebP, needs UPLOAD_KEY)
+//   DELETE /api/avatar/<userId>             remove it (needs UPLOAD_KEY)
+//   GET    /profile/<userId>.webp           the photo itself (public, like videos)
 //   GET    /api/folders                     folders with their video counts (needs UPLOAD_KEY)
 //   POST   /api/folders                     create a folder (needs UPLOAD_KEY)
 //   PATCH  /api/folders/<id>                rename a folder (needs UPLOAD_KEY)
@@ -33,7 +37,7 @@
 // endpoints are only called by the Showthrough website, which checks who is signed in and
 // passes their name along. Viewers never talk to these endpoints directly.
 
-const VERSION = 5;
+const VERSION = 6;
 const VIDEO_ID = /^[a-z0-9]{8,64}$/;
 const EMOJIS = ["👍", "❤️", "😂", "🎉", "😮", "🔥"];
 const FILE = /^videos\/[a-z0-9]{8,64}\/[A-Za-z0-9._-]{1,100}$/;
@@ -543,6 +547,47 @@ async function handlePersonal(request, env, url) {
   return json({ error: "not_found" }, 404);
 }
 
+// ---- Profile photos (version 6) ------------------------------------------------------------
+//
+// A small square WebP per person, used in the camera bubble when someone records with their
+// photo instead of their camera. Stored in this bucket like videos; its version (time saved)
+// is kept in D1 so links change when the photo does.
+
+const AVATAR_MAX_BYTES = 400 * 1024;
+const avatarKey = (userId) => `profile/${userId}.webp`;
+
+async function handleAvatar(request, env, url, path) {
+  await ensureSchema(env);
+  if (request.method === "GET" && path === "/api/avatar") {
+    const user = url.searchParams.get("user") || "";
+    if (!USER_ID.test(user)) return json({ error: "bad_request" }, 400);
+    const row = await env.DB.prepare("select value from settings where key = ?").bind(`avatar:${user}`).first();
+    if (!row) return json({ avatar: null });
+    return json({ avatar: { version: Number(row.value), url: `${url.origin}/${avatarKey(user)}?v=${row.value}` } });
+  }
+  const user = path.slice("/api/avatar/".length);
+  if (!USER_ID.test(user)) return json({ error: "bad_request" }, 400);
+  if (request.method === "PUT") {
+    const body = await request.arrayBuffer();
+    const bytes = new Uint8Array(body);
+    const isWebp = bytes.length > 12 && String.fromCharCode(...bytes.slice(0, 4)) === "RIFF" && String.fromCharCode(...bytes.slice(8, 12)) === "WEBP";
+    if (!isWebp) return json({ error: "not_webp" }, 400);
+    if (body.byteLength > AVATAR_MAX_BYTES) return json({ error: "too_large" }, 413);
+    const version = String(Date.now());
+    await env.VIDEOS.put(avatarKey(user), body, {
+      httpMetadata: { contentType: "image/webp", cacheControl: "public, max-age=31536000, immutable" },
+    });
+    await env.DB.prepare("insert or replace into settings (key, value) values (?, ?)").bind(`avatar:${user}`, version).run();
+    return json({ avatar: { version: Number(version), url: `${url.origin}/${avatarKey(user)}?v=${version}` } });
+  }
+  if (request.method === "DELETE") {
+    await env.VIDEOS.delete(avatarKey(user));
+    await env.DB.prepare("delete from settings where key = ?").bind(`avatar:${user}`).run();
+    return json({ ok: true });
+  }
+  return json({ error: "not_found" }, 404);
+}
+
 // ---- Usage -------------------------------------------------------------------------------
 //
 // Cloudflare's free plan limits Worker requests per day and storage operations per month. The
@@ -727,6 +772,10 @@ async function route(request, env) {
     }
     if (path === "/api/folders" || path.startsWith("/api/folders/")) return handleFolders(request, env, path);
     if (path === "/api/personal") return handlePersonal(request, env, url);
+    if (path === "/api/avatar" || path.startsWith("/api/avatar/")) {
+      if (!env.DB) return json({ error: "no_database" }, 501);
+      return handleAvatar(request, env, url, path);
+    }
     if (path.startsWith("/api/videos/")) return handleVideo(request, env, path.slice("/api/videos/".length));
     if (path.startsWith("/api/social/")) return handleSocial(request, env, path);
 
@@ -752,6 +801,17 @@ async function route(request, env) {
       }
     }
     return json({ error: "not_found" }, 404);
+  }
+
+  // A profile photo: public, cached for a year (its address changes with each new photo).
+  if ((method === "GET" || method === "HEAD") && /^\/profile\/[A-Za-z0-9_-]{1,100}\.webp$/.test(path)) {
+    const object = await env.VIDEOS.get(path.slice(1));
+    if (!object) return new Response("Not found", { status: 404, headers: CORS });
+    const headers = new Headers(CORS);
+    object.writeHttpMetadata(headers);
+    headers.set("content-type", "image/webp");
+    headers.set("cache-control", "public, max-age=31536000, immutable");
+    return new Response(method === "HEAD" ? null : object.body, { headers });
   }
 
   if ((method === "GET" || method === "HEAD") && path.startsWith("/videos/")) {

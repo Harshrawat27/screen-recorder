@@ -68,6 +68,17 @@ const workspace: Item[] = [
     ),
   },
   {
+    href: "/dashboard/profile",
+    label: "Profile",
+    icon: icon(
+      <>
+        <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="1.6" />
+        <circle cx="10" cy="8.2" r="2.6" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M5.2 15.3c1-1.8 2.7-2.8 4.8-2.8s3.8 1 4.8 2.8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </>,
+    ),
+  },
+  {
     href: "/dashboard/billing",
     label: "Billing",
     icon: icon(

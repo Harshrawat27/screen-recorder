@@ -8,6 +8,8 @@ import { site } from "@/lib/site";
 export type ExtensionConfig = {
   version: 1;
   email: string;
+  /** The account's id, so the extension can find this person's profile photo. */
+  userId: string;
   space: string;
   uploadUrl: string;
   uploadKey: string;

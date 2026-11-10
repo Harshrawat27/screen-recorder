@@ -6,8 +6,9 @@ import { currentOffer } from "@/lib/billing";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Pricing",
-  description: "Showthrough is a one-time purchase for your whole team. $29 for the first 20 customers, $59 up to 100, both with lifetime updates.",
+  title: "Pricing: one payment, whole team, no monthly fee",
+  description: "Showthrough is a one-time purchase for your whole team. No per-seat fee and no subscription. Your videos live in your own Cloudflare account.",
+  alternates: { canonical: "/pricing" },
 };
 
 function Notice({ children }: { children: React.ReactNode }) {
@@ -33,6 +34,7 @@ export default async function PricingPage({ searchParams }: PageProps<"/pricing"
         <SiteNav />
       </div>
       <main className="pt-6">
+        <h1 className="sr-only">Showthrough pricing: pay once, use it forever</h1>
         <Pricing sold={sold} price={price} notice={notice} />
         <Faq />
       </main>

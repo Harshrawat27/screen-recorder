@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Roadmap",
+  alternates: { canonical: "/roadmap" },
   description: `What's coming to ${site.name}: team members, AI titles and chapters, and a video editor.`,
 };
 
