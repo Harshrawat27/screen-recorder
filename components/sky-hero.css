@@ -112,7 +112,8 @@
   14% { transform: translateY(0); opacity: 1; filter: blur(0); color: var(--text); }
   30% { color: var(--text); }
   40% { color: var(--muted); }
-  88% { transform: translateY(0); opacity: 1; filter: blur(0); color: var(--muted); }
+  /* The exit starts slow and leaves quickly (ease-in), unlike the entrance. */
+  88% { transform: translateY(0); opacity: 1; filter: blur(0); color: var(--muted); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
   100% { transform: translateY(-0.9em); opacity: 0; filter: blur(6px); color: var(--muted); }
 }
 @keyframes say-no-strike {
@@ -123,7 +124,7 @@
 @keyframes say-no-yes {
   0%, 34% { transform: translateY(8px) scale(0.96); opacity: 0; }
   44% { transform: translateY(0) scale(1); opacity: 1; }
-  88% { transform: translateY(0) scale(1); opacity: 1; }
+  88% { transform: translateY(0) scale(1); opacity: 1; animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
   100% { transform: translateY(-6px); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
