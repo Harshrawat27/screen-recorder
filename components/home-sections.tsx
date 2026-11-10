@@ -567,6 +567,7 @@ const footerColumns = [
     title: "Compare",
     links: [
       { href: "/alternatives/loom", label: "Loom alternative" },
+      { href: "/alternatives/cap", label: "Cap alternative" },
       { href: "/alternatives/vidyard", label: "Vidyard alternative" },
       { href: "/alternatives/screencastify", label: "Screencastify alternative" },
       { href: "/alternatives", label: "All alternatives" },
