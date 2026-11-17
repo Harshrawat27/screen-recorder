@@ -27,10 +27,18 @@ export const metadata: Metadata = {
   description:
     'Record your screen, camera and voice from Chrome and share the link the moment you stop. No video or time limits, no monthly bill. Videos stay in your Cloudflare.',
   applicationName: site.name,
-  keywords: ['screen recorder', 'Loom alternative', 'Chrome screen recorder', 'record screen and camera', 'video messages', 'Cloudflare'],
+  keywords: [
+    'screen recorder',
+    'Loom alternative',
+    'Chrome screen recorder',
+    'record screen and camera',
+    'video messages',
+    'Cloudflare',
+  ],
   openGraph: {
     title: `${site.name}: Screen recording you own`,
-    description: 'Say no to video limits, time limits, monthly bills and pointless stand-ups. Record from Chrome, share the link the moment you stop, pay once.',
+    description:
+      'Say no to video limits, time limits, monthly bills and pointless stand-ups. Record from Chrome, share the link the moment you stop, pay once.',
     url: site.url,
     siteName: site.name,
     type: 'website',
@@ -39,7 +47,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: `${site.name}: Screen recording you own`,
-    description: 'Say no to video limits, time limits, monthly bills and pointless stand-ups. Record from Chrome, share the link the moment you stop, pay once.',
+    description:
+      'Say no to video limits, time limits, monthly bills and pointless stand-ups. Record from Chrome, share the link the moment you stop, pay once.',
     creator: '@Harshrwt27',
   },
 };
@@ -56,9 +65,18 @@ const themeScript = `(function(){try{var t=localStorage.getItem('theme');if(t!==
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang='en' className={`${newsreader.variable} ${instrumentSans.variable}`} suppressHydrationWarning>
+    <html
+      lang='en'
+      className={`${newsreader.variable} ${instrumentSans.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script
+          defer
+          src='https://www.ship-or-die.com/hackathon/verify.js'
+          data-site='51d2b380fa65d16d069980006f34193a0c06d9e5'
+        ></script>
       </head>
       <body className='min-h-screen bg-canvas text-text'>
         {children}
