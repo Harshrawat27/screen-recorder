@@ -579,6 +579,7 @@ const footerColumns = [
       { href: "/pricing", label: "Pricing" },
       { href: "/#faq", label: "FAQ" },
       { href: "/roadmap", label: "Roadmap" },
+      { href: "/blog", label: "Blog" },
       { href: "/support", label: "Support" },
     ],
   },

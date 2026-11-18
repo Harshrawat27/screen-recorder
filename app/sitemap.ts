@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { alternatives } from "@/lib/alternatives";
+import { posts } from "@/lib/blog";
 import { site } from "@/lib/site";
 
 // Public pages only. The dashboard, sign-in, recording and share pages are left out on purpose
@@ -10,6 +11,7 @@ const pages: { path: string; updated: string }[] = [
   { path: "/roadmap", updated: "2026-11-10" },
   { path: "/support", updated: "2026-11-10" },
   { path: "/alternatives", updated: "2026-11-10" },
+  { path: "/blog", updated: "2026-11-18" },
   { path: "/privacy", updated: "2026-11-09" },
   { path: "/terms", updated: "2026-11-10" },
 ];
@@ -18,5 +20,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...pages.map((page) => ({ url: `${site.url}${page.path === "/" ? "" : page.path}`, lastModified: page.updated })),
     ...alternatives.map((alt) => ({ url: `${site.url}/alternatives/${alt.slug}`, lastModified: alt.updated })),
+    ...posts.map((post) => ({ url: `${site.url}/blog/${post.slug}`, lastModified: post.updated })),
   ];
 }
