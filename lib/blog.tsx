@@ -63,6 +63,35 @@ const chromebookFaqs = [
   },
 ];
 
+const LOOM_CHECKED = "19 November 2026";
+
+const loomPricingFaqs = [
+  {
+    q: "How much does Loom cost per month?",
+    a: "Loom Business costs $18 per user per month and Business + AI costs $24 per user per month. The Starter plan is free, and Enterprise is priced by quote.",
+  },
+  {
+    q: "Is Loom free?",
+    a: "Loom's Starter plan is free, but it allows 25 videos per person and 5 minutes per screen recording, at up to 720p. Removing those limits needs a paid plan.",
+  },
+  {
+    q: "Is Loom cheaper if you pay yearly?",
+    a: "Yes. Loom says yearly billing saves up to 17%, which brings Business to about $15 per user per month, or $180 a year.",
+  },
+  {
+    q: "How much does Loom cost for a team of 5?",
+    a: "On Business at monthly billing, 5 people pay $90 a month, or $1,080 a year. With yearly billing it's about $900 a year.",
+  },
+  {
+    q: "What does Loom Business + AI add?",
+    a: "Automatic titles, summaries and chapters, filler-word and silence removal, editing by transcript and meeting notes. It costs $6 more per user per month than Business.",
+  },
+  {
+    q: "Does Loom have a free trial?",
+    a: "You can try Business + AI free for 14 days, according to Loom's pricing page.",
+  },
+];
+
 export const posts: Post[] = [
   {
     slug: "how-to-screen-record-on-chromebook",
@@ -325,6 +354,219 @@ export const posts: Post[] = [
 
         <h2>Questions people ask</h2>
         {chromebookFaqs.map((f) => (
+          <div key={f.q}>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </>
+    ),
+  },
+  {
+    slug: "loom-pricing",
+    title: "Loom pricing explained: what each plan costs and what you get",
+    metaTitle: "Loom pricing explained: plans, limits and team costs",
+    description:
+      "Loom's Starter, Business, Business + AI and Enterprise plans compared: prices, free-plan limits, what a team really pays per year, and how to pay less.",
+    excerpt:
+      "Every Loom plan, what the free plan stops you doing, what a team of 5 or 10 really pays, and the cheaper ways to send screen recordings.",
+    published: "2026-11-19",
+    updated: "2026-11-19",
+    readingMinutes: 6,
+    image: {
+      src: "/blog/showthrough-recording-controls.webp",
+      alt: "A screen recording in progress, with the control bar for pause, restart, delete and stop and a round camera bubble",
+      width: 1600,
+      height: 852,
+    },
+    faqs: loomPricingFaqs,
+    Body: () => (
+      <>
+        <p>
+          Loom has four plans: a free Starter plan, Business, Business + AI and Enterprise. The paid plans are charged per user, every month, so the
+          price you see on the pricing page is only the start of what a team pays. This guide shows what each plan costs, what the free plan stops
+          you doing, and what a real team pays in a year.
+        </p>
+
+        <div className="callout">
+          <p>
+            <strong>Quick answer:</strong> Starter is free, with 25 videos per person and a 5-minute limit on screen recordings. Business costs{" "}
+            <strong>$18 per user per month</strong> and removes those limits. Business + AI costs <strong>$24 per user per month</strong> and adds
+            Loom&rsquo;s AI tools. Enterprise is priced by quote. Paying yearly saves up to 17%.
+          </p>
+        </div>
+
+        <p className="text-sm">
+          Prices checked on {LOOM_CHECKED} on{" "}
+          <a href="https://www.loom.com/pricing" target="_blank" rel="noopener noreferrer nofollow">
+            Loom&rsquo;s pricing page
+          </a>
+          , in US dollars, before tax. Prices change, so check there before you buy.
+        </p>
+
+        <h2>Loom&rsquo;s plans at a glance</h2>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Plan</th>
+                <th scope="col">Billed monthly</th>
+                <th scope="col">Billed yearly</th>
+                <th scope="col">Best for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Starter</th>
+                <td>Free</td>
+                <td>Free</td>
+                <td>Trying Loom, or a few short videos a month</td>
+              </tr>
+              <tr>
+                <th scope="row">Business</th>
+                <td>$18 per user</td>
+                <td>About $15 per user ($180 a year)</td>
+                <td>Teams that record often and need longer videos</td>
+              </tr>
+              <tr>
+                <th scope="row">Business + AI</th>
+                <td>$24 per user</td>
+                <td>About $20 per user ($240 a year)</td>
+                <td>Teams that want AI titles, summaries and editing</td>
+              </tr>
+              <tr>
+                <th scope="row">Enterprise</th>
+                <td colSpan={2}>Contact sales</td>
+                <td>Large companies that need SSO and admin controls</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Loom&rsquo;s page says yearly billing saves up to 17% but doesn&rsquo;t print the yearly amount. The yearly figures above are the ones
+          pricing trackers report, and they match a 17% discount.
+        </p>
+
+        <h2>What the free Starter plan includes</h2>
+        <p>Starter is a real product, not just a trial, but its limits are tight if you record every day:</p>
+        <ul>
+          <li>
+            <strong>25 videos per person.</strong> Once you reach 25, you delete old videos or upgrade.
+          </li>
+          <li>
+            <strong>5 minutes per screen recording.</strong> Meeting recordings aren&rsquo;t limited, but a screen recording stops at 5 minutes.
+          </li>
+          <li>
+            <strong>Up to 720p video.</strong> 4K needs a paid plan.
+          </li>
+          <li>
+            <strong>Up to 50 members</strong> in the workspace.
+          </li>
+        </ul>
+        <p>
+          Starter does include transcripts, comments and emoji reactions, viewer insights, folders and integrations such as Slack, Jira and GitHub.
+          It doesn&rsquo;t include password-protected videos, removing Loom&rsquo;s branding, or any AI features.
+        </p>
+        <p>
+          When I was freelancing, the free plan was enough to understand Loom but not to use it. Five minutes isn&rsquo;t long enough to walk a
+          client through a website handover, and 25 videos go quickly when clients want updates every day.
+        </p>
+
+        <h2>Business vs Business + AI: what the extra $6 buys</h2>
+        <p>
+          <strong>Business ($18)</strong> removes the Starter limits: unlimited videos, unlimited recording length and 4K. It adds uploading and
+          downloading videos, password-protected videos, your own logo and player colours instead of Loom&rsquo;s branding, and more detailed
+          engagement insights.
+        </p>
+        <p>
+          <strong>Business + AI ($24)</strong> adds Loom AI on top: automatic titles, summaries and chapters, filler-word and silence removal, editing
+          by transcript, and meeting notes. Loom marks it as its most popular plan, and you can try it free for 14 days.
+        </p>
+        <p>
+          The AI tools are useful if your videos get searched and skimmed later, like training videos or product docs. For quick updates that people
+          watch once, Business is usually enough.
+        </p>
+
+        <h2>What Loom really costs a team</h2>
+        <p>Because Loom charges per user, the bill grows with every person who records. Here&rsquo;s what a year costs on Business:</p>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">People recording</th>
+                <th scope="col">Business, billed monthly</th>
+                <th scope="col">Business, billed yearly</th>
+                <th scope="col">Business + AI, billed monthly</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td>$216 a year</td>
+                <td>$180 a year</td>
+                <td>$288 a year</td>
+              </tr>
+              <tr>
+                <th scope="row">3</th>
+                <td>$648 a year</td>
+                <td>$540 a year</td>
+                <td>$864 a year</td>
+              </tr>
+              <tr>
+                <th scope="row">5</th>
+                <td>$1,080 a year</td>
+                <td>$900 a year</td>
+                <td>$1,440 a year</td>
+              </tr>
+              <tr>
+                <th scope="row">10</th>
+                <td>$2,160 a year</td>
+                <td>$1,800 a year</td>
+                <td>$2,880 a year</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          My own team of 5 was on Business at monthly billing: $90 a month, or $1,080 a year, just to send screen recordings to clients. That bill
+          is what pushed me to build something else.
+        </p>
+
+        <h2>How to pay less for Loom</h2>
+        <ul>
+          <li>
+            <strong>Pay yearly</strong> if you&rsquo;re sure you&rsquo;ll keep it. It saves up to 17%, but you commit to every seat for the year.
+          </li>
+          <li>
+            <strong>Only pay for people who record.</strong> People who just watch don&rsquo;t need a paid seat. Check who on your team actually
+            creates videos.
+          </li>
+          <li>
+            <strong>Skip the AI plan</strong> unless you&rsquo;ll use the summaries and chapters. It&rsquo;s $6 more per person, every month.
+          </li>
+          <li>
+            <strong>Stay on Starter</strong> if you record a few short videos a month and can live with 25 videos and 5 minutes.
+          </li>
+        </ul>
+
+        <h2>Cheaper ways to send screen recordings</h2>
+        <p>
+          If per-user pricing is the problem, there are tools that charge differently. Some open-source recorders are free if you host them
+          yourself. Others charge once instead of every month.
+        </p>
+        <p>
+          That&rsquo;s why I built <Link href="/">Showthrough</Link>. It&rsquo;s a Chrome extension that records your screen, camera and voice and
+          copies the link the moment you stop. There&rsquo;s no limit on the number of videos or their length, videos are stored in your own
+          Cloudflare account, and it&rsquo;s a <Link href="/pricing">one-time payment</Link> instead of a monthly bill per person. It doesn&rsquo;t
+          have Loom&rsquo;s AI tools or a desktop app yet, so it suits quick updates more than polished, edited videos.
+        </p>
+        <p>
+          For a side-by-side look, see <Link href="/alternatives/loom">Showthrough vs Loom</Link> or{" "}
+          <Link href="/alternatives">all the Loom alternatives we compare</Link>.
+        </p>
+
+        <h2>Questions people ask</h2>
+        {loomPricingFaqs.map((f) => (
           <div key={f.q}>
             <h3>{f.q}</h3>
             <p>{f.a}</p>
