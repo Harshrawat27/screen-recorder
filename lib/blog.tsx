@@ -374,10 +374,10 @@ export const posts: Post[] = [
     updated: "2026-11-19",
     readingMinutes: 6,
     image: {
-      src: "/blog/showthrough-recording-controls.webp",
-      alt: "A screen recording in progress, with the control bar for pause, restart, delete and stop and a round camera bubble",
+      src: "/blog/loom-pricing.webp",
+      alt: "Loom pricing explained: Starter at $0 a month, Business at $18 per user per month, and Enterprise with custom pricing",
       width: 1600,
-      height: 852,
+      height: 900,
     },
     faqs: loomPricingFaqs,
     Body: () => (
@@ -387,6 +387,17 @@ export const posts: Post[] = [
           price you see on the pricing page is only the start of what a team pays. This guide shows what each plan costs, what the free plan stops
           you doing, and what a real team pays in a year.
         </p>
+
+        <figure>
+          <Image
+            src="/blog/loom-pricing.webp"
+            alt="Loom pricing explained: Starter at $0 a month, Business at $18 per user per month, and Enterprise with custom pricing"
+            width={1600}
+            height={900}
+            sizes="(min-width: 768px) 720px, 100vw"
+            priority
+          />
+        </figure>
 
         <div className="callout">
           <p>
