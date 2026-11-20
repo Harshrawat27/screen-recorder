@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Savings } from "@/components/savings";
 import { CheckIcon, LogoMark, buttonClass } from "@/components/ui";
 import { site } from "@/lib/site";
-import { type TierState, tierStates } from "@/lib/pricing";
+import { type TierState, earlyBird, tierStates } from "@/lib/pricing";
 
 // Home page sections below the hero. Black and white for now; every color comes from theme tokens.
 
@@ -375,7 +375,14 @@ export function Pricing({ sold, price, notice }: { sold: number; price: number; 
 
         {notice && <div className="mx-auto mt-10 max-w-3xl">{notice}</div>}
 
-        <div className="mt-14 grid gap-5 lg:grid-cols-3">
+        <p
+          aria-disabled
+          className="pointer-events-none mx-auto mt-14 w-fit select-none rounded-full border border-line px-3.5 py-1 text-xs text-faint"
+        >
+          First {earlyBird.sold} sold at <span className="line-through">${earlyBird.price}</span> · Sold out
+        </p>
+
+        <div className="mt-5 grid gap-5 lg:grid-cols-3">
           {tierStates(sold).map(({ tier, state, left, size }) => (
             <TierCard key={tier.id} name={tier.name} price={tier.price} updates={tier.updates} note={tier.note} state={state} left={left} size={size} />
           ))}
@@ -475,7 +482,7 @@ const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
   },
   {
     q: "Why are there three prices?",
-    a: "The first 20 customers pay $29 and customers 21 to 100 pay $59. Both include every future update, forever. After the first 100 the price is $99, and that purchase covers the version you buy without future updates. Whatever you buy keeps working.",
+    a: "The first 5 customers paid $29, customers 6 to 20 pay $39 and customers 21 to 100 pay $59. All of these include every future update, forever. After the first 100 the price is $99, and that purchase covers the version you buy without future updates. Whatever you buy keeps working.",
   },
   {
     q: "Is it a subscription?",
@@ -556,7 +563,7 @@ export function FinalCta({ price }: { price: number }) {
           Be one of the first 100.
         </h2>
         <p className="mt-6 max-w-[48ch] text-lg leading-relaxed opacity-75">
-          $29 for the first 20, then $59 up to 100, both with every future update. After that it&rsquo;s $99 without future updates.
+          $39 for the first 20, then $59 up to 100, both with every future update. After that it&rsquo;s $99 without future updates.
         </p>
         <a
           href="/buy"

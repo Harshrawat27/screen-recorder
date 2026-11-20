@@ -1,8 +1,8 @@
 // The price ladder. Safe to import anywhere (no secrets): the Dodo product IDs live in
 // environment variables and are only read on the server, in lib/billing.ts.
 //
-// Spots are counted across tiers: the first 20 buyers pay $29, buyers 21 to 100 pay $59,
-// and after that the launch price applies.
+// Spots are counted across tiers: the first 20 buyers pay $39 (the first 5 of them paid $29,
+// see earlyBird), buyers 21 to 100 pay $59, and after that the launch price applies.
 
 export type TierId = "first20" | "first100" | "launch";
 
@@ -17,10 +17,13 @@ export type Tier = {
 };
 
 export const tiers: Tier[] = [
-  { id: "first20", name: "First 20", price: 29, upTo: 20, updates: "Lifetime updates", note: "For the first 20 customers." },
+  { id: "first20", name: "First 20", price: 39, upTo: 20, updates: "Lifetime updates", note: "For customers 6 to 20." },
   { id: "first100", name: "Early", price: 59, upTo: 100, updates: "Lifetime updates", note: "For customers 21 to 100." },
   { id: "launch", name: "Launch", price: 99, upTo: null, updates: "No future updates", note: "After the first 100." },
 ];
+
+/** The very first spots, sold at the original launch price. Shown as a small sold-out note above the tiers. */
+export const earlyBird = { sold: 5, price: 29 };
 
 export type TierState = "sold-out" | "open" | "next" | "later";
 
