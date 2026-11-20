@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Terms", alternates: { canonical: "/t
 
 export default function Terms() {
   return (
-    <LegalPage title="Terms" updated="10 November 2026">
+    <LegalPage title="Terms" updated="20 November 2026">
       <p>
         These terms cover {site.name}: the website, the dashboard, the share pages and the Chrome extension. By using{" "}
         {site.name} you agree to them. They are short on purpose.
@@ -33,6 +33,7 @@ export default function Terms() {
         bought with. Refunds are paid back through Dodo Payments to your original payment method. A refunded purchase
         ends your license.
       </p>
+      <p>Bought on AppSumo? AppSumo handles your refund under its own policy. A refunded code ends your license.</p>
 
       <h2>Your Cloudflare account</h2>
       <p>

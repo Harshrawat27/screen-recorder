@@ -13,7 +13,7 @@ const pages: { path: string; updated: string }[] = [
   { path: "/alternatives", updated: "2026-11-10" },
   { path: "/blog", updated: "2026-11-18" },
   { path: "/privacy", updated: "2026-11-09" },
-  { path: "/terms", updated: "2026-11-10" },
+  { path: "/terms", updated: "2026-11-20" },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

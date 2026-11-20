@@ -40,6 +40,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
 
   // Back from Dodo checkout: confirm the payment with Dodo right away rather than waiting for the webhook.
   const returning = params.checkout === "done";
+  const redeemed = params.redeemed === "appsumo";
   let access = await getAccess(user);
   if (returning && !access.paid && typeof params.payment_id === "string") {
     try {
@@ -74,6 +75,14 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
         {returning && (
           <p role="status" className="mt-8 max-w-3xl rounded-control border border-line bg-surface px-4 py-3 text-sm">
             <span className="font-semibold">Payment received. Thank you!</span> Connect Cloudflare below to start recording.
+          </p>
+        )}
+
+        {/* Back from /appsumo after redeeming a code. */}
+        {redeemed && (
+          <p role="status" className="mt-8 max-w-3xl rounded-control border border-line bg-surface px-4 py-3 text-sm">
+            <span className="font-semibold">Code redeemed. Welcome, Sumo-ling! 🎉</span> Your lifetime license is active, with every
+            future update. {connected ? "You're all set to record." : "Connect Cloudflare below to start recording."}
           </p>
         )}
 
