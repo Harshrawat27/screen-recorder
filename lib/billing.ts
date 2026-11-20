@@ -51,7 +51,8 @@ function tierForProduct(productId: string): TierId | null {
 export type Purchase = {
   payment_id: string;
   user_id: string;
-  tier: TierId;
+  /** "appsumo" = redeemed an AppSumo code (lib/appsumo.ts). */
+  tier: TierId | "appsumo";
   product_id: string;
   amount: number;
   currency: string;
@@ -61,10 +62,15 @@ export type Purchase = {
   created_at: Date;
 };
 
-/** How many accounts have bought so far (refunds give the spot back). */
+/**
+ * How many accounts have bought on the site so far (refunds give the spot back). AppSumo
+ * redemptions don't count, so they never use up the early-bird spots.
+ */
 export async function soldCount(): Promise<number> {
   await ensureSchema();
-  const { rows } = await pool.query<{ n: string }>("select count(distinct user_id) as n from purchase where status = 'paid'");
+  const { rows } = await pool.query<{ n: string }>(
+    "select count(distinct user_id) as n from purchase where status = 'paid' and tier <> 'appsumo'",
+  );
   return Number(rows[0]?.n ?? 0);
 }
 

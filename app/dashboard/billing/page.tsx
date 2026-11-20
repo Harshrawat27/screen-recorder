@@ -21,6 +21,7 @@ export default async function BillingPage() {
   const { user } = await requireSession();
   const { paid, purchase, free } = await getAccess(user);
   const tier = purchase ? tiers.find((t) => t.id === purchase.tier) : null;
+  const appsumo = purchase?.tier === "appsumo";
 
   return (
     <main className="px-5 py-8 sm:px-10 sm:py-10">
@@ -37,9 +38,12 @@ export default async function BillingPage() {
               ) : (
                 purchase && (
                   <>
-                    <Row label="Plan" value={tier ? `${tier.name}, $${tier.price} once` : "Lifetime"} />
+                    <Row
+                      label="Plan"
+                      value={appsumo ? "AppSumo lifetime deal" : tier ? `${tier.name}, $${tier.price} once` : "Lifetime"}
+                    />
                     <Row label="Updates" value={tier?.updates ?? "Lifetime updates"} />
-                    <Row label="Paid" value={`${(purchase.amount / 100).toFixed(2)} ${purchase.currency}`} />
+                    {!appsumo && <Row label="Paid" value={`${(purchase.amount / 100).toFixed(2)} ${purchase.currency}`} />}
                     <Row
                       label="Date"
                       value={new Date(purchase.created_at).toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" })}
@@ -48,7 +52,11 @@ export default async function BillingPage() {
                 )
               )}
             </dl>
-            {!free && <p className="mt-5 text-sm text-faint">Your receipt was emailed to {user.email} by Dodo Payments.</p>}
+            {!free && (
+              <p className="mt-5 text-sm text-faint">
+                {appsumo ? "Redeemed with an AppSumo code. Your receipt is in your AppSumo account." : `Your receipt was emailed to ${user.email} by Dodo Payments.`}
+              </p>
+            )}
           </>
         ) : (
           <>
