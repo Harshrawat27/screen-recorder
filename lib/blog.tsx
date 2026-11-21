@@ -92,6 +92,60 @@ const loomPricingFaqs = [
   },
 ];
 
+const asyncFaqs = [
+  {
+    q: "What is async communication?",
+    a: "Async (asynchronous) communication is any message that doesn't need a reply right away. You send it when it suits you, and the other person reads, watches and answers when it suits them. Email, recorded videos, shared documents and comments are all async.",
+  },
+  {
+    q: "What is an example of async communication?",
+    a: "A 2-minute screen recording that walks a client through changes to their website, sent as a link instead of booking a call. Others are a written daily stand-up, comments on a shared document, or a code review left on a pull request.",
+  },
+  {
+    q: "What is the difference between sync and async communication?",
+    a: "Sync communication happens live, with everyone present at the same time, like meetings and phone calls. Async communication happens on each person's own schedule, like email, recorded videos and documents.",
+  },
+  {
+    q: "Is Slack async or sync?",
+    a: "It can be either. Slack works as async communication when people reply in threads on their own schedule, and as sync communication when everyone is expected to answer within minutes.",
+  },
+  {
+    q: "When should you not use async communication?",
+    a: "Use a live call for urgent problems, for anything that has gone back and forth without progress, for sensitive conversations, and for getting to know someone new.",
+  },
+  {
+    q: "How do you run an async stand-up?",
+    a: "Each person posts a short written or video update at the same time each day: what they did, what they're doing next, and anything blocking them. Others read it when they start work and reply only where something needs a decision.",
+  },
+];
+
+const isLoomFreeFaqs = [
+  {
+    q: "Is Loom free?",
+    a: "Yes. Loom's Starter plan is free, with up to 25 videos per person, a 5-minute limit on each screen recording, and video up to 720p.",
+  },
+  {
+    q: "What happens when you reach 25 videos on Loom's free plan?",
+    a: "You can't record new videos until you delete some or upgrade. Your existing videos stay available, and archived videos still count towards the 25.",
+  },
+  {
+    q: "What happens when a Loom recording reaches 5 minutes on the free plan?",
+    a: "On Starter, the timer counts down from 5:00 and the recording ends when it reaches zero.",
+  },
+  {
+    q: "Is Loom free for students and teachers?",
+    a: "Not any more. Loom's help centre says the free education plan is no longer available to new applicants. Verified students and educators can get a discount of up to 75% on paid plans instead.",
+  },
+  {
+    q: "Does Loom have a free trial?",
+    a: "Yes. You can try Loom Business + AI free for 14 days.",
+  },
+  {
+    q: "How much does Loom cost after the free plan?",
+    a: "Loom Business costs $18 per user per month, and Business + AI costs $24 per user per month. Paying yearly saves up to 17%.",
+  },
+];
+
 export const posts: Post[] = [
   {
     slug: "how-to-screen-record-on-chromebook",
@@ -471,7 +525,8 @@ export const posts: Post[] = [
             <strong>Up to 720p video.</strong> 4K needs a paid plan.
           </li>
           <li>
-            <strong>Up to 50 members</strong> in the workspace.
+            <strong>Up to 50 members</strong> in the workspace, or 10 if your account is linked to Atlassian, according to Loom&rsquo;s help
+            centre.
           </li>
         </ul>
         <p>
@@ -578,6 +633,396 @@ export const posts: Post[] = [
 
         <h2>Questions people ask</h2>
         {loomPricingFaqs.map((f) => (
+          <div key={f.q}>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </>
+    ),
+  },
+  {
+    slug: "async-communication",
+    title: "What is async communication? Examples, benefits and how to do it well",
+    metaTitle: "What is async communication? Examples and tips",
+    description:
+      "Async communication explained: what it means, how it differs from sync, real examples for remote teams and freelancers, and when a meeting is still better.",
+    excerpt:
+      "What async communication means, how it compares with meetings, real examples, and the habits that make it work for teams and freelancers.",
+    published: "2026-11-21",
+    updated: "2026-11-21",
+    readingMinutes: 7,
+    image: {
+      src: "/blog/async-communication.webp",
+      alt: "What is async communication? A message thread showing a message sent at 9:02 AM, seen at 2:14 PM and replied to at 6:40 PM",
+      width: 1600,
+      height: 900,
+    },
+    faqs: asyncFaqs,
+    Body: () => (
+      <>
+        <p>
+          Async communication is how most good remote work gets done. Instead of pulling everyone into a meeting, you send a message, a document or a
+          short video, and people respond when they&rsquo;re ready. This guide explains what it means, when it works better than a meeting, and how
+          to do it well.
+        </p>
+
+        <figure>
+          <Image
+            src="/blog/async-communication.webp"
+            alt="What is async communication? A message thread showing a message sent at 9:02 AM, seen at 2:14 PM and replied to at 6:40 PM"
+            width={1600}
+            height={900}
+            sizes="(min-width: 768px) 720px, 100vw"
+            priority
+          />
+        </figure>
+
+        <div className="callout">
+          <p>
+            <strong>Quick answer:</strong> async (asynchronous) communication is any message that doesn&rsquo;t need a reply right away. You send it
+            when it suits you, and the other person reads, watches and answers when it suits them. Email, recorded video updates, shared documents
+            and comments are async. Meetings, phone calls and live chats are <strong>sync</strong> (synchronous): everyone has to be there at the
+            same time.
+          </p>
+        </div>
+
+        <h2>Async vs sync communication</h2>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" />
+                <th scope="col">Async</th>
+                <th scope="col">Sync</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Examples</th>
+                <td>Email, recorded videos, documents, comments, project boards</td>
+                <td>Meetings, video calls, phone calls, live chat</td>
+              </tr>
+              <tr>
+                <th scope="row">When people respond</th>
+                <td>When it suits them, often within hours</td>
+                <td>Right away</td>
+              </tr>
+              <tr>
+                <th scope="row">Best for</th>
+                <td>Updates, reviews, feedback, decisions that can wait a day</td>
+                <td>Urgent problems, brainstorming, sensitive conversations</td>
+              </tr>
+              <tr>
+                <th scope="row">Downside</th>
+                <td>Slower back-and-forth; needs clear writing</td>
+                <td>Interrupts focus; hard across time zones</td>
+              </tr>
+              <tr>
+                <th scope="row">Leaves a record</th>
+                <td>Yes, by default</td>
+                <td>Only if someone takes notes or records it</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Examples of async communication at work</h2>
+        <ul>
+          <li>
+            <strong>A video walkthrough instead of a meeting.</strong> Record 2 minutes showing a design, a bug or a finished feature, and send the
+            link.
+          </li>
+          <li>
+            <strong>A written stand-up.</strong> Each person posts what they did, what&rsquo;s next and what&rsquo;s blocking them, instead of a daily
+            call.
+          </li>
+          <li>
+            <strong>Comments on a document.</strong> People review a proposal in the doc itself, on their own time.
+          </li>
+          <li>
+            <strong>Code review.</strong> Developers leave comments on a pull request instead of reviewing it together live.
+          </li>
+          <li>
+            <strong>A client update.</strong> A short recording of this week&rsquo;s progress, which the client watches whenever they open their
+            inbox.
+          </li>
+        </ul>
+
+        <h2>Why teams switch to async</h2>
+        <ul>
+          <li>
+            <strong>Fewer interruptions.</strong> People get long stretches of focused work instead of a day broken up by calls.
+          </li>
+          <li>
+            <strong>Time zones stop mattering.</strong> Nobody has to join a meeting at 11 pm to give a five-minute update.
+          </li>
+          <li>
+            <strong>Better thinking.</strong> People answer after they&rsquo;ve thought it through, not on the spot.
+          </li>
+          <li>
+            <strong>A record by default.</strong> Decisions and explanations stay findable, so new teammates can catch up on their own.
+          </li>
+        </ul>
+        <p>
+          GitLab, a company that works fully remotely, makes async its default and documents how in its public{" "}
+          <a href="https://handbook.gitlab.com/handbook/company/culture/all-remote/asynchronous/" target="_blank" rel="noopener noreferrer">
+            handbook on asynchronous communication
+          </a>
+          . It&rsquo;s one of the most thorough guides on the subject.
+        </p>
+
+        <h2>When a meeting is still better</h2>
+        <p>Async is a default, not a rule. Switch to a live call when:</p>
+        <ul>
+          <li>Something is urgent, or broken right now.</li>
+          <li>A thread has gone back and forth three times without getting anywhere.</li>
+          <li>You&rsquo;re brainstorming, or making a big decision with many opinions.</li>
+          <li>The conversation is sensitive, like feedback on someone&rsquo;s work or a difficult client issue.</li>
+          <li>You&rsquo;re meeting someone for the first time and building trust.</li>
+        </ul>
+
+        <h2>How freelancers use async communication</h2>
+        <p>
+          I freelanced for five years, and clients wanted small updates all the time: a change I&rsquo;d made, a bug I&rsquo;d fixed, where the
+          project stood today. The choice was usually between booking a call for a two-minute update or writing a message so long it was nearly an
+          article.
+        </p>
+        <p>
+          A short screen recording fixed both problems. The client sees exactly what changed, hears why, and watches it when it suits them. I keep
+          my focus, and there&rsquo;s a record of what we agreed. These are the updates I&rsquo;d send async:
+        </p>
+        <ul>
+          <li>
+            <strong>Daily or weekly progress</strong>: what&rsquo;s done, what&rsquo;s next, what I need from them.
+          </li>
+          <li>
+            <strong>Design and website reviews</strong>: walk through the page and explain each decision.
+          </li>
+          <li>
+            <strong>Handover</strong>: how to edit the site, where things live, what to do if something breaks.
+          </li>
+          <li>
+            <strong>Bug reports</strong>: show the problem happening instead of describing it.
+          </li>
+        </ul>
+
+        <h2>How to do async communication well</h2>
+        <ol>
+          <li>
+            <strong>Give full context.</strong> Write or record as if the reader knows nothing about the last conversation. Link the doc, the design
+            or the ticket.
+          </li>
+          <li>
+            <strong>Lead with the ask.</strong> Start with what you need: a decision, feedback, or nothing (just an update).
+          </li>
+          <li>
+            <strong>Set a reply-by time.</strong> &ldquo;Can you reply by Thursday?&rdquo; stops async from turning into waiting forever.
+          </li>
+          <li>
+            <strong>Keep videos short.</strong> Two to five minutes, one topic each. If it needs twenty minutes, it might need a meeting.
+          </li>
+          <li>
+            <strong>Show, don&rsquo;t describe.</strong> A screen recording beats three paragraphs explaining where to click.
+          </li>
+          <li>
+            <strong>Agree on response times.</strong> For example: messages within a working day, urgent things by phone.
+          </li>
+        </ol>
+
+        <h3>A simple async stand-up</h3>
+        <p>Post this at the same time each day, in writing or as a one-minute video:</p>
+        <ul>
+          <li>
+            <strong>Done:</strong> what I finished since yesterday
+          </li>
+          <li>
+            <strong>Next:</strong> what I&rsquo;m working on today
+          </li>
+          <li>
+            <strong>Blocked:</strong> anything I need from someone, and by when
+          </li>
+        </ul>
+
+        <h2>Tools for async communication</h2>
+        <ul>
+          <li>
+            <strong>Writing:</strong> email, threaded chat in Slack or Teams, shared documents like Google Docs or Notion.
+          </li>
+          <li>
+            <strong>Project tracking:</strong> boards and issue trackers like Trello, Linear or Jira, where status updates live next to the work.
+          </li>
+          <li>
+            <strong>Video:</strong> screen recorders that give you a link to share, so you can show instead of write.
+          </li>
+        </ul>
+        <p>
+          For video, I built <Link href="/">Showthrough</Link>, a Chrome extension that records your screen, camera and voice and copies the link the
+          moment you stop. There&rsquo;s no limit on the number of videos or their length, and viewers can comment at the exact moment
+          they&rsquo;re asking about. If you&rsquo;re comparing options, see <Link href="/alternatives">the screen recorders we compare</Link>.
+        </p>
+
+        <h2>Questions people ask</h2>
+        {asyncFaqs.map((f) => (
+          <div key={f.q}>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </>
+    ),
+  },
+  {
+    slug: "is-loom-free",
+    title: "Is Loom free? The free plan's limits, explained",
+    metaTitle: "Is Loom free? The 25-video and 5-minute limits explained",
+    description:
+      "Loom has a free Starter plan, but it stops at 25 videos and 5-minute recordings. What's included, what happens at the limits, and when it's worth paying.",
+    excerpt:
+      "What Loom's free plan includes, what happens when you hit 25 videos or 5 minutes, and whether you'll need to pay.",
+    published: "2026-11-21",
+    updated: "2026-11-21",
+    readingMinutes: 5,
+    image: {
+      src: "/blog/is-loom-free.webp",
+      alt: "Is Loom free? A free plan card showing 25 of 25 videos used, a 5-minute recording timer at 0:00 and 720p video, with a recording limit reached warning",
+      width: 1600,
+      height: 900,
+    },
+    faqs: isLoomFreeFaqs,
+    Body: () => (
+      <>
+        <p>
+          Yes, Loom has a free plan. It&rsquo;s called Starter, and it&rsquo;s enough to try Loom and send the occasional short video. But it has
+          two limits that most people hit quickly: 25 videos and 5 minutes per recording. Here&rsquo;s what the free plan includes, what happens at
+          those limits, and when it&rsquo;s worth paying.
+        </p>
+
+        <figure>
+          <Image
+            src="/blog/is-loom-free.webp"
+            alt="Is Loom free? A free plan card showing 25 of 25 videos used, a 5-minute recording timer at 0:00 and 720p video, with a recording limit reached warning"
+            width={1600}
+            height={900}
+            sizes="(min-width: 768px) 720px, 100vw"
+            priority
+          />
+        </figure>
+
+        <div className="callout">
+          <p>
+            <strong>Quick answer:</strong> Loom&rsquo;s Starter plan is free, with up to <strong>25 videos per person</strong>, a{" "}
+            <strong>5-minute limit</strong> on each screen recording, and video up to <strong>720p</strong>. Removing those limits costs $18 per user
+            per month on the Business plan.
+          </p>
+        </div>
+
+        <p className="text-sm">
+          Checked on 21 November 2026 against{" "}
+          <a href="https://www.loom.com/pricing" target="_blank" rel="noopener noreferrer nofollow">
+            Loom&rsquo;s pricing page
+          </a>{" "}
+          and{" "}
+          <a href="https://support.atlassian.com/loom/docs/how-long-can-i-record/" target="_blank" rel="noopener noreferrer nofollow">
+            Loom&rsquo;s help centre
+          </a>
+          .
+        </p>
+
+        <h2>What Loom&rsquo;s free plan includes</h2>
+        <ul>
+          <li>Screen, camera and microphone recording, shared as a link</li>
+          <li>Transcripts, comments and emoji reactions</li>
+          <li>Viewer insights, folders and privacy controls</li>
+          <li>Integrations such as Slack, Jira, GitHub and Gmail</li>
+          <li>Unlimited screenshots</li>
+        </ul>
+        <p>
+          It doesn&rsquo;t include password-protected videos, removing Loom&rsquo;s branding, uploading or downloading videos, 4K, or any of
+          Loom&rsquo;s AI tools.
+        </p>
+
+        <h2>The limits you&rsquo;ll hit</h2>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Limit</th>
+                <th scope="col">Free Starter plan</th>
+                <th scope="col">What happens</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Videos</th>
+                <td>25 per person</td>
+                <td>At 25, you can&rsquo;t record until you delete videos or upgrade. Archived videos still count.</td>
+              </tr>
+              <tr>
+                <th scope="row">Recording length</th>
+                <td>5 minutes</td>
+                <td>The timer counts down from 5:00 and the recording ends at zero.</td>
+              </tr>
+              <tr>
+                <th scope="row">Video quality</th>
+                <td>Up to 720p</td>
+                <td>Fine for most screens; small text can look soft.</td>
+              </tr>
+              <tr>
+                <th scope="row">Members</th>
+                <td>Up to 50 on the pricing page</td>
+                <td>Loom&rsquo;s help centre says accounts linked to Atlassian are limited to 10 users on Starter.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          The 5-minute limit is the one that hurts most. A website handover, a code review or a walkthrough of a new feature rarely fits in five
+          minutes, and when the timer runs out the recording simply stops.
+        </p>
+        <p>
+          When I was freelancing, I found the free plan was more for understanding Loom than for using it. Clients wanted updates every day, so 25
+          videos went quickly, and deleting old videos to make room meant deleting the record of what I&rsquo;d sent.
+        </p>
+
+        <h2>Is there a free trial of the paid plans?</h2>
+        <p>
+          Yes. You can try Business + AI free for 14 days. After the trial, you&rsquo;re moved back to Starter unless you pay, and the 25-video and
+          5-minute limits apply again. If you already have more than 25 videos, you keep access to them, but you can&rsquo;t record new ones until
+          you&rsquo;re back under 25.
+        </p>
+
+        <h2>Is Loom free for teachers and students?</h2>
+        <p>
+          Not any more. Loom used to offer a free education plan, but its help centre now says that plan is closed to new applicants. Verified
+          teachers and students can get{" "}
+          <a href="https://support.atlassian.com/loom/docs/loom-education-discount-verification/" target="_blank" rel="noopener noreferrer nofollow">
+            a discount of up to 75%
+          </a>{" "}
+          on paid plans instead. Some school websites still describe the old free plan, so check the date on anything you read.
+        </p>
+
+        <h2>Is the free plan enough for you?</h2>
+        <p>
+          <strong>Stay on free</strong> if you send a few short videos a month, mostly under five minutes, and don&rsquo;t mind deleting old ones.
+        </p>
+        <p>
+          <strong>You&rsquo;ll outgrow it</strong> if you send updates daily, record walkthroughs longer than five minutes, or want to keep every
+          video you&rsquo;ve sent. Then the options are Loom Business at $18 per user per month (see{" "}
+          <Link href="/blog/loom-pricing">Loom pricing explained</Link>), or a different tool.
+        </p>
+
+        <h2>Alternatives without the limits</h2>
+        <p>
+          Some screen recorders are free and open source if you host them yourself; others charge once instead of every month. I built{" "}
+          <Link href="/">Showthrough</Link> after hitting Loom&rsquo;s limits: there&rsquo;s no cap on the number of videos or their length, your
+          videos are stored in your own Cloudflare account, and it&rsquo;s a <Link href="/pricing">one-time payment</Link>. It doesn&rsquo;t have a
+          free plan or Loom&rsquo;s AI tools yet. For a full comparison, see <Link href="/alternatives/loom">Showthrough vs Loom</Link> or{" "}
+          <Link href="/alternatives">all the alternatives we compare</Link>.
+        </p>
+
+        <h2>Questions people ask</h2>
+        {isLoomFreeFaqs.map((f) => (
           <div key={f.q}>
             <h3>{f.q}</h3>
             <p>{f.a}</p>
