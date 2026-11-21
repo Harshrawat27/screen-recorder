@@ -13,7 +13,7 @@ const pages: { path: string; updated: string }[] = [
   { path: "/support", updated: "2026-11-10" },
   { path: "/alternatives", updated: "2026-11-10" },
   { path: "/blog", updated: "2026-11-18" },
-  { path: "/privacy", updated: "2026-11-09" },
+  { path: "/privacy", updated: "2026-11-21" },
   { path: "/terms", updated: "2026-11-20" },
 ];
 

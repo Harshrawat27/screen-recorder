@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CookieSettingsLink } from "@/components/analytics";
 import { Savings } from "@/components/savings";
 import { CheckIcon, LogoMark, buttonClass } from "@/components/ui";
 import { site } from "@/lib/site";
@@ -636,6 +637,7 @@ export function SiteFooter() {
                   {link.label}
                 </Link>
               ))}
+              {column.title === "Company" && <CookieSettingsLink className="text-left text-muted hover:text-text" />}
             </div>
           ))}
         </nav>

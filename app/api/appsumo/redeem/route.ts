@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
+import { track } from "@/lib/analytics";
 import { redeemCode } from "@/lib/appsumo";
 import { requestOrigin } from "@/lib/origin";
 import { getSession } from "@/lib/session";
@@ -19,5 +20,6 @@ export async function POST(request: Request) {
 
   const result = await redeemCode(session.user.id, code);
   if (!result.ok) return back(result.reason);
+  after(() => track(session.user.id, "purchased", { tier: "appsumo", revenue: 0, currency: "USD" }, `appsumo-${code}`));
   return NextResponse.redirect(`${origin}/dashboard?redeemed=appsumo`, 303);
 }

@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
+import { track } from "@/lib/analytics";
 import { SetupError, WORKER_VERSION, exchangeCode, provision, waitForWorker } from "@/lib/cloudflare";
 import { getWorkspace, saveWorkspace } from "@/lib/db";
 import { includesVersion } from "@/lib/updates";
@@ -42,6 +43,7 @@ export async function POST(request: Request) {
       upload_key: result.uploadKey,
       worker_version: WORKER_VERSION,
     });
+    if (!current) after(() => track(session.user.id, "cloudflare_connected"));
     return NextResponse.json({ ok: true, space: result.space, accountName: result.accountName, ready, updated: Boolean(current) });
   } catch (err) {
     if (err instanceof SetupError) {

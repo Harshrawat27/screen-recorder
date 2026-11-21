@@ -1,4 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { after } from "next/server";
+import { track } from "@/lib/analytics";
 import { pool } from "@/lib/db";
 import { WORKER_VERSION } from "@/lib/cloudflare";
 import { type Tier, type TierId, openTier, tiers } from "@/lib/pricing";
@@ -160,12 +162,19 @@ export async function recordPayment(payment: DodoPayment) {
   }
   // Early buyers (first 50) get every future version; later buyers get the version available today.
   const updatesUntil = tiers.find((t) => t.id === tier)?.updates.startsWith("Lifetime") ? null : WORKER_VERSION;
-  await pool.query(
+  const inserted = await pool.query(
     `insert into purchase (payment_id, user_id, tier, product_id, amount, currency, updates_until)
      values ($1, $2, $3, $4, $5, $6, $7)
      on conflict (payment_id) do nothing`,
     [payment.payment_id, userId, tier, productId, payment.total_amount ?? 0, payment.currency ?? "USD", updatesUntil],
   );
+  // Counted once, the first time this payment is saved (the webhook and the return page can both get here).
+  if (inserted.rowCount) {
+    const buyer = userId;
+    after(() =>
+      track(buyer, "purchased", { tier, revenue: (payment.total_amount ?? 0) / 100, currency: payment.currency ?? "USD" }, payment.payment_id),
+    );
+  }
   return true;
 }
 

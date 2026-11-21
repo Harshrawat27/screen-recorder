@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Privacy", alternates: { canonical: "
 
 export default function Privacy() {
   return (
-    <LegalPage title="Privacy" updated="9 November 2026">
+    <LegalPage title="Privacy" updated="21 November 2026">
       <p>
         {site.name} is a screen recorder (a website and a Chrome extension) built so that your recordings live in your
         own Cloudflare account, not ours. This page explains what we keep, what passes through our services, and what
@@ -107,11 +107,25 @@ export default function Privacy() {
         <li>The extension has no ads, trackers or analytics, and we don&rsquo;t sell or share your data.</li>
       </ul>
 
-      <h2>Our website</h2>
+      <h2 id="analytics">Our website</h2>
       <ul>
+        <li>We use Vercel Web Analytics to count page visits. It doesn&rsquo;t use cookies.</li>
         <li>
-          We use Vercel Analytics to count page visits. It is anonymous and doesn&rsquo;t use cookies to follow you
-          across websites.
+          We also use PostHog to understand how people use our website: which pages they visit, where they click, and how
+          they move from the home page to signing up, buying and setting up. PostHog sets a cookie (named{" "}
+          <code>ph_…_posthog</code>) and receives your IP address, browser and the pages you visit. It can record your
+          visit as a replay of clicks and scrolling, with anything you type hidden. PostHog stores this data in the
+          United States and processes it under its own privacy policy. There are no ads.
+        </li>
+        <li>
+          When you sign in, we link these visits to your {site.name} account using an internal ID, never your email. We
+          also note when you buy, connect Cloudflare and connect the extension, so we can see where people get stuck.
+        </li>
+        <li>PostHog doesn&rsquo;t run on shared video pages, so people watching your recordings aren&rsquo;t tracked.</li>
+        <li>
+          Visitors in Europe (the EU, EEA, UK and Switzerland) are asked first, and PostHog loads only if they choose
+          Allow. Everyone else can turn it off at any time: choose Cookie settings at the bottom of any page, then Decline,
+          and the PostHog cookie is removed.
         </li>
         <li>
           People watching a share link don&rsquo;t need an account. Like any website, our hosting providers (Vercel and
@@ -124,6 +138,7 @@ export default function Privacy() {
         <li>Google, to sign you in.</li>
         <li>Dodo Payments, to process payments. It receives your name and email for checkout and receipts.</li>
         <li>Vercel, to host our website and database.</li>
+        <li>PostHog, for website analytics, as described above.</li>
         <li>Cloudflare, for your storage and video app (under your own account) and for our media address.</li>
       </ul>
 

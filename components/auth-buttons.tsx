@@ -1,5 +1,6 @@
 "use client";
 
+import { resetAnalytics } from "@/components/analytics";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
@@ -57,6 +58,7 @@ export function SignOutButton() {
   async function signOut() {
     setPending(true);
     await authClient.signOut();
+    resetAnalytics();
     router.push("/");
     router.refresh();
   }

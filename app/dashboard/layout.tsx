@@ -1,4 +1,5 @@
 import { AccountMenu } from '@/components/account-menu';
+import { AnalyticsIdentify } from '@/components/analytics';
 import { MobileNav, SidebarNav } from '@/components/dashboard-nav';
 import { DashboardSearch } from '@/components/dashboard-search';
 import { Avatar } from '@/components/dashboard-ui';
@@ -26,6 +27,7 @@ export default async function DashboardLayout({
 
   return (
     <div className='lg:flex'>
+      <AnalyticsIdentify id={user.id} />
       <aside className='hidden border-r border-line bg-surface lg:sticky lg:top-0 lg:flex lg:h-dvh lg:w-64 lg:shrink-0 lg:flex-col'>
         <div className='px-5 pb-6 pt-5'>
           <Logo />

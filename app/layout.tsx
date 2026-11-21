@@ -3,6 +3,7 @@ import localFont from 'next/font/local';
 import { site } from '@/lib/site';
 import './globals.css';
 import { Analytics } from '@vercel/analytics/next';
+import { Analytics as ProductAnalytics } from '@/components/analytics';
 // Self-hosted (SIL Open Font License) so builds work offline.
 // Newsreader for headings, Instrument Sans for body text and buttons.
 const newsreader = localFont({
@@ -81,6 +82,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       <body className='min-h-screen bg-canvas text-text'>
         {children}
         <Analytics />
+        <ProductAnalytics />
       </body>
     </html>
   );
