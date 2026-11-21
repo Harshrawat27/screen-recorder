@@ -80,7 +80,7 @@ export async function deleteVideo(ws: Workspace, id: string): Promise<void> {
   // Work out the file list from the playlists before removing anything.
   const master = await readText(ws, id, "master.m3u8");
   const playlists = master ? playlistFiles(master).filter((n) => n.endsWith(".m3u8")) : [];
-  const media = new Set<string>(["meta.json", "thumb.jpg", "thumb-small.jpg"]);
+  const media = new Set<string>(["meta.json", "cta.json", "thumb.jpg", "thumb-small.jpg"]);
   for (const playlist of playlists) {
     const text = await readText(ws, id, playlist);
     if (text) for (const name of playlistFiles(text)) media.add(name);

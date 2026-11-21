@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GoogleSignInButton } from "@/components/auth-buttons";
 import { Player } from "@/components/player";
+import { VideoCta } from "@/components/video-cta";
 import {
   Dialog,
   DialogContent,
@@ -445,7 +446,12 @@ export function VideoSocial({
       finishing={finishing}
       onVideo={onVideo}
       stats={stats}
-      belowVideo={reactionBar}
+      belowVideo={
+        <>
+          <VideoCta space={space} id={id} />
+          {reactionBar}
+        </>
+      }
     />
   );
 
