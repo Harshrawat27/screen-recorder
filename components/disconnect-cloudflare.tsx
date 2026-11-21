@@ -9,7 +9,6 @@ import { buttonClass } from "@/components/ui";
 // because their library and share links stop working here until they connect again.
 
 const WORD = "disconnect";
-const danger = "border border-danger/40 bg-surface text-danger hover:border-danger hover:bg-danger/5";
 
 export function DisconnectCloudflare({ accountName, email }: { accountName: string | null; email: string }) {
   const [open, setOpen] = useState(false);
@@ -43,7 +42,7 @@ export function DisconnectCloudflare({ accountName, email }: { accountName: stri
       <p className="mt-1.5 text-muted">
         Your videos are saved to {accountName ? <span className="font-semibold text-text">{accountName}</span> : "your Cloudflare account"}.
       </p>
-      <button type="button" onClick={() => setOpen(true)} className={buttonClass("secondary", "md", `mt-5 ${danger}`)}>
+      <button type="button" onClick={() => setOpen(true)} className={buttonClass("danger", "md", "mt-5")}>
         Disconnect Cloudflare
       </button>
 
@@ -98,7 +97,7 @@ export function DisconnectCloudflare({ accountName, email }: { accountName: stri
               <DialogClose className={buttonClass("ghost", "md")} disabled={busy}>
                 Cancel
               </DialogClose>
-              <button type="submit" disabled={!ready || busy} className={buttonClass("primary", "md", "bg-danger! text-white! hover:bg-danger/90! disabled:opacity-40")}>
+              <button type="submit" disabled={!ready || busy} className={buttonClass("danger", "md", "disabled:opacity-40")}>
                 {busy ? "Disconnecting…" : "Disconnect"}
               </button>
             </DialogFooter>

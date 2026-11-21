@@ -1,7 +1,7 @@
 // Shared building blocks. Every page and the future dashboard should use these
 // instead of styling buttons and cards from scratch.
 
-type Variant = "primary" | "secondary" | "ghost" | "brand";
+type Variant = "primary" | "secondary" | "ghost" | "brand" | "danger";
 type Size = "sm" | "md" | "lg";
 
 const base =
@@ -16,6 +16,8 @@ const variants: Record<Variant, string> = {
   secondary: "border border-line bg-surface text-text hover:border-line-strong hover:bg-sunken",
   // Text only: tertiary actions, navigation.
   ghost: "text-muted hover:bg-sunken hover:text-text",
+  // Flat red fill with white text, the same red in both themes: destructive actions only.
+  danger: "bg-[#dc2626] text-white hover:bg-[#b91c1c]",
 };
 
 const sizes: Record<Size, string> = {
