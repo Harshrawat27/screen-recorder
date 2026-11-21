@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AvatarEditor } from "@/components/avatar-editor";
 import { PageHeader } from "@/components/dashboard-ui";
+import { DisconnectCloudflare } from "@/components/disconnect-cloudflare";
 import { buttonClass } from "@/components/ui";
 import { avatarEnabled, getAvatar } from "@/lib/avatar";
 import { pages } from "@/lib/dashboard-pages";
@@ -24,6 +25,7 @@ export default async function ProfilePage() {
   const { user } = await requireSession();
   const workspace = await getWorkspace(user.id);
   const header = <PageHeader title={pages.profile.title} description={pages.profile.description} />;
+  const disconnect = workspace && <DisconnectCloudflare accountName={workspace.cf_account_name} email={user.email} />;
 
   if (!workspace) {
     return (
@@ -49,6 +51,7 @@ export default async function ProfilePage() {
           title="Update to add a photo"
           body="Profile photos come with the latest version of your video backend. Press Update in the sidebar; it takes about 30 seconds and keeps everything as it is."
         />
+        {disconnect}
       </main>
     );
   }
@@ -58,6 +61,7 @@ export default async function ProfilePage() {
     <main className="px-5 py-8 sm:px-10 sm:py-10">
       {header}
       <AvatarEditor name={user.name} email={user.email} userId={user.id} googleImage={user.image ?? null} initial={avatar} />
+      {disconnect}
     </main>
   );
 }
