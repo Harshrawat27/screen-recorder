@@ -300,7 +300,7 @@ const badge: Record<TierState, string> = {
   open: "On sale now",
   closed: "Closed",
   ended: "Ended",
-  later: `From ${LAUNCH_LABEL.replace(" November", " Nov")}`,
+  later: "Next",
 };
 
 function TierCard({ name, price, updates, note, state }: { name: string; price: number; updates: string; note: string; state: TierState }) {
@@ -312,7 +312,7 @@ function TierCard({ name, price, updates, note, state }: { name: string; price: 
       aria-disabled={!open || undefined}
       className={`flex flex-col rounded-[24px] bg-surface p-7 sm:p-8 ${
         open ? "border-2 border-text shadow-pop" : "border border-line"
-      } ${gone ? "pointer-events-none select-none opacity-45" : !open ? "opacity-70" : ""}`}
+      } ${open ? "" : "pointer-events-none select-none opacity-45"}`}
     >
       <div className="flex items-center justify-between gap-3">
         <p className="text-lg font-semibold">{name}</p>
@@ -361,7 +361,7 @@ function TierCard({ name, price, updates, note, state }: { name: string; price: 
           </a>
         ) : (
           <span className={buttonClass("secondary", "lg", "w-full cursor-default rounded-full opacity-70")}>
-            {state === "later" ? `On sale ${LAUNCH_LABEL}` : state === "ended" ? "Ended" : "Closed"}
+            {state === "later" ? "Not on sale yet" : state === "ended" ? "Ended" : "Closed"}
           </span>
         )}
       </div>
@@ -480,7 +480,7 @@ const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
   },
   {
     q: "Why are there three prices?",
-    a: `Our first buyers paid $29. Until ${EARLY_ENDS_LABEL} it's $49, and both include every future update, forever. From our Product Hunt launch on ${LAUNCH_LABEL} the price is $99, and that purchase covers the version you buy without future updates. Whatever you buy keeps working.`,
+    a: `Our first buyers paid $29. Until ${EARLY_ENDS_LABEL} it's $49, and both include every future update, forever. After that the price is $99, and that purchase covers the version you buy without future updates. Whatever you buy keeps working.`,
   },
   {
     q: "Is it a subscription?",

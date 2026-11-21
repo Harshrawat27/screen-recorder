@@ -26,7 +26,7 @@ export type Tier = {
 export const tiers: Tier[] = [
   { id: "first20", name: "First buyers", price: 29, updates: "Lifetime updates", note: "For the people who found us before we found them." },
   { id: "first100", name: "Early", price: 49, updates: "Lifetime updates", note: `Until ${EARLY_ENDS_LABEL}.` },
-  { id: "launch", name: "Launch", price: 99, updates: "No future updates", note: `From our Product Hunt launch, ${LAUNCH_LABEL}.` },
+  { id: "launch", name: "Launch", price: 99, updates: "No future updates", note: "After early pricing ends." },
 ];
 
 export type TierState = "closed" | "open" | "ended" | "later";
