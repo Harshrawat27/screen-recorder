@@ -2,7 +2,7 @@
 // environment variables and are only read on the server, in lib/billing.ts.
 //
 //   $29  the first buyers (closed)
-//   $49  until EARLY_ENDS, with every future update
+//   $49  the Black Friday sale, until EARLY_ENDS, with every future update
 //   $99  from the Product Hunt launch, without future updates (sales pause until then)
 //
 // The deadline is one fixed moment, so the countdown is the same on every device, and the
@@ -11,8 +11,12 @@
 
 export type TierId = "first20" | "first100" | "launch";
 
-export const EARLY_ENDS = "2026-11-23T23:59:59+05:30";
-export const EARLY_ENDS_LABEL = "23 November, 11:59 PM IST";
+// The end of Black Friday in US Pacific time (most visitors are in the US).
+export const EARLY_ENDS = "2026-11-27T23:59:59-08:00";
+export const EARLY_ENDS_LABEL = "Black Friday, 27 November, 11:59 PM PT";
+export const EARLY_ENDS_SHORT = "27 Nov";
+/** The price from the Product Hunt launch; shown crossed out next to the sale price. */
+export const LAUNCH_PRICE = 99;
 export const LAUNCH_LABEL = "30 November";
 
 export type Tier = {
@@ -25,7 +29,7 @@ export type Tier = {
 
 export const tiers: Tier[] = [
   { id: "first20", name: "First buyers", price: 29, updates: "Lifetime updates", note: "For the people who found us before we found them." },
-  { id: "first100", name: "Early", price: 49, updates: "Lifetime updates", note: `Until ${EARLY_ENDS_LABEL}.` },
+  { id: "first100", name: "Black Friday", price: 49, updates: "Lifetime updates", note: `Until ${EARLY_ENDS_LABEL}.` },
   { id: "launch", name: "Launch", price: 99, updates: "No future updates", note: "After early pricing ends." },
 ];
 

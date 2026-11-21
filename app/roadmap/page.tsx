@@ -88,7 +88,7 @@ export default async function RoadmapPage() {
             What&rsquo;s coming next
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted">
-            {site.name} records and shares today. Here&rsquo;s what we&rsquo;re building next. Everyone who buys before 23 November gets
+            {site.name} records and shares today. Here&rsquo;s what we&rsquo;re building next. Everyone who buys by Black Friday (27 November) gets
             every one of these updates free, forever.
           </p>
         </section>

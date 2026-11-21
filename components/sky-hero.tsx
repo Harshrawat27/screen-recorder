@@ -2,7 +2,7 @@ import { HeroShowcase } from '@/components/hero-showcase';
 import { SayNoHeadline } from '@/components/say-no';
 import { SiteNav } from '@/components/site-nav';
 import { buttonClass } from '@/components/ui';
-import { EARLY_ENDS_LABEL, LAUNCH_LABEL, earlyOpen } from '@/lib/pricing';
+import { EARLY_ENDS_SHORT, LAUNCH_LABEL, LAUNCH_PRICE, earlyOpen } from '@/lib/pricing';
 import './sky-hero.css';
 
 export function SkyHero({ price }: { price: number }) {
@@ -14,9 +14,18 @@ export function SkyHero({ price }: { price: number }) {
       <div className='relative mx-auto flex max-w-5xl flex-col items-center px-5 pt-20 text-center sm:px-8 sm:pt-28'>
         <p className='sky-glass inline-flex items-center gap-2 whitespace-nowrap rounded-full py-1.5 pl-3.5 pr-4 text-[13px] font-medium sm:text-sm'>
           <span className='live-dot' aria-hidden />
-          {onSale
-            ? `$49 with lifetime updates, until ${EARLY_ENDS_LABEL.split(',')[0]}`
-            : `Back on sale at our Product Hunt launch, ${LAUNCH_LABEL}`}
+          {onSale ? (
+            <>
+              <span className='font-semibold'>Black Friday sale:</span>
+              <span className='text-muted line-through'>${LAUNCH_PRICE}</span>
+              <span className='font-semibold'>${price}</span>
+              <span>
+                <span className='hidden sm:inline'>with lifetime updates, </span>until {EARLY_ENDS_SHORT}
+              </span>
+            </>
+          ) : (
+            `Back on sale at our Product Hunt launch, ${LAUNCH_LABEL}`
+          )}
         </p>
 
         <SayNoHeadline />
