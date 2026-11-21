@@ -57,7 +57,15 @@ export const guideContent: Record<string, React.ReactNode> = {
 
   "turn-on-r2": (
     <>
-      <Lead>R2 is the part of Cloudflare that stores your videos.</Lead>
+      <Lead>
+        R2 is the part of Cloudflare that stores your videos. Most of Cloudflare works without a card, but R2 asks for one before it
+        turns on.
+      </Lead>
+      <Note title="You add a card, but you pay $0">
+        <p>Your first 10 GB every month are free. That&rsquo;s roughly 100 hours of recordings.</p>
+        <p>Watching your videos is always free.</p>
+        <p>You&rsquo;re only charged if you go past 10 GB: $0.015 per GB a month, so 110 GB costs about $1.50 a month.</p>
+      </Note>
       <Do>
         <li>
           In the sidebar, open <b>Storage &amp; databases</b> → <b>R2 Object Storage</b>.
@@ -72,17 +80,11 @@ export const guideContent: Record<string, React.ReactNode> = {
         alt="Cloudflare's R2 page, showing the free monthly usage and the Add R2 subscription button"
         marks={[{ circle: [2.7, 52.8, 13.6, 4.2] }, { circle: [61.1, 37.1, 36.9, 5.2] }, { cursor: [75.0, 40.9] }]}
       />
-    </>
-  ),
-
-  "add-card": (
-    <>
-      <Lead>
-        Most of Cloudflare works without a card. R2 isn&rsquo;t one of them: Cloudflare asks for a card before turning it on.
-      </Lead>
-      <Do>
+      <Do start={3}>
         <li>Add a card, Apple Pay or PayPal.</li>
-        <li>Confirm. You pay $0 today.</li>
+        <li>
+          Confirm. <b>Due today: $0.</b>
+        </li>
       </Do>
       <Shot
         src="r2-add-card"
@@ -90,11 +92,6 @@ export const guideContent: Record<string, React.ReactNode> = {
         alt="Cloudflare's Activate R2 page: card details on the left, $0 due today on the right"
         marks={[{ circle: [4.3, 55.5, 39.8, 15.2] }, { circle: [54.7, 77.8, 40.3, 4.7] }]}
       />
-      <Note title="Will I be charged?">
-        <p>Only if you store more than 10 GB. That&rsquo;s roughly 100 hours of recordings.</p>
-        <p>Watching your videos is always free.</p>
-        <p>After 10 GB it&rsquo;s $0.015 per GB a month. Storing 110 GB costs about $1.50 a month.</p>
-      </Note>
     </>
   ),
 

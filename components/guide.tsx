@@ -78,8 +78,8 @@ export function Lead({ children }: { children: React.ReactNode }) {
 }
 
 /** The actions on a page, numbered. Keep each one short. */
-export function Do({ children }: { children: React.ReactNode }) {
-  return <ol className="mt-6 list-decimal space-y-2.5 pl-6 text-[17px] leading-relaxed marker:font-semibold marker:text-muted">{children}</ol>;
+export function Do({ start, children }: { start?: number; children: React.ReactNode }) {
+  return <ol start={start} className="mt-6 list-decimal space-y-2.5 pl-6 text-[17px] leading-relaxed marker:font-semibold marker:text-muted">{children}</ol>;
 }
 
 export function Note({ title, children }: { title: string; children: React.ReactNode }) {

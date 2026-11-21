@@ -25,13 +25,7 @@ export const guidePages: GuidePage[] = [
     slug: "turn-on-r2",
     title: "Turn on R2",
     nav: "Turn on R2",
-    description: "Turn on Cloudflare R2, the storage that keeps your Showthrough videos.",
-  },
-  {
-    slug: "add-card",
-    title: "Add a card for R2",
-    nav: "Add a card for R2",
-    description: "Why Cloudflare asks for a card to turn on R2, and why you won't be charged for your first 10 GB each month.",
+    description: "Turn on Cloudflare R2, the storage that keeps your Showthrough videos. It asks for a card, but your first 10 GB each month are free.",
   },
   {
     slug: "connect-cloudflare",
