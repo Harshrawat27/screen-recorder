@@ -5,7 +5,7 @@ import { SkyHero } from "@/components/sky-hero";
 import { currentOffer } from "@/lib/billing";
 import { site } from "@/lib/site";
 
-// Rendered on every request so the prices and spots left are always current.
+// Rendered on every request so the prices and the countdown are always current.
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };

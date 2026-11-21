@@ -59,7 +59,7 @@ export type Purchase = {
   amount: number;
   currency: string;
   status: "paid" | "refunded";
-  /** Last Worker version included; null = all future versions (first 50 customers). */
+  /** Last Worker version included; null = all future versions (early buyers). */
   updates_until: number | null;
   created_at: Date;
 };
@@ -116,7 +116,7 @@ async function dodo<T>(path: string, init?: RequestInit): Promise<T> {
 
 /** Starts a Dodo checkout for whichever tier is on sale. Returns null when nothing is on sale. */
 export async function createCheckout(user: { id: string; email: string; name: string }, origin: string): Promise<{ url: string; tier: Tier } | null> {
-  const tier = openTier(await soldCount());
+  const tier = openTier();
   if (!tier) return null;
   const productId = productIds[tier.id];
   if (!productId) throw new Error(`No Dodo product ID set for the ${tier.id} tier`);
@@ -160,7 +160,7 @@ export async function recordPayment(payment: DodoPayment) {
     console.warn("Dodo payment without a Showthrough user or product", payment.payment_id);
     return false;
   }
-  // Early buyers (first 50) get every future version; later buyers get the version available today.
+  // Early buyers ($29 and $49) get every future version; later buyers get the version available today.
   const updatesUntil = tiers.find((t) => t.id === tier)?.updates.startsWith("Lifetime") ? null : WORKER_VERSION;
   const inserted = await pool.query(
     `insert into purchase (payment_id, user_id, tier, product_id, amount, currency, updates_until)
@@ -224,6 +224,6 @@ export async function currentOffer(): Promise<{ sold: number; tier: Tier | null;
   } catch (err) {
     console.error("Could not count purchases", err);
   }
-  const tier = openTier(sold);
+  const tier = openTier();
   return { sold, tier, price: tier?.price ?? tiers[tiers.length - 1].price };
 }

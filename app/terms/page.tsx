@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Terms", alternates: { canonical: "/t
 
 export default function Terms() {
   return (
-    <LegalPage title="Terms" updated="20 November 2026">
+    <LegalPage title="Terms" updated="21 November 2026">
       <p>
         These terms cover {site.name}: the website, the dashboard, the share pages and the Chrome extension. By using{" "}
         {site.name} you agree to them. They are short on purpose.
@@ -18,7 +18,7 @@ export default function Terms() {
         {site.name} for as long as the product exists.
       </p>
       <p>
-        Purchases made at the early prices (the first 50 customers) include every future update. Purchases made after
+        Purchases made at the early prices ($29, and $49 until 23 November 2026) include every future update. Purchases made after
         that include the version available at the time of purchase, without future updates; that version keeps working.
       </p>
 

@@ -26,7 +26,7 @@ export default async function PricingPage({ searchParams }: PageProps<"/pricing"
   let notice: React.ReactNode = null;
   if (params.locked !== undefined) notice = <Notice>Buy {"Showthrough"} to connect Cloudflare (one click, we handle the rest) and start recording. It&rsquo;s a one-time payment.</Notice>;
   if (params.error !== undefined) notice = <Notice>We couldn&rsquo;t open checkout just now. Try again in a minute.</Notice>;
-  if (params.soldout !== undefined) notice = <Notice>The early spots are gone. The next price opens soon.</Notice>;
+  if (params.soldout !== undefined) notice = <Notice>Early pricing has ended. Sales open again at our Product Hunt launch on 30 November.</Notice>;
 
   return (
     <>

@@ -3,7 +3,8 @@ import { CookieSettingsLink } from "@/components/analytics";
 import { Savings } from "@/components/savings";
 import { CheckIcon, LogoMark, buttonClass } from "@/components/ui";
 import { site } from "@/lib/site";
-import { type TierState, tierStates } from "@/lib/pricing";
+import { Countdown } from "@/components/countdown";
+import { EARLY_ENDS, EARLY_ENDS_LABEL, LAUNCH_LABEL, type TierState, earlyOpen, tierStates } from "@/lib/pricing";
 
 // Home page sections below the hero. Black and white for now; every color comes from theme tokens.
 
@@ -289,7 +290,7 @@ const included: { key: string; text: React.ReactNode }[] = [
         <Link href="/roadmap" className="underline underline-offset-2 hover:text-muted">
           future updates
         </Link>{" "}
-        for life for the first 50 customers. After that, each update costs a small fee.
+        for life if you buy before {EARLY_ENDS_LABEL}. After that, each update costs a small fee.
       </span>
     ),
   },
@@ -297,29 +298,21 @@ const included: { key: string; text: React.ReactNode }[] = [
 
 const badge: Record<TierState, string> = {
   open: "On sale now",
-  next: "Next",
-  "sold-out": "Sold out",
-  later: "After the first 50",
+  closed: "Closed",
+  ended: "Ended",
+  later: `From ${LAUNCH_LABEL.replace(" November", " Nov")}`,
 };
 
-function TierCard({ name, price, updates, note, state, left, size }: {
-  name: string;
-  price: number;
-  updates: string;
-  note: string;
-  state: TierState;
-  left: number | null;
-  size: number | null;
-}) {
+function TierCard({ name, price, updates, note, state }: { name: string; price: number; updates: string; note: string; state: TierState }) {
   const open = state === "open";
-  const faded = state === "sold-out" || state === "later";
+  const gone = state === "closed" || state === "ended";
   const hasUpdates = updates.startsWith("Lifetime");
   return (
     <div
       aria-disabled={!open || undefined}
       className={`flex flex-col rounded-[24px] bg-surface p-7 sm:p-8 ${
         open ? "border-2 border-text shadow-pop" : "border border-line"
-      } ${faded ? "pointer-events-none select-none opacity-45" : ""}`}
+      } ${gone ? "pointer-events-none select-none opacity-45" : !open ? "opacity-70" : ""}`}
     >
       <div className="flex items-center justify-between gap-3">
         <p className="text-lg font-semibold">{name}</p>
@@ -330,7 +323,10 @@ function TierCard({ name, price, updates, note, state, left, size }: {
         </span>
       </div>
       <p className="mt-6 flex items-baseline gap-2">
-        <span className="font-display text-[64px] leading-none" style={{ letterSpacing: "-0.03em" }}>
+        <span
+          className={`font-display text-[64px] leading-none ${gone ? "line-through decoration-2" : ""}`}
+          style={{ letterSpacing: "-0.03em" }}
+        >
           ${price}
         </span>
         <span className="text-muted">once</span>
@@ -352,15 +348,10 @@ function TierCard({ name, price, updates, note, state, left, size }: {
         {updates}
       </p>
 
-      {size !== null && left !== null && (
-        <div className="mt-6">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted">{state === "sold-out" ? "All spots taken" : `${left} of ${size} spots left`}</span>
-          </div>
-          <div className="mt-2 h-2 rounded-full bg-sunken">
-            <div className="h-full rounded-full bg-text" style={{ width: `${((size - left) / size) * 100}%` }} />
-          </div>
-        </div>
+      {open && (
+        <p className="mt-6 rounded-control bg-sunken px-3.5 py-2.5 text-sm font-semibold">
+          <Countdown to={EARLY_ENDS} label={EARLY_ENDS_LABEL} />
+        </p>
       )}
 
       <div className="mt-auto pt-8">
@@ -370,7 +361,7 @@ function TierCard({ name, price, updates, note, state, left, size }: {
           </a>
         ) : (
           <span className={buttonClass("secondary", "lg", "w-full cursor-default rounded-full opacity-70")}>
-            {state === "next" ? "Opens after the first 10" : state === "sold-out" ? "Sold out" : "Not on sale yet"}
+            {state === "later" ? `On sale ${LAUNCH_LABEL}` : state === "ended" ? "Ended" : "Closed"}
           </span>
         )}
       </div>
@@ -378,7 +369,7 @@ function TierCard({ name, price, updates, note, state, left, size }: {
   );
 }
 
-export function Pricing({ sold, price, notice }: { sold: number; price: number; notice?: React.ReactNode }) {
+export function Pricing({ price, notice }: { sold?: number; price: number; notice?: React.ReactNode }) {
   return (
     <section id="pricing" className="scroll-mt-6 border-y border-line bg-surface/60">
       <div className="mx-auto max-w-6xl px-5 py-24 sm:px-8 sm:py-32">
@@ -390,8 +381,8 @@ export function Pricing({ sold, price, notice }: { sold: number; price: number; 
         {notice && <div className="mx-auto mt-10 max-w-3xl">{notice}</div>}
 
         <div className="mt-14 grid gap-5 lg:grid-cols-3">
-          {tierStates(sold).map(({ tier, state, left, size }) => (
-            <TierCard key={tier.id} name={tier.name} price={tier.price} updates={tier.updates} note={tier.note} state={state} left={left} size={size} />
+          {tierStates().map(({ tier, state }) => (
+            <TierCard key={tier.id} name={tier.name} price={tier.price} updates={tier.updates} note={tier.note} state={state} />
           ))}
         </div>
 
@@ -489,7 +480,7 @@ const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
   },
   {
     q: "Why are there three prices?",
-    a: "The first 10 customers pay $29 and customers 11 to 50 pay $59. Both include every future update, forever. After the first 50 the price is $99, and that purchase covers the version you buy without future updates. Whatever you buy keeps working.",
+    a: `Our first buyers paid $29. Until ${EARLY_ENDS_LABEL} it's $49, and both include every future update, forever. From our Product Hunt launch on ${LAUNCH_LABEL} the price is $99, and that purchase covers the version you buy without future updates. Whatever you buy keeps working.`,
   },
   {
     q: "Is it a subscription?",
@@ -563,21 +554,33 @@ export function Faq() {
 /* ---------- Final call to action ---------- */
 
 export function FinalCta({ price }: { price: number }) {
+  const onSale = earlyOpen();
   return (
     <section className="px-2 pb-2 sm:px-3 sm:pb-3">
       <div className="mx-auto flex max-w-[1400px] flex-col items-center rounded-[28px] bg-text px-6 py-20 text-center text-canvas sm:rounded-[32px] sm:py-28">
         <h2 className="max-w-[16ch] text-[44px] leading-[1.02] sm:text-[72px]" style={{ letterSpacing: "-0.03em" }}>
-          Be one of the first 50.
+          {onSale ? "Lifetime updates, for $49." : `Back on ${LAUNCH_LABEL}.`}
         </h2>
         <p className="mt-6 max-w-[48ch] text-lg leading-relaxed opacity-75">
-          $29 for the first 10, then $59 up to 50, both with every future update. After that it&rsquo;s $99 without future updates.
+          {onSale
+            ? `$49 once, with every future update, until ${EARLY_ENDS_LABEL}. From our Product Hunt launch it's $99 without future updates.`
+            : `Early pricing has ended. Showthrough goes on sale again at our Product Hunt launch on ${LAUNCH_LABEL}, at $99.`}
         </p>
-        <a
-          href="/buy"
-          className="mt-10 inline-flex h-13 items-center rounded-full bg-canvas px-8 text-base font-semibold text-text shadow-pop transition-opacity hover:opacity-90"
-        >
-          Buy for ${price}
-        </a>
+        {onSale ? (
+          <a
+            href="/buy"
+            className="mt-10 inline-flex h-13 items-center rounded-full bg-canvas px-8 text-base font-semibold text-text shadow-pop transition-opacity hover:opacity-90"
+          >
+            Buy for ${price}
+          </a>
+        ) : (
+          <a
+            href="/pricing"
+            className="mt-10 inline-flex h-13 items-center rounded-full bg-canvas px-8 text-base font-semibold text-text shadow-pop transition-opacity hover:opacity-90"
+          >
+            See pricing
+          </a>
+        )}
       </div>
     </section>
   );

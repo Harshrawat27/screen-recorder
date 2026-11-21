@@ -2,9 +2,11 @@ import { HeroShowcase } from '@/components/hero-showcase';
 import { SayNoHeadline } from '@/components/say-no';
 import { SiteNav } from '@/components/site-nav';
 import { buttonClass } from '@/components/ui';
+import { EARLY_ENDS_LABEL, LAUNCH_LABEL, earlyOpen } from '@/lib/pricing';
 import './sky-hero.css';
 
 export function SkyHero({ price }: { price: number }) {
+  const onSale = earlyOpen();
   return (
     <section className='sky relative isolate overflow-hidden'>
       <SiteNav />
@@ -12,7 +14,9 @@ export function SkyHero({ price }: { price: number }) {
       <div className='relative mx-auto flex max-w-5xl flex-col items-center px-5 pt-20 text-center sm:px-8 sm:pt-28'>
         <p className='sky-glass inline-flex items-center gap-2 whitespace-nowrap rounded-full py-1.5 pl-3.5 pr-4 text-[13px] font-medium sm:text-sm'>
           <span className='live-dot' aria-hidden />
-          Early pricing: the first 50 get lifetime updates
+          {onSale
+            ? `$49 with lifetime updates, until ${EARLY_ENDS_LABEL.split(',')[0]}`
+            : `Back on sale at our Product Hunt launch, ${LAUNCH_LABEL}`}
         </p>
 
         <SayNoHeadline />
@@ -25,10 +29,10 @@ export function SkyHero({ price }: { price: number }) {
 
         <div className='mt-9 flex flex-wrap justify-center gap-3'>
           <a
-            href='/buy'
+            href={onSale ? '/buy' : '/pricing'}
             className={buttonClass('primary', 'lg', 'rounded-full px-7')}
           >
-            Buy for ${price}
+            {onSale ? `Buy for $${price}` : 'See pricing'}
           </a>
           <a
             href='#how'
