@@ -1026,7 +1026,7 @@ export function LibraryView({
   );
 }
 
-/** The two buttons beside the page title. Front-end only for now. */
+/** The two buttons beside the page title. */
 export function LibraryActions({
   foldersEnabled = false,
 }: {
@@ -1038,8 +1038,9 @@ export function LibraryActions({
         enabled={foldersEnabled}
         className='inline-flex h-10 items-center gap-2 rounded-control border border-line bg-surface px-4 text-sm font-semibold transition-colors hover:border-line-strong hover:bg-sunken'
       />
-      <button
-        type='button'
+      {/* /record opens the extension's recording panel by itself (or explains how to install it). */}
+      <a
+        href='/record'
         className='btn-primary inline-flex h-10 items-center gap-2 rounded-control bg-text px-4 text-sm font-semibold text-canvas transition-colors hover:bg-text/85'
       >
         {svg(
@@ -1051,7 +1052,7 @@ export function LibraryActions({
           />
         )}
         New video
-      </button>
+      </a>
     </div>
   );
 }
