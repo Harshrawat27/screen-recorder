@@ -34,6 +34,21 @@ function Step({ n, done, title, body, children }: { n: number; done: boolean; ti
   );
 }
 
+/** A thin strip across the top of the library until Cloudflare is connected, pointing to the setup guide. */
+function GuideBar() {
+  return (
+    <a
+      href="/guide"
+      target="_blank"
+      className="-mx-5 -mt-8 mb-8 flex items-center justify-center gap-2 border-b border-line bg-surface px-5 py-2.5 text-center text-sm text-muted transition-colors hover:text-text sm:-mx-10 sm:-mt-10"
+    >
+      <span>
+        New here? Setting up takes about 2 minutes. <span className="font-semibold text-text underline underline-offset-2">Follow the setup guide →</span>
+      </span>
+    </a>
+  );
+}
+
 export default async function DashboardPage({ searchParams }: PageProps<"/dashboard">) {
   const { user } = await requireSession();
   const params = await searchParams;
@@ -68,6 +83,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
 
   return (
     <main className="px-5 py-8 sm:px-10 sm:py-10">
+        {!connected && <GuideBar />}
         <PageHeader title={pages.library.title} description={pages.library.description}>
           <LibraryActions foldersEnabled={canFolder} />
         </PageHeader>
@@ -165,6 +181,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
 function LockedLibrary({ pending }: { pending: boolean }) {
   return (
     <main className="px-5 py-8 sm:px-10 sm:py-10">
+      <GuideBar />
       <PageHeader title={pages.library.title} description={pages.library.description} />
 
       {pending && (
