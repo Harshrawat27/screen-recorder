@@ -91,7 +91,12 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
             <h2 id="setup" className="text-xl font-bold tracking-tight">
               Get ready to record
             </h2>
-            <p className="mt-1 text-muted">Three steps. You only do this once.</p>
+            <p className="mt-1 text-muted">
+              Three steps. You only do this once.{" "}
+              <a href="/guide" target="_blank" className="underline underline-offset-2 hover:text-text">
+                Step-by-step guide
+              </a>
+            </p>
             <ol className="mt-6 divide-y divide-line">
               <Step
                 n={1}

@@ -580,6 +580,7 @@ const footerColumns = [
       { href: "/#faq", label: "FAQ" },
       { href: "/roadmap", label: "Roadmap" },
       { href: "/blog", label: "Blog" },
+      { href: "/guide", label: "Setup guide" },
       { href: "/support", label: "Support" },
     ],
   },
