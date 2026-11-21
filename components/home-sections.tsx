@@ -274,11 +274,24 @@ export function Features({ price }: { price: number }) {
 
 /* ---------- Pricing ---------- */
 
-const included = [
-  "Unlimited recordings and share links",
-  "Screen, camera bubble, mic and tab audio",
-  "Every team member, no per-seat pricing",
-  "Videos stored in your own Cloudflare, connected in one click",
+const included: { key: string; text: React.ReactNode }[] = [
+  { key: "unlimited", text: "Unlimited recordings and share links" },
+  { key: "capture", text: "Screen, camera bubble, mic and tab audio" },
+  { key: "social", text: "Comments and reactions on every video" },
+  { key: "team", text: "Every team member, no per-seat pricing" },
+  { key: "storage", text: "Videos stored in your own Cloudflare, connected in one click" },
+  {
+    key: "updates",
+    text: (
+      <span>
+        Free{" "}
+        <Link href="/roadmap" className="underline underline-offset-2 hover:text-muted">
+          future updates
+        </Link>{" "}
+        for life for the first 50 customers. After that, each update costs a small fee.
+      </span>
+    ),
+  },
 ];
 
 const badge: Record<TierState, string> = {
@@ -386,11 +399,11 @@ export function Pricing({ sold, price, notice }: { sold: number; price: number; 
             <p className="text-lg font-semibold">Every plan includes</p>
             <ul className="mt-6 space-y-3.5 text-[15px]">
               {included.map((item) => (
-                <li key={item} className="flex items-start gap-3">
+                <li key={item.key} className="flex items-start gap-3">
                   <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-text text-canvas">
                     <CheckIcon className="size-3" />
                   </span>
-                  {item}
+                  {item.text}
                 </li>
               ))}
             </ul>
