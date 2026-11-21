@@ -285,7 +285,7 @@ const badge: Record<TierState, string> = {
   open: "On sale now",
   next: "Next",
   "sold-out": "Sold out",
-  later: "After the first 100",
+  later: "After the first 50",
 };
 
 function TierCard({ name, price, updates, note, state, left, size }: {
@@ -356,7 +356,7 @@ function TierCard({ name, price, updates, note, state, left, size }: {
           </a>
         ) : (
           <span className={buttonClass("secondary", "lg", "w-full cursor-default rounded-full opacity-70")}>
-            {state === "next" ? "Opens after the first 20" : state === "sold-out" ? "Sold out" : "Not on sale yet"}
+            {state === "next" ? "Opens after the first 10" : state === "sold-out" ? "Sold out" : "Not on sale yet"}
           </span>
         )}
       </div>
@@ -475,7 +475,7 @@ const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
   },
   {
     q: "Why are there three prices?",
-    a: "The first 20 customers pay $29 and customers 21 to 100 pay $59. Both include every future update, forever. After the first 100 the price is $99, and that purchase covers the version you buy without future updates. Whatever you buy keeps working.",
+    a: "The first 10 customers pay $29 and customers 11 to 50 pay $59. Both include every future update, forever. After the first 50 the price is $99, and that purchase covers the version you buy without future updates. Whatever you buy keeps working.",
   },
   {
     q: "Is it a subscription?",
@@ -553,10 +553,10 @@ export function FinalCta({ price }: { price: number }) {
     <section className="px-2 pb-2 sm:px-3 sm:pb-3">
       <div className="mx-auto flex max-w-[1400px] flex-col items-center rounded-[28px] bg-text px-6 py-20 text-center text-canvas sm:rounded-[32px] sm:py-28">
         <h2 className="max-w-[16ch] text-[44px] leading-[1.02] sm:text-[72px]" style={{ letterSpacing: "-0.03em" }}>
-          Be one of the first 100.
+          Be one of the first 50.
         </h2>
         <p className="mt-6 max-w-[48ch] text-lg leading-relaxed opacity-75">
-          $29 for the first 20, then $59 up to 100, both with every future update. After that it&rsquo;s $99 without future updates.
+          $29 for the first 10, then $59 up to 50, both with every future update. After that it&rsquo;s $99 without future updates.
         </p>
         <a
           href="/buy"

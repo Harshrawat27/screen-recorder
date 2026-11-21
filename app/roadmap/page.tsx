@@ -88,7 +88,7 @@ export default async function RoadmapPage() {
             What&rsquo;s coming next
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted">
-            {site.name} records and shares today. Here&rsquo;s what we&rsquo;re building next. The first 100 buyers get every one of
+            {site.name} records and shares today. Here&rsquo;s what we&rsquo;re building next. The first 50 buyers get every one of
             these updates free, forever.
           </p>
         </section>

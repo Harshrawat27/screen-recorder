@@ -18,7 +18,7 @@ export default function Terms() {
         {site.name} for as long as the product exists.
       </p>
       <p>
-        Purchases made at the early prices (the first 100 customers) include every future update. Purchases made after
+        Purchases made at the early prices (the first 50 customers) include every future update. Purchases made after
         that include the version available at the time of purchase, without future updates; that version keeps working.
       </p>
 

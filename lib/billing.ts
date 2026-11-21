@@ -57,7 +57,7 @@ export type Purchase = {
   amount: number;
   currency: string;
   status: "paid" | "refunded";
-  /** Last Worker version included; null = all future versions (first 100 customers). */
+  /** Last Worker version included; null = all future versions (first 50 customers). */
   updates_until: number | null;
   created_at: Date;
 };
@@ -158,7 +158,7 @@ export async function recordPayment(payment: DodoPayment) {
     console.warn("Dodo payment without a Showthrough user or product", payment.payment_id);
     return false;
   }
-  // Early buyers (first 100) get every future version; later buyers get the version available today.
+  // Early buyers (first 50) get every future version; later buyers get the version available today.
   const updatesUntil = tiers.find((t) => t.id === tier)?.updates.startsWith("Lifetime") ? null : WORKER_VERSION;
   await pool.query(
     `insert into purchase (payment_id, user_id, tier, product_id, amount, currency, updates_until)
