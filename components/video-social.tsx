@@ -448,7 +448,7 @@ export function VideoSocial({
       stats={stats}
       belowVideo={
         <>
-          <VideoCta space={space} id={id} />
+          <VideoCta space={space} id={id} src={src} />
           {reactionBar}
         </>
       }

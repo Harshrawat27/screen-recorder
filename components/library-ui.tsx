@@ -1,5 +1,6 @@
 'use client';
 
+import { VideoDownloads, useVideoDownload } from '@/components/video-download';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createContext, useContext, useState } from 'react';
@@ -37,6 +38,8 @@ export type LibraryVideo = {
   id: string;
   title: string;
   href: string;
+  /** The HLS playlist, for downloading as MP4. */
+  src: string;
   thumb: string | null;
   length: string | null;
   when: string;
@@ -359,6 +362,7 @@ function VideoMenu({
   );
   const { folders, foldersEnabled, moved, later, toggleLater } =
     useContext(Actions);
+  const download = useVideoDownload();
   const copy = () =>
     navigator.clipboard?.writeText(
       new URL(video.href, window.location.origin).toString()
@@ -385,6 +389,12 @@ function VideoMenu({
             onClick={() => setDialog('move')}
           >
             Add to folder
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={!video.ready}
+            onClick={() => download(video.src, video.title)}
+          >
+            Download MP4
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setDialog('rename')}>
             Rename
@@ -927,6 +937,7 @@ export function LibraryView({
 
   return (
     <Actions.Provider value={actions}>
+      <VideoDownloads>
       <div className='mt-8 flex flex-wrap items-center justify-between gap-3'>
         <Tabs tab={tab} onChange={setTab} starred={stars.size} />
         <div className='flex items-center gap-2'>
@@ -1022,6 +1033,7 @@ export function LibraryView({
           )}
         </div>
       </section>
+      </VideoDownloads>
     </Actions.Provider>
   );
 }

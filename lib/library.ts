@@ -27,6 +27,7 @@ export function toLibraryVideos(videos: VideoSummary[], ws: Workspace): LibraryV
     title: video.title || "Untitled recording",
     href: `/v/${ws.space}/${video.id}`,
     thumb: `${MEDIA_URL}/${ws.space}/videos/${video.id}/thumb-small.jpg`,
+    src: `${MEDIA_URL}/${ws.space}/videos/${video.id}/master.m3u8`,
     length: duration(video.durationSec),
     when: when(video.createdAt),
     ready: video.ready,

@@ -1336,8 +1336,8 @@ export const posts: Post[] = [
     updated: "2026-11-22",
     readingMinutes: 6,
     image: {
-      src: "/blog/loom-pricing.webp",
-      alt: "A comparison of Loom plans and prices",
+      src: "/blog/download-loom-videos.webp",
+      alt: "A video player with its menu open and Download highlighted, saving the video as an .mp4 file, with a lock badge for plans that can't download",
       width: 1600,
       height: 900,
     },
@@ -1349,6 +1349,17 @@ export const posts: Post[] = [
           Download button and can&rsquo;t find it. This guide shows the steps, who&rsquo;s allowed to download, why the button goes missing, and
           what to do if you want your whole library.
         </p>
+
+        <figure>
+          <Image
+            src="/blog/download-loom-videos.webp"
+            alt="A video player with its menu open and Download highlighted, saving the video as an .mp4 file, with a lock badge for plans that can't download"
+            width={1600}
+            height={900}
+            sizes="(min-width: 768px) 720px, 100vw"
+            priority
+          />
+        </figure>
 
         <div className="callout">
           <p>
@@ -1486,13 +1497,15 @@ export const posts: Post[] = [
 
         <h2>Why owning your videos matters</h2>
         <p>
-          When I was freelancing, my Loom library was a record of everything I&rsquo;d sent clients: changes, fixes, handovers. On the free plan I
-          couldn&rsquo;t download any of it, and staying under 25 videos meant deleting the record of what I&rsquo;d sent.
+          When I was freelancing, I paid for Loom, and my library became a record of everything I&rsquo;d sent clients: changes, fixes,
+          handovers. I never once downloaded a video. I only realised later that all of it lived in Loom&rsquo;s account, not mine. If I&rsquo;d
+          wanted to stop paying, I&rsquo;d first have had to download hundreds of videos one by one, because once you drop to the free plan,
+          nobody can download at all.
         </p>
         <p>
           That&rsquo;s one reason I built <Link href="/">Showthrough</Link> to store videos in your own Cloudflare account instead of ours.
           Connecting it is one click, and we handle the setup. A plan change can&rsquo;t lock you out of your own recordings, because they never
-          sat on our servers. It&rsquo;s a <Link href="/pricing">one-time payment</Link>, with no free plan. For other options, see{" "}
+          sat on our servers, and you can download any video as a file whenever you like. It&rsquo;s a <Link href="/pricing">one-time payment</Link>, with no free plan. For other options, see{" "}
           <Link href="/alternatives">the best Loom alternatives</Link>.
         </p>
 

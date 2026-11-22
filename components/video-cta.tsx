@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { buttonClass } from "@/components/ui";
+import { VideoDownloads, useVideoDownload } from "@/components/video-download";
 import { type Cta, CTA_LABEL_MAX, CTA_MAX, cleanButtons, ctaHost } from "@/lib/cta";
 
 // The call-to-action buttons under a shared video. Each button shows, in small type, the site
@@ -21,7 +22,19 @@ type Row = Cta & { key: number };
 let nextKey = 0;
 const row = (b: Cta = { label: "", url: "" }): Row => ({ ...b, key: nextKey++ });
 
-export function VideoCta({ space, id }: { space: string; id: string }) {
+/** The owner's "Download MP4" button on the share page. */
+function DownloadButton({ src }: { src: string }) {
+  const download = useVideoDownload();
+  // The page title is the recording's title ("Title | Showthrough").
+  const title = () => document.title.replace(/\s*\|\s*Showthrough\s*$/, "");
+  return (
+    <button type="button" onClick={() => download(src, title())} className={buttonClass("ghost", "sm")}>
+      Download MP4
+    </button>
+  );
+}
+
+export function VideoCta({ space, id, src }: { space: string; id: string; src?: string }) {
   const [state, setState] = useState<{ buttons: Cta[]; isOwner: boolean } | null>(null);
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState<Row[]>([]);
@@ -73,6 +86,7 @@ export function VideoCta({ space, id }: { space: string; id: string }) {
   }
 
   return (
+    <VideoDownloads>
     <div className="mt-4 flex flex-wrap items-center gap-2">
       {buttons.map((b, i) => (
         <a
@@ -101,6 +115,8 @@ export function VideoCta({ space, id }: { space: string; id: string }) {
           )}
         </button>
       )}
+
+      {isOwner && src && <DownloadButton src={src} />}
 
       <Dialog open={open} onOpenChange={(next) => !next && !busy && setOpen(false)}>
         <DialogContent className="max-w-lg">
@@ -171,5 +187,6 @@ export function VideoCta({ space, id }: { space: string; id: string }) {
         </DialogContent>
       </Dialog>
     </div>
+    </VideoDownloads>
   );
 }
