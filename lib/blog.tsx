@@ -171,6 +171,29 @@ const freeAltsFaqs = [
   },
 ];
 
+const loomDownloadFaqs = [
+  {
+    q: "Can you download Loom videos on the free plan?",
+    a: "No. On Loom's free Starter plan, admins and creators can't download videos, and viewers on Starter can't download other people's videos either. Downloading needs a paid plan such as Business.",
+  },
+  {
+    q: "Why is the Download button missing in Loom?",
+    a: "Usually because of your plan or role: Starter, Creator Lite and Viewer roles can't download. It can also be missing if the video uses Variables, is a meeting recording you didn't organise, is larger than 20 GB, or is still being processed after recording.",
+  },
+  {
+    q: "Can I download a Loom video someone else sent me?",
+    a: "Only if the creator turned on downloads for that video, and you're signed in to Loom with a paid workspace role (creator or admin). Viewers who aren't signed in can't download, whatever the video's settings.",
+  },
+  {
+    q: "What format are Loom downloads?",
+    a: "MP4. Trims you made are kept, but calls to action, filler word and silence removal, chapters and closed captions are not included in the file.",
+  },
+  {
+    q: "Can I download all my Loom videos at once?",
+    a: "Not from Loom itself: bulk download is an open feature request. You download videos one at a time from your Library, or use a migration tool from another provider, such as Tella Transfer or Cap's Loom importer.",
+  },
+];
+
 export const posts: Post[] = [
   {
     slug: "how-to-screen-record-on-chromebook",
@@ -1293,6 +1316,188 @@ export const posts: Post[] = [
 
         <h2>Questions people ask</h2>
         {freeAltsFaqs.map((f) => (
+          <div key={f.q}>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </>
+    ),
+  },
+  {
+    slug: "download-loom-videos",
+    title: "How to download a Loom video (and why the button is missing)",
+    metaTitle: "How to download a Loom video, step by step",
+    description:
+      "Download your Loom videos as MP4 in three steps, let viewers download them, and fix a missing Download button. Plus what the free plan allows and bulk export.",
+    excerpt:
+      "The three steps to download a Loom video, who's allowed to, why the button disappears, and how to get your whole library out.",
+    published: "2026-11-22",
+    updated: "2026-11-22",
+    readingMinutes: 6,
+    image: {
+      src: "/blog/loom-pricing.webp",
+      alt: "A comparison of Loom plans and prices",
+      width: 1600,
+      height: 900,
+    },
+    faqs: loomDownloadFaqs,
+    Body: () => (
+      <>
+        <p>
+          Loom lets you download your videos as MP4 files, but only on some plans and roles. That&rsquo;s why so many people go looking for the
+          Download button and can&rsquo;t find it. This guide shows the steps, who&rsquo;s allowed to download, why the button goes missing, and
+          what to do if you want your whole library.
+        </p>
+
+        <div className="callout">
+          <p>
+            <strong>Quick answer:</strong> open the video from your Loom Library, open the menu above the video, and choose{" "}
+            <strong>Download</strong>. You get an MP4 file. This works for admins and creators on Business and Business + AI, admins on
+            Education, and admins and members on Enterprise. On the free Starter plan, nobody can download.
+          </p>
+        </div>
+
+        <p className="text-sm">
+          Checked on 22 November 2026 against{" "}
+          <a href="https://support.atlassian.com/loom/docs/download-your-loom-video/" target="_blank" rel="noopener noreferrer nofollow">
+            Loom&rsquo;s help centre
+          </a>
+          .
+        </p>
+
+        <h2>How to download your own Loom video</h2>
+        <ol>
+          <li>
+            <strong>Open your Library</strong> at loom.com/my-videos and select the video.
+          </li>
+          <li>
+            <strong>Open the menu above the video.</strong>
+          </li>
+          <li>
+            <strong>Select Download.</strong> The video saves to your computer as an MP4.
+          </li>
+        </ol>
+        <p>
+          If you see a &ldquo;Polishing pixels&rdquo; message, the file isn&rsquo;t ready yet. Long videos can take a while to process; Loom
+          suggests allowing up to 30 minutes before the download is available.
+        </p>
+
+        <h2>Who can download, by plan</h2>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Plan</th>
+                <th scope="col">Who can download</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Starter (free)</th>
+                <td>Nobody, not even the video&rsquo;s creator</td>
+              </tr>
+              <tr>
+                <th scope="row">Business and Business + AI</th>
+                <td>Admins and creators</td>
+              </tr>
+              <tr>
+                <th scope="row">Education</th>
+                <td>Admins only</td>
+              </tr>
+              <tr>
+                <th scope="row">Enterprise</th>
+                <td>Admins and members (unless an admin turns downloads off for everyone)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          The Creator Lite and Viewer roles can&rsquo;t download on any plan. If you&rsquo;re weighing an upgrade just to get your videos out, see{" "}
+          <Link href="/blog/loom-pricing">Loom pricing explained</Link> for what each plan costs.
+        </p>
+
+        <h2>How to let viewers download your video</h2>
+        <p>If you&rsquo;re on a paid plan, you can let the people you share with download too:</p>
+        <ul>
+          <li>
+            <strong>For one video:</strong> open it, select <strong>Settings</strong>, turn on <strong>Allow downloads</strong>, then refresh
+            the page.
+          </li>
+          <li>
+            <strong>For all your videos:</strong> open any video, go to <strong>Settings</strong>, scroll down to{" "}
+            <strong>Set defaults&hellip;</strong>, open the <strong>Audience</strong> tab, turn on <strong>Downloads</strong> and save.
+          </li>
+        </ul>
+        <p>
+          There&rsquo;s a catch: viewers can only download if they&rsquo;re signed in to Loom with a paid workspace role (creator or admin). A
+          client who just opens your link without a Loom account can&rsquo;t download, whatever your settings say.
+        </p>
+
+        <h2>Why the Download button is missing</h2>
+        <ul>
+          <li>
+            <strong>You&rsquo;re on the free plan,</strong> or your role is Creator Lite or Viewer.
+          </li>
+          <li>
+            <strong>The video is still processing.</strong> Wait a few minutes, up to 30 for long recordings.
+          </li>
+          <li>
+            <strong>It uses Variables</strong> (personalised versions of one video). These can&rsquo;t be downloaded.
+          </li>
+          <li>
+            <strong>It&rsquo;s a meeting recording</strong> and you weren&rsquo;t the organiser.
+          </li>
+          <li>
+            <strong>It&rsquo;s larger than 20 GB,</strong> roughly three hours of 4K. Loom&rsquo;s support team has to help with those.
+          </li>
+          <li>
+            <strong>Your Enterprise admin has turned downloads off</strong> for the organisation.
+          </li>
+        </ul>
+        <p>
+          If the button is there but no file appears, Loom suggests clearing your cache and cookies or trying another browser.
+        </p>
+
+        <h2>What you lose in the downloaded file</h2>
+        <p>
+          The MP4 keeps any trims you made, but not the extras Loom adds on top: calls to action, filler word and silence removal, chapters and
+          closed captions. If you recorded at an unusual screen shape, the file keeps that shape, so it can look stretched in other players. Loom
+          recommends recording at a 16:9 resolution to avoid this.
+        </p>
+
+        <h2>Can you download all your Loom videos at once?</h2>
+        <p>
+          Not from Loom itself. Bulk download is still an{" "}
+          <a href="https://jira.atlassian.com/browse/LOOM-168" target="_blank" rel="noopener noreferrer nofollow">
+            open feature request
+          </a>
+          , so you download videos one at a time. If you have hundreds, some competitors offer migration tools, such as{" "}
+          <a href="https://www.tella.com/tools/tella-transfer" target="_blank" rel="noopener noreferrer nofollow">
+            Tella Transfer
+          </a>{" "}
+          and Cap&rsquo;s Loom importer.
+        </p>
+        <p>
+          Be careful with third-party &ldquo;Loom downloader&rdquo; sites and extensions. Most only work on public videos, and some ask for your
+          Loom password or browser cookies to reach private ones. Never hand those over to a tool you don&rsquo;t trust; it&rsquo;s full access
+          to your account.
+        </p>
+
+        <h2>Why owning your videos matters</h2>
+        <p>
+          When I was freelancing, my Loom library was a record of everything I&rsquo;d sent clients: changes, fixes, handovers. On the free plan I
+          couldn&rsquo;t download any of it, and staying under 25 videos meant deleting the record of what I&rsquo;d sent.
+        </p>
+        <p>
+          That&rsquo;s one reason I built <Link href="/">Showthrough</Link> to store videos in your own Cloudflare account instead of ours.
+          Connecting it is one click, and we handle the setup. A plan change can&rsquo;t lock you out of your own recordings, because they never
+          sat on our servers. It&rsquo;s a <Link href="/pricing">one-time payment</Link>, with no free plan. For other options, see{" "}
+          <Link href="/alternatives">the best Loom alternatives</Link>.
+        </p>
+
+        <h2>Questions people ask</h2>
+        {loomDownloadFaqs.map((f) => (
           <div key={f.q}>
             <h3>{f.q}</h3>
             <p>{f.a}</p>
