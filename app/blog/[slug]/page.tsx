@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AuthorBox } from "@/components/author-box";
 import { SiteFooter } from "@/components/home-sections";
 import { JsonLd } from "@/components/json-ld";
 import { SiteNav } from "@/components/site-nav";
 import { buttonClass } from "@/components/ui";
+import { author, authorId, personSchema } from "@/lib/author";
 import { formatDate, getPost, posts } from "@/lib/blog";
 import { site } from "@/lib/site";
 
@@ -24,7 +26,7 @@ export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): P
     title: post.metaTitle,
     description: post.description,
     alternates: { canonical: url },
-    authors: [{ name: "Harsh Rawat", url: "https://x.com/Harshrwt27" }],
+    authors: [{ name: author.name, url: `${site.url}${author.path}` }],
     openGraph: {
       type: "article",
       url,
@@ -60,9 +62,17 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
               image: `${site.url}${post.image.src}`,
               datePublished: post.published,
               dateModified: post.updated,
-              author: { "@type": "Person", name: "Harsh Rawat", url: "https://x.com/Harshrwt27" },
-              publisher: { "@type": "Organization", name: site.name, url: site.url, logo: `${site.url}/apple-icon.png` },
+              author: { "@id": authorId },
+              publisher: { "@id": `${site.url}/#organization` },
               mainEntityOfPage: url,
+            },
+            personSchema(),
+            {
+              "@type": "Organization",
+              "@id": `${site.url}/#organization`,
+              name: site.name,
+              url: site.url,
+              logo: `${site.url}/apple-icon.png`,
             },
             {
               "@type": "BreadcrumbList",
@@ -100,13 +110,18 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
               {post.title}
             </h1>
             <p className="mt-5 text-sm text-muted">
-              By Harsh Rawat · <time dateTime={post.updated}>{formatDate(post.updated)}</time> · {post.readingMinutes} min read
+              By{" "}
+              <Link href={author.path} className="underline underline-offset-2 hover:text-text">
+                {author.name}
+              </Link>{" "}
+              · <time dateTime={post.updated}>{formatDate(post.updated)}</time> · {post.readingMinutes} min read
             </p>
           </header>
 
           <div className="prose-blog mt-10">
             <Body />
           </div>
+          <AuthorBox />
         </article>
 
         <aside className="mt-16 rounded-[24px] border border-line bg-surface p-8 text-center">

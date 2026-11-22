@@ -3,6 +3,7 @@ import { Faq, Features, FinalCta, Pricing, SiteFooter, faqText } from "@/compone
 import { JsonLd } from "@/components/json-ld";
 import { SkyHero } from "@/components/sky-hero";
 import { currentOffer } from "@/lib/billing";
+import { authorId, personSchema } from "@/lib/author";
 import { softwareAppSchema } from "@/lib/schema";
 import { site } from "@/lib/site";
 
@@ -25,10 +26,12 @@ export default async function Home() {
               name: site.name,
               url: site.url,
               logo: `${site.url}/apple-icon.png`,
+              founder: { "@id": authorId },
               sameAs: ["https://x.com/Harshrwt27", site.chromeStoreUrl],
             },
             { "@type": "WebSite", "@id": `${site.url}/#website`, name: site.name, url: site.url, publisher: { "@id": `${site.url}/#organization` } },
             softwareAppSchema(price),
+            personSchema(),
             {
               "@type": "FAQPage",
               mainEntity: faqText.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),

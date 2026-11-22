@@ -11,6 +11,7 @@ const pages: { path: string; updated: string }[] = [
   { path: "/pricing", updated: "2026-11-22" },
   { path: "/roadmap", updated: "2026-11-21" },
   { path: "/support", updated: "2026-11-10" },
+  { path: "/about", updated: "2026-11-22" },
   { path: "/alternatives", updated: "2026-11-22" },
   { path: "/blog", updated: "2026-11-22" },
   { path: "/privacy", updated: "2026-11-21" },

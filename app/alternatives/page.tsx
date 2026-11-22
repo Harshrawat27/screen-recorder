@@ -4,6 +4,7 @@ import { FinalCta, SiteFooter } from "@/components/home-sections";
 import { JsonLd } from "@/components/json-ld";
 import { SiteNav } from "@/components/site-nav";
 import { currentOffer } from "@/lib/billing";
+import { authorId, personSchema } from "@/lib/author";
 import { breadcrumbSchema } from "@/lib/schema";
 import { site } from "@/lib/site";
 
@@ -234,7 +235,7 @@ export default async function AlternativesPage() {
               url: `${site.url}/alternatives`,
               name: "10 best Loom alternatives in 2026, compared",
               dateModified: UPDATED,
-              author: { "@type": "Person", name: "Harsh Rawat", url: "https://x.com/Harshrwt27" },
+              author: { "@id": authorId },
               publisher: { "@id": `${site.url}/#organization` },
             },
             {
@@ -247,6 +248,7 @@ export default async function AlternativesPage() {
                 url: `${site.url}/alternatives#${tool.id}`,
               })),
             },
+            personSchema(),
             breadcrumbSchema([["Loom alternatives", "/alternatives"]]),
           ],
         }}
@@ -265,7 +267,11 @@ export default async function AlternativesPage() {
             stated as plainly as everyone else&rsquo;s.
           </p>
           <p className="mt-4 text-sm text-faint">
-            By Harsh Rawat · Updated 22 November 2026 · Prices checked {CHECKED} on each tool&rsquo;s own pricing page
+            By{" "}
+            <Link href="/about" className="underline underline-offset-2 hover:text-text">
+              Harsh Rawat
+            </Link>{" "}
+            · Updated 22 November 2026 · Prices checked {CHECKED} on each tool&rsquo;s own pricing page
           </p>
         </header>
 
