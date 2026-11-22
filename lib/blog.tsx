@@ -146,6 +146,31 @@ const isLoomFreeFaqs = [
   },
 ];
 
+const FREE_ALTS_CHECKED = "22 November 2026";
+
+const freeAltsFaqs = [
+  {
+    q: "What is the best free Loom alternative?",
+    a: "It depends on what you need. Screenity is the closest free option inside Chrome, with no video or time limit, but it saves files to your computer instead of giving you a link. Cap gives you share links for free, up to 25 a month and 5 minutes each. OBS Studio is best for long, high-quality recordings if you don't mind a learning curve.",
+  },
+  {
+    q: "Is there a free Loom alternative with no time limit?",
+    a: "Yes. Screenity's free recorder and OBS Studio both have no time limit. Both save the video as a file, so you share it yourself. Among tools that host your video, Vidyard and Screencastify allow 30 minutes per recording on their free plans.",
+  },
+  {
+    q: "Which free Loom alternatives have no watermark?",
+    a: "Screenity's free recorder and OBS Studio add no watermark. Screencastify's free plan adds a Castify watermark to your videos.",
+  },
+  {
+    q: "Is Screenity really free?",
+    a: "The recorder is. Screenity's recorder is free and open source under GPLv3, with no watermark and no time limit, and it records locally. Its editor is a paid upgrade with a 7-day free trial.",
+  },
+  {
+    q: "Can I self-host a Loom alternative for free?",
+    a: "Yes. Cap and Screenity are both open source, so you can run them yourself. You still pay for the server and storage you host them on, and you look after updates.",
+  },
+];
+
 export const posts: Post[] = [
   {
     slug: "how-to-screen-record-on-chromebook",
@@ -1023,6 +1048,251 @@ export const posts: Post[] = [
 
         <h2>Questions people ask</h2>
         {isLoomFreeFaqs.map((f) => (
+          <div key={f.q}>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </>
+    ),
+  },
+  {
+    slug: "free-loom-alternatives",
+    title: "7 free Loom alternatives, and what each free plan really allows",
+    metaTitle: "7 free Loom alternatives and their real limits",
+    description:
+      "Seven free Loom alternatives compared: Screenity, OBS, Cap, Vidyard, Screencastify, ScreenPal and Zight. The real limits on each free plan, and who each suits.",
+    excerpt:
+      "Seven screen recorders with a free plan, the limits on each one, and which to pick for client updates, tutorials or long recordings.",
+    published: "2026-11-22",
+    updated: "2026-11-22",
+    readingMinutes: 7,
+    image: {
+      src: "/blog/free-loom-alternatives.webp",
+      alt: "Seven screen recorder cards labelled with free-plan limits such as 5 min, 30 min and 10 videos, and one card highlighted in orange labelled no limit",
+      width: 1600,
+      height: 900,
+    },
+    faqs: freeAltsFaqs,
+    Body: () => (
+      <>
+        <p>
+          Loom&rsquo;s free plan stops at 25 videos and 5 minutes per recording (see{" "}
+          <Link href="/blog/is-loom-free">Is Loom free?</Link>). If that&rsquo;s too tight, there are free screen recorders that go further. Each one
+          has its own catch: a monthly cap, a watermark, or no share link at all. Here are seven worth trying, with the real limits on each free plan.
+        </p>
+
+        <figure>
+          <Image
+            src="/blog/free-loom-alternatives.webp"
+            alt="Seven screen recorder cards labelled with free-plan limits such as 5 min, 30 min and 10 videos, and one card highlighted in orange labelled no limit"
+            width={1600}
+            height={900}
+            sizes="(min-width: 768px) 720px, 100vw"
+            priority
+          />
+        </figure>
+
+        <div className="callout">
+          <p>
+            <strong>Quick answer:</strong> for recording in Chrome with no limits, use <strong>Screenity</strong>. It&rsquo;s free and open source,
+            but it saves a file instead of giving you a link. For free share links, use <strong>Cap</strong> (25 a month, 5 minutes each). For long,
+            high-quality recordings on a desktop, use <strong>OBS Studio</strong>.
+          </p>
+        </div>
+
+        <p className="text-sm">Free plans checked on {FREE_ALTS_CHECKED} on each tool&rsquo;s own website. Free plans change often, so check before you rely on one.</p>
+
+        <h2>The free plans at a glance</h2>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Tool</th>
+                <th scope="col">Free plan limit</th>
+                <th scope="col">Share link</th>
+                <th scope="col">Best for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Screenity</th>
+                <td>No video or time limit</td>
+                <td>No, saves a file</td>
+                <td>Recording in Chrome without limits</td>
+              </tr>
+              <tr>
+                <th scope="row">OBS Studio</th>
+                <td>No limits</td>
+                <td>No, saves a file</td>
+                <td>Long, high-quality desktop recordings</td>
+              </tr>
+              <tr>
+                <th scope="row">Cap</th>
+                <td>25 share links a month, 5 minutes each</td>
+                <td>Yes</td>
+                <td>Developers who want open source</td>
+              </tr>
+              <tr>
+                <th scope="row">Vidyard</th>
+                <td>5 videos a month, 30 minutes each</td>
+                <td>Yes</td>
+                <td>Sales outreach videos</td>
+              </tr>
+              <tr>
+                <th scope="row">Screencastify</th>
+                <td>10 videos, 30 minutes each, watermark</td>
+                <td>Yes</td>
+                <td>Teachers and classrooms</td>
+              </tr>
+              <tr>
+                <th scope="row">ScreenPal</th>
+                <td>15 minutes per recording</td>
+                <td>Yes</td>
+                <td>Tutorials with light editing</td>
+              </tr>
+              <tr>
+                <th scope="row">Zight</th>
+                <td>5 minutes per recording, 720p, 1 GB storage</td>
+                <td>Yes</td>
+                <td>Quick screenshots, GIFs and clips</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>1. Screenity: free and unlimited in Chrome</h2>
+        <p>
+          <a href="https://screenity.io/extension" target="_blank" rel="noopener noreferrer nofollow">
+            Screenity
+          </a>{" "}
+          is a Chrome extension that records your screen, a tab or your camera. The recorder is free and open source, with no watermark and no time
+          limit, and you don&rsquo;t need an account. You can draw on the screen, blur parts of it and highlight clicks while you record.
+        </p>
+        <p>
+          <strong>The catch:</strong> your video is saved to your computer, so to send it you have to upload it somewhere yourself. The editor, with
+          zooms and captions, is a paid upgrade.
+        </p>
+
+        <h2>2. OBS Studio: free, powerful, and harder to learn</h2>
+        <p>
+          <a href="https://obsproject.com" target="_blank" rel="noopener noreferrer nofollow">
+            OBS Studio
+          </a>{" "}
+          is a free, open-source app for Windows, Mac and Linux. It has no limits on the number or length of recordings, and it&rsquo;s the tool most
+          streamers and YouTubers use. You can mix your screen, camera and several microphones into one video.
+        </p>
+        <p>
+          <strong>The catch:</strong> setting up scenes and sources takes time, and it has no editor or share links. It&rsquo;s overkill for a
+          two-minute update to a client.
+        </p>
+
+        <h2>3. Cap: open source, with free share links</h2>
+        <p>
+          <a href="https://cap.so/pricing" target="_blank" rel="noopener noreferrer nofollow">
+            Cap
+          </a>{" "}
+          is the closest open-source match to Loom: record on Mac, Windows or Linux and get a link to share. The free plan is for personal use and
+          gives you 25 share links a month, each up to 5 minutes. You can also host Cap yourself.
+        </p>
+        <p>
+          <strong>The catch:</strong> 5 minutes per shared video is the same limit as Loom&rsquo;s free plan. For a full comparison, see{" "}
+          <Link href="/alternatives/cap">Showthrough vs Cap</Link>.
+        </p>
+
+        <h2>4. Vidyard: 30-minute videos, 5 a month</h2>
+        <p>
+          <a href="https://www.vidyard.com/pricing/" target="_blank" rel="noopener noreferrer nofollow">
+            Vidyard
+          </a>{" "}
+          is built for sales teams. Its free plan lets you record up to 30 minutes per video, which is six times longer than Loom&rsquo;s free plan.
+        </p>
+        <p>
+          <strong>The catch:</strong> you get 5 videos a month, and most of the extras, such as captions, custom thumbnails and the analytics
+          dashboard, are on paid plans. See <Link href="/alternatives/vidyard">Showthrough vs Vidyard</Link>.
+        </p>
+
+        <h2>5. Screencastify: made for classrooms</h2>
+        <p>
+          <a href="https://www.screencastify.com/pricing" target="_blank" rel="noopener noreferrer nofollow">
+            Screencastify
+          </a>{" "}
+          is a Chrome recorder popular with teachers. The free plan lets you create or upload 10 videos of up to 30 minutes each, and you can keep and
+          share them for as long as you like. Inviting colleagues adds 5 bonus videos for each one, up to 20 in total.
+        </p>
+        <p>
+          <strong>The catch:</strong> free videos carry a Castify watermark, which looks odd in front of a client. See{" "}
+          <Link href="/alternatives/screencastify">Showthrough vs Screencastify</Link>.
+        </p>
+
+        <h2>6. ScreenPal: 15-minute recordings with an editor</h2>
+        <p>
+          <a href="https://screenpal.com/plans" target="_blank" rel="noopener noreferrer nofollow">
+            ScreenPal
+          </a>
+          , formerly Screencast-O-Matic, lets you record up to 15 minutes at a time on the free plan. It includes a basic editor for cutting, cropping,
+          adding text and recording a voiceover.
+        </p>
+        <p>
+          <strong>The catch:</strong> the free plan doesn&rsquo;t record system audio, so sound playing on your computer won&rsquo;t be captured.
+          Its pricing page is also unclear about how many videos free users can host. See{" "}
+          <Link href="/alternatives/screenpal">Showthrough vs ScreenPal</Link>.
+        </p>
+
+        <h2>7. Zight: screenshots, GIFs and short videos</h2>
+        <p>
+          <a href="https://zight.com/pricing/" target="_blank" rel="noopener noreferrer nofollow">
+            Zight
+          </a>
+          , formerly CloudApp, puts screenshots, GIFs and screen recordings in one app. The free plan allows 5-minute recordings at up to 720p, with
+          1 GB of storage in total and access to your last 50 captures.
+        </p>
+        <p>
+          <strong>The catch:</strong> 5 minutes and 1 GB fill up fast if you record every day. See{" "}
+          <Link href="/alternatives/zight">Showthrough vs Zight</Link>.
+        </p>
+
+        <h2>Your computer may already have a free recorder</h2>
+        <p>
+          Windows 11 (<Keys>Windows</Keys> + <Keys>Shift</Keys> + <Keys>R</Keys>), Mac (<Keys>Shift</Keys> + <Keys>Command</Keys> + <Keys>5</Keys>)
+          and every Chromebook come with a screen recorder. They&rsquo;re free and have no time limit, but like Screenity and OBS they give you a file,
+          not a link. The steps are in{" "}
+          <Link href="/blog/how-to-screen-record-on-chromebook">how to screen record on a Chromebook, Windows or Mac</Link>.
+        </p>
+
+        <h2>Which one should you pick?</h2>
+        <ul>
+          <li>
+            <strong>Short updates to clients, a few a month:</strong> Cap, or stay on Loom&rsquo;s free plan.
+          </li>
+          <li>
+            <strong>Long walkthroughs or handovers:</strong> Vidyard or Screencastify (30 minutes), or Screenity if you don&rsquo;t need a link.
+          </li>
+          <li>
+            <strong>Tutorials you want to edit:</strong> ScreenPal or OBS Studio.
+          </li>
+          <li>
+            <strong>Screenshots and quick GIFs as well as video:</strong> Zight.
+          </li>
+        </ul>
+        <p>
+          When I started freelancing, I sent client updates mostly as text messages, Google Docs or Google Meet calls. Writing out something that
+          was easier to show took a long time, and booking a call for a two-minute update wasted everyone&rsquo;s time. Loom fixed that, but its
+          free plan ran out quickly: clients wanted small updates every day, so the 25-video and 5-minute limits came up within a week or two.
+          That&rsquo;s the trade-off with every tool on this list. The ones with no limits give you a file to upload yourself, and the ones that
+          give you a link cap how much you can record.
+        </p>
+
+        <h2>If you&rsquo;d rather pay once than work around limits</h2>
+        <p>
+          That&rsquo;s why I built <Link href="/">Showthrough</Link>. It isn&rsquo;t free, so it&rsquo;s not on the list above. It&rsquo;s a{" "}
+          <Link href="/pricing">one-time payment</Link> instead of a monthly fee. You get a share link the moment you stop recording, there&rsquo;s no
+          limit on the number or length of videos, and your videos are stored in your own Cloudflare account. Connecting Cloudflare is one click, and
+          we handle the setup. For more options, see <Link href="/alternatives">all the Loom alternatives we compare</Link>.
+        </p>
+
+        <h2>Questions people ask</h2>
+        {freeAltsFaqs.map((f) => (
           <div key={f.q}>
             <h3>{f.q}</h3>
             <p>{f.a}</p>
