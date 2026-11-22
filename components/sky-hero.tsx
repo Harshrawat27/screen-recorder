@@ -8,8 +8,9 @@ import './sky-hero.css';
 export function SkyHero({ price }: { price: number }) {
   const onSale = earlyOpen();
   return (
+    <>
+    <SiteNav />
     <section className='sky relative isolate overflow-hidden'>
-      <SiteNav />
 
       <div className='relative mx-auto flex max-w-5xl flex-col items-center px-5 pt-20 text-center sm:px-8 sm:pt-28'>
         <p className='sky-glass inline-flex items-center gap-2 whitespace-nowrap rounded-full py-1.5 pl-3.5 pr-4 text-[13px] font-medium sm:text-sm'>
@@ -59,5 +60,6 @@ export function SkyHero({ price }: { price: number }) {
         <HeroShowcase />
       </div>
     </section>
+    </>
   );
 }

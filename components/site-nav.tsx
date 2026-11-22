@@ -4,17 +4,20 @@ import { LogoMark } from "@/components/ui";
 import { site } from "@/lib/site";
 import "./sky-hero.css";
 
-// Floating navbar, used on the home page and the roadmap.
+// Floating navbar, fixed to the top of the window on every page that uses it.
+// The <header> keeps the navbar's height in the page so content starts below it.
+// (Roadmap and FAQ are linked from the footer.)
 const links = [
   { href: "/#how", label: "How it works" },
   { href: "/#pricing", label: "Pricing" },
-  { href: "/roadmap", label: "Roadmap" },
-  { href: "/#faq", label: "FAQ" },
+  { href: "/guide", label: "Setup guide" },
+  { href: "/blog", label: "Blog" },
 ];
 
 export function SiteNav() {
   return (
-    <header className="relative z-20 px-3 pt-3 sm:px-6 sm:pt-5">
+    <header className="relative z-50 h-[76px] sm:h-[84px]">
+      <div className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-5">
       <nav
         aria-label="Main"
         className="sky-glass mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 rounded-full py-2 pl-4 pr-2 sm:pl-5"
@@ -52,6 +55,7 @@ export function SiteNav() {
           </Link>
         </div>
       </nav>
+      </div>
     </header>
   );
 }
