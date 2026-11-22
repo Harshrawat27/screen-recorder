@@ -20,7 +20,7 @@ export default function BlogIndexPage() {
         <SiteNav />
       </div>
 
-      <main className="mx-auto max-w-5xl px-5 pb-24 sm:px-8">
+      <main className="mx-auto max-w-6xl px-5 pb-24 sm:px-8">
         <header className="mx-auto max-w-3xl pt-16 text-center sm:pt-24">
           <h1 className="text-[44px] leading-[1.04] sm:text-[64px]" style={{ letterSpacing: "-0.03em" }}>
             Blog
@@ -30,27 +30,27 @@ export default function BlogIndexPage() {
           </p>
         </header>
 
-        <ul className="mt-14 grid gap-5 md:grid-cols-2">
+        <ul className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {sorted.map((post) => (
             <li key={post.slug}>
               <Link
                 href={`/blog/${post.slug}`}
-                className="flex h-full flex-col overflow-hidden rounded-[24px] border border-line bg-surface transition-colors hover:border-line-strong"
+                className="flex h-full flex-col overflow-hidden rounded-[20px] border border-line bg-surface transition-colors hover:border-line-strong"
               >
                 <Image
                   src={post.image.src}
                   alt={post.image.alt}
                   width={post.image.width}
                   height={post.image.height}
-                  sizes="(min-width: 768px) 480px, 100vw"
+                  sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
                   className="aspect-[16/9] w-full border-b border-line object-cover object-top"
                 />
-                <div className="flex flex-1 flex-col p-7">
-                  <h2 className="text-[24px] leading-tight" style={{ letterSpacing: "-0.02em" }}>
+                <div className="flex flex-1 flex-col p-5">
+                  <h2 className="text-[19px] leading-snug" style={{ letterSpacing: "-0.02em" }}>
                     {post.title}
                   </h2>
-                  <p className="mt-3 flex-1 leading-relaxed text-muted">{post.excerpt}</p>
-                  <p className="mt-5 text-sm text-faint">
+                  <p className="mt-2 flex-1 text-[15px] leading-relaxed text-muted">{post.excerpt}</p>
+                  <p className="mt-4 text-[13px] text-faint">
                     <time dateTime={post.published}>{formatDate(post.published)}</time> · {post.readingMinutes} min read
                   </p>
                 </div>
