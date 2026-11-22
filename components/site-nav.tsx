@@ -20,7 +20,7 @@ export function SiteNav() {
       <div className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-5">
       <nav
         aria-label="Main"
-        className="sky-glass mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 rounded-full py-2 pl-4 pr-2 sm:pl-5"
+        className="mx-auto flex h-16 border border-line bg-surface shadow-[0_8px_24px_-12px_rgb(0_0_0/0.18)] max-w-6xl items-center justify-between gap-4 rounded-full py-2 pl-4 pr-2 sm:pl-5"
       >
         <Link href="/" className="flex items-center gap-2.5 font-semibold text-text">
           <LogoMark className="size-7" />
