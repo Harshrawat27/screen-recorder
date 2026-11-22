@@ -30,7 +30,7 @@ export function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={`Switch to ${next} theme`}
-      className="grid size-9 place-items-center rounded-control text-muted hover:bg-sunken hover:text-text"
+      className="grid size-11 place-items-center rounded-control text-muted hover:bg-sunken hover:text-text"
     >
       {theme === "dark" ? (
         <svg viewBox="0 0 20 20" fill="none" aria-hidden className="size-[18px]">

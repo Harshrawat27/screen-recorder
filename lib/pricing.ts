@@ -18,6 +18,8 @@ export const EARLY_ENDS_SHORT = "27 Nov";
 /** The price from the Product Hunt launch; shown crossed out next to the sale price. */
 export const LAUNCH_PRICE = 99;
 export const LAUNCH_LABEL = "30 November";
+/** The launch day, for structured data (sales reopen then). */
+export const LAUNCH_DATE = "2026-11-30";
 
 export type Tier = {
   id: TierId;

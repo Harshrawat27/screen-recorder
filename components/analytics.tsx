@@ -63,6 +63,16 @@ function start(): Promise<PostHog | null> {
   return loading;
 }
 
+/** Starts PostHog once the page has loaded and the browser is idle, so it never competes with the first paint. */
+function startWhenIdle() {
+  const go = () => {
+    if ("requestIdleCallback" in window) window.requestIdleCallback(() => void start(), { timeout: 4000 });
+    else setTimeout(() => void start(), 2000);
+  };
+  if (document.readyState === "complete") go();
+  else window.addEventListener("load", go, { once: true });
+}
+
 function stop() {
   if (ph) {
     ph.opt_out_capturing();
@@ -113,7 +123,7 @@ export function Analytics() {
   useEffect(() => {
     if (skip) return;
     const choice = saved();
-    if (choice === "yes") return void start();
+    if (choice === "yes") return void startWhenIdle();
     if (choice === "no") return;
     let live = true;
     fetch("/api/consent-region")
@@ -121,7 +131,7 @@ export function Analytics() {
       .then((data: { ask?: boolean }) => {
         if (!live) return;
         if (data.ask) setBanner(true);
-        else start();
+        else startWhenIdle();
       })
       .catch(() => {});
     return () => {

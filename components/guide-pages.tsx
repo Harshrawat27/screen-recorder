@@ -62,7 +62,7 @@ export const guideContent: Record<string, React.ReactNode> = {
         turns on.
       </Lead>
       <Note title="You add a card, but you pay $0">
-        <p>Your first 10 GB every month are free. That&rsquo;s roughly 100 hours of recordings.</p>
+        <p>Your first 10 GB every month are free. That&rsquo;s about 8 hours of recordings.</p>
         <p>Watching your videos is always free.</p>
         <p>You&rsquo;re only charged if you go past 10 GB: $0.015 per GB a month, so 110 GB costs about $1.50 a month.</p>
       </Note>

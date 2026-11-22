@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import { Faq, Pricing, SiteFooter } from "@/components/home-sections";
+import { JsonLd } from "@/components/json-ld";
 import { SiteNav } from "@/components/site-nav";
 import { currentOffer } from "@/lib/billing";
+import { breadcrumbSchema, softwareAppSchema } from "@/lib/schema";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Pricing: one payment, whole team, no monthly fee",
-  description: "Showthrough is a one-time purchase for your whole team. No per-seat fee and no subscription. Your videos live in your own Cloudflare account.",
+  description: "Showthrough is a one-time purchase for your whole team, with team accounts coming soon. No per-seat fee, no subscription, and videos in your own Cloudflare.",
   alternates: { canonical: "/pricing" },
 };
 
@@ -30,6 +32,7 @@ export default async function PricingPage({ searchParams }: PageProps<"/pricing"
 
   return (
     <>
+      <JsonLd data={{ "@context": "https://schema.org", "@graph": [softwareAppSchema(price), breadcrumbSchema([["Pricing", "/pricing"]])] }} />
       <div className="sky">
         <SiteNav />
       </div>

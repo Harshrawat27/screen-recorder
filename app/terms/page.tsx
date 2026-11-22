@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal-page";
 import { site } from "@/lib/site";
 
-export const metadata: Metadata = { title: "Terms", alternates: { canonical: "/terms" } };
+export const metadata: Metadata = {
+  title: "Terms",
+  description:
+    "The terms for using Showthrough: your one-time license, which updates are included, refunds within 7 days, and your responsibilities for the videos you record.",
+  alternates: { canonical: "/terms" },
+};
 
 export default function Terms() {
   return (

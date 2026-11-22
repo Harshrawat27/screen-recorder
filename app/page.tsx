@@ -3,6 +3,7 @@ import { Faq, Features, FinalCta, Pricing, SiteFooter, faqText } from "@/compone
 import { JsonLd } from "@/components/json-ld";
 import { SkyHero } from "@/components/sky-hero";
 import { currentOffer } from "@/lib/billing";
+import { softwareAppSchema } from "@/lib/schema";
 import { site } from "@/lib/site";
 
 // Rendered on every request so the prices and the countdown are always current.
@@ -27,18 +28,7 @@ export default async function Home() {
               sameAs: ["https://x.com/Harshrwt27", site.chromeStoreUrl],
             },
             { "@type": "WebSite", "@id": `${site.url}/#website`, name: site.name, url: site.url, publisher: { "@id": `${site.url}/#organization` } },
-            {
-              "@type": "SoftwareApplication",
-              name: site.name,
-              url: site.url,
-              description:
-                "A Chrome screen recorder: record your screen, camera and voice and share the link the moment you stop. Videos are stored in your own Cloudflare account. One payment, no subscription.",
-              applicationCategory: "MultimediaApplication",
-              operatingSystem: "Chrome on Windows, macOS, Linux and ChromeOS",
-              installUrl: site.chromeStoreUrl,
-              publisher: { "@id": `${site.url}/#organization` },
-              offers: { "@type": "Offer", price: String(price), priceCurrency: "USD", url: `${site.url}/pricing` },
-            },
+            softwareAppSchema(price),
             {
               "@type": "FAQPage",
               mainEntity: faqText.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),

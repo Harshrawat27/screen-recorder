@@ -246,7 +246,7 @@ export function Features({ price }: { price: number }) {
         >
           <CloudVisual />
         </Tile>
-        <Tile title="Pay once" body={`$${price} for your whole team. No seats, no subscription.`}>
+        <Tile title="Pay once" body={`$${price} for your whole team, with team accounts coming soon. No seats, no subscription.`}>
           <PriceVisual price={price} />
         </Tile>
         <Tile title="Camera bubble" body="Put your face in the corner so it feels like a conversation.">
@@ -489,7 +489,7 @@ const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
   },
   {
     q: "Is it a subscription?",
-    a: "No. You pay once and your whole team can use it. The only other cost is Cloudflare storage if you go past their free 10 GB, billed to your own Cloudflare account.",
+    a: "No. You pay once, and the same purchase will cover your whole team when team accounts arrive (coming soon, included). The only other cost is Cloudflare storage if you go past their free 10 GB, billed to your own Cloudflare account.",
   },
   {
     q: "Can I get a refund?",

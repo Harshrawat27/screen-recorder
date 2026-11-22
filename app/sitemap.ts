@@ -7,12 +7,12 @@ import { site } from "@/lib/site";
 // Public pages only. The dashboard, sign-in, recording and share pages are left out on purpose
 // (they are noindex). Update a page's date when its content changes; Google ignores priority.
 const pages: { path: string; updated: string }[] = [
-  { path: "/", updated: "2026-11-10" },
-  { path: "/pricing", updated: "2026-11-10" },
-  { path: "/roadmap", updated: "2026-11-10" },
+  { path: "/", updated: "2026-11-22" },
+  { path: "/pricing", updated: "2026-11-22" },
+  { path: "/roadmap", updated: "2026-11-21" },
   { path: "/support", updated: "2026-11-10" },
   { path: "/alternatives", updated: "2026-11-10" },
-  { path: "/blog", updated: "2026-11-18" },
+  { path: "/blog", updated: "2026-11-22" },
   { path: "/privacy", updated: "2026-11-21" },
   { path: "/terms", updated: "2026-11-21" },
 ];

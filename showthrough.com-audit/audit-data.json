@@ -1,0 +1,275 @@
+{
+  "summary": {
+    "health_score": 74,
+    "business_type": "SaaS (pay-once Chrome screen recorder)",
+    "top_findings": [
+      "'loom alternative' targeted by 3 URLs; SERP is ~78% multi-tool roundups",
+      "Homepage mobile lab LCP 5.0s / TBT 2.6s (JS, PostHog, hydration)",
+      "Inaccurate claims: 10 GB = '100 hours' (actual ~8h); team pricing before team features",
+      "No About/author page, Gmail contact, no reviews, no demo video",
+      "Offer schema lacks priceValidUntil/availability; Black Friday ends 27 Nov"
+    ],
+    "quick_wins": [
+      "Add priceValidUntil + availability to Offer; reuse on /pricing",
+      "Fix '100 hours' claim in components/guide-pages.tsx:65",
+      "Add a category-defining sentence near the top of the homepage",
+      "Unique meta descriptions for /privacy and /terms",
+      "Defer PostHog recorder/surveys/dead-clicks to idle"
+    ]
+  },
+  "categories": [
+    {
+      "name": "Technical SEO",
+      "score": 82,
+      "what_works": [
+        "All 30 URLs 200, self-canonical, SSR",
+        "Valid sitemap, correct robots.txt",
+        "Private routes noindexed"
+      ],
+      "findings": [
+        {
+          "title": "Marketing HTML not cached",
+          "severity": "Medium",
+          "description": "/, /pricing, /alternatives/loom served no-store, X-Vercel-Cache MISS; breaks bfcache",
+          "recommendation": "Make marketing routes static/ISR"
+        },
+        {
+          "title": "Missing security headers",
+          "severity": "Medium",
+          "description": "Only HSTS present",
+          "recommendation": "Add headers() in next.config.ts"
+        },
+        {
+          "title": "Two-hop apex redirect",
+          "severity": "Low",
+          "description": "http://showthrough.com -> https apex -> www",
+          "recommendation": "Redirect apex straight to https://www"
+        },
+        {
+          "title": "Stale hand-maintained lastmod",
+          "severity": "Low",
+          "description": "/, /pricing, /roadmap dated 2026-11-10 vs commits 2026-11-21",
+          "recommendation": "Update app/sitemap.ts"
+        }
+      ]
+    },
+    {
+      "name": "Content Quality",
+      "score": 68,
+      "what_works": [
+        "Alternatives pages 80-88% unique",
+        "Competitor prices dated and sourced",
+        "First-hand experience, no AI-typical phrasing"
+      ],
+      "findings": [
+        {
+          "title": "Storage claim ~12x too high",
+          "severity": "High",
+          "description": "/guide/turn-on-r2: 10 GB = '100 hours'; recorder is 2.5 Mbps + 128 kbps (~1.2 GB/h)",
+          "recommendation": "State ~8 hours or measured MB/min"
+        },
+        {
+          "title": "Team pricing ahead of team features",
+          "severity": "High",
+          "description": "'One payment for your whole team' while team library is Coming soon",
+          "recommendation": "Qualify every team claim"
+        },
+        {
+          "title": "Weak authority signals",
+          "severity": "High",
+          "description": "No About/author page, Gmail contact, no reviews/testimonials",
+          "recommendation": "Add /about, author box, domain email, social proof"
+        },
+        {
+          "title": "Thin guide step pages",
+          "severity": "Medium",
+          "description": "9 pages with ~20-100 unique words",
+          "recommendation": "Merge into /guide with 301s or noindex,follow"
+        }
+      ]
+    },
+    {
+      "name": "On-Page SEO",
+      "score": 80,
+      "what_works": [
+        "Unique titles and H1s",
+        "OG/Twitter images on all pages"
+      ],
+      "findings": [
+        {
+          "title": "Keyword cannibalisation on 'loom alternative'",
+          "severity": "High",
+          "description": "/alternatives, /alternatives/loom, /blog/free-loom-alternatives",
+          "recommendation": "/alternatives = roundup pillar; /alternatives/loom = pay-once vs page; free post = free only"
+        },
+        {
+          "title": "Duplicate meta descriptions",
+          "severity": "Medium",
+          "description": "/privacy and /terms inherit homepage description",
+          "recommendation": "Add page metadata"
+        },
+        {
+          "title": "Missing contextual internal links",
+          "severity": "Medium",
+          "description": "/alternatives and /alternatives/loom link to no blog posts",
+          "recommendation": "Apply cluster link matrix"
+        }
+      ]
+    },
+    {
+      "name": "Schema / Structured Data",
+      "score": 58,
+      "what_works": [
+        "Valid SSR JSON-LD on home",
+        "BlogPosting with author and dates"
+      ],
+      "findings": [
+        {
+          "title": "Incomplete Offer",
+          "severity": "High",
+          "description": "No priceValidUntil/availability; post-sale state would be wrong",
+          "recommendation": "offerSchema() from currentOffer()"
+        },
+        {
+          "title": "/pricing has no schema",
+          "severity": "High",
+          "description": "No SoftwareApplication or Offer",
+          "recommendation": "Reference homepage @id + Offer + BreadcrumbList"
+        },
+        {
+          "title": "Missing breadcrumbs",
+          "severity": "Medium",
+          "description": "/pricing, /blog, /guide, /guide/*",
+          "recommendation": "WebPage + BreadcrumbList (no HowTo)"
+        },
+        {
+          "title": "FAQPage present",
+          "severity": "Info",
+          "description": "No Google rich result since 7 May 2026",
+          "recommendation": "Leave as is; add no new FAQPage"
+        }
+      ]
+    },
+    {
+      "name": "Performance (CWV)",
+      "score": 74,
+      "what_works": [
+        "CLS ~0 everywhere",
+        "TTFB ~100ms",
+        "/pricing and blog pass lab LCP"
+      ],
+      "findings": [
+        {
+          "title": "Homepage slow on mobile (lab)",
+          "severity": "High",
+          "description": "LCP 5.0s, TBT 2.6s, Lighthouse 52",
+          "recommendation": "Defer PostHog extras, dynamic-import below-fold components, remove unused third-party script"
+        },
+        {
+          "title": "/alternatives/loom LCP 4.0s (lab)",
+          "severity": "Medium",
+          "description": "Text LCP delayed by hydration",
+          "recommendation": "Same JS fixes"
+        }
+      ]
+    },
+    {
+      "name": "AI Search Readiness",
+      "score": 65,
+      "what_works": [
+        "All AI crawlers allowed and served identical content",
+        "Blog citability 85-90"
+      ],
+      "findings": [
+        {
+          "title": "No off-site brand presence",
+          "severity": "High",
+          "description": "No Product Hunt, HN, YouTube, Wikidata found",
+          "recommendation": "Launch and list; add to sameAs"
+        },
+        {
+          "title": "No video",
+          "severity": "Medium",
+          "description": "Screen-recording product with no demo video",
+          "recommendation": "YouTube demo + VideoObject"
+        },
+        {
+          "title": "Homepage lacks definition sentence",
+          "severity": "Medium",
+          "description": "Slogan H1; 'Showthrough' is also a printing term",
+          "recommendation": "Add explicit category sentence"
+        }
+      ]
+    },
+    {
+      "name": "Images",
+      "score": 86,
+      "what_works": [
+        "Dimensions and alt text set",
+        "WebP via Next optimizer"
+      ],
+      "findings": [
+        {
+          "title": "No AVIF, short image cache TTL",
+          "severity": "Low",
+          "description": "images revalidate every visit",
+          "recommendation": "images.formats AVIF; minimumCacheTTL"
+        }
+      ]
+    }
+  ],
+  "action_plan": {
+    "phases": [
+      {
+        "name": "Phase 1: Critical Fixes",
+        "timeframe": "Week 1 (Offer schema + sale rollover before 27 Nov)",
+        "items": [
+          "Offer schema priceValidUntil/availability",
+          "Black Friday rollover incl. roadmap sentence",
+          "Fix 100-hours claim",
+          "Qualify team claims",
+          "Mobile nav overflow",
+          "Privacy/terms descriptions",
+          "Homepage definition sentence",
+          "Defer PostHog extras"
+        ]
+      },
+      {
+        "name": "Phase 2: High-Impact Improvements",
+        "timeframe": "Weeks 2-3",
+        "items": [
+          "Resolve loom-alternative cannibalisation",
+          "Static/ISR marketing routes",
+          "Schema completion",
+          "About/author/domain email",
+          "Security headers"
+        ]
+      },
+      {
+        "name": "Phase 3: Content & Authority",
+        "timeframe": "Month 2",
+        "items": [
+          "Internal link matrix",
+          "3 new posts (self-hosted, 5-min limit, Chrome extension listicle)",
+          "Demo video",
+          "Social proof",
+          "Launches and listings",
+          "Merge guide steps"
+        ]
+      },
+      {
+        "name": "Phase 4: Monitoring & Iteration",
+        "timeframe": "Ongoing",
+        "items": [
+          "Monthly competitor price checks",
+          "Google API for CrUX/GSC",
+          "Drift baseline and compare"
+        ]
+      }
+    ]
+  },
+  "artifacts": {
+    "findings_dir": "findings/",
+    "screenshots_dir": "screenshots/"
+  }
+}

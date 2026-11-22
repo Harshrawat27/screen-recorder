@@ -1,0 +1,471 @@
+<title>Showthrough SEO Audit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,700&display=swap">
+<style>
+/* Layout: single reading column, score header, then findings by category as tables; orange only for the one key number */
+:root{
+  --brand:#F35733; --brand-ink:#C2381A; --brand-soft:#FEEDE8;
+  --canvas:#FAFAFA; --surface:#FFFFFF; --sunken:#F2F2F2;
+  --line:#E1E1E1; --line-strong:#CFCFCF;
+  --text:#18181B; --muted:#5B5B63; --faint:#76767E;
+  --crit:#B42318; --crit-bg:#FDECEA;
+  --high:#B54708; --high-bg:#FEF3E2;
+  --med:#7A5D00; --med-bg:#FBF6DC;
+  --low:#3F5B7A; --low-bg:#EAF0F6;
+  --ok:#1E6B3A; --ok-bg:#E6F4EA;
+  --font-display:"Newsreader",Georgia,"Times New Roman",serif;
+  --font-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --brand:#F35733; --brand-ink:#FF8466; --brand-soft:rgb(243 87 51 / .14);
+  --canvas:#080808; --surface:#111111; --sunken:#1A1A1A;
+  --line:#2D2D2D; --line-strong:#3D3D3D;
+  --text:#F4F4F5; --muted:#A6A6AE; --faint:#8A8A92;
+  --crit:#FF8A80; --crit-bg:rgb(255 90 80 / .14);
+  --high:#FFB56B; --high-bg:rgb(255 160 60 / .13);
+  --med:#E8CF6A; --med-bg:rgb(230 200 80 / .12);
+  --low:#9DB9D8; --low-bg:rgb(120 160 210 / .13);
+  --ok:#7DD39A; --ok-bg:rgb(90 200 130 / .13);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --brand:#F35733; --brand-ink:#FF8466; --brand-soft:rgb(243 87 51 / .14);
+  --canvas:#080808; --surface:#111111; --sunken:#1A1A1A;
+  --line:#2D2D2D; --line-strong:#3D3D3D;
+  --text:#F4F4F5; --muted:#A6A6AE; --faint:#8A8A92;
+  --crit:#FF8A80; --crit-bg:rgb(255 90 80 / .14);
+  --high:#FFB56B; --high-bg:rgb(255 160 60 / .13);
+  --med:#E8CF6A; --med-bg:rgb(230 200 80 / .12);
+  --low:#9DB9D8; --low-bg:rgb(120 160 210 / .13);
+  --ok:#7DD39A; --ok-bg:rgb(90 200 130 / .13);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--canvas);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding-block:48px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--font-display);font-weight:700;text-wrap:balance;margin:0;color:var(--text)}
+h1{font-size:clamp(36px,6vw,48px);letter-spacing:-.03em;line-height:1.1}
+h2{font-size:28px;letter-spacing:-.02em;line-height:1.2}
+h3{font-size:20px;letter-spacing:-.01em;line-height:1.3}
+p{margin:0}
+.muted{color:var(--muted)} .faint{color:var(--faint)}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--sunken);border:1px solid var(--line);border-radius:6px;padding:1px 5px;word-break:break-word}
+a{color:var(--brand-ink)}
+section{display:flex;flex-direction:column;gap:20px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:12px}
+.sec-score{font-family:var(--font-display);font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text)}
+.sec-score small{font-family:var(--font-body);font-size:14px;font-weight:500;color:var(--faint)}
+.lead{font-size:18px;color:var(--muted);max-width:62ch}
+
+/* header */
+header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:end}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14px;color:var(--faint);margin-top:12px}
+.score{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.score-num{font-family:var(--font-display);font-size:88px;line-height:.9;font-weight:700;letter-spacing:-.04em;color:var(--brand);font-variant-numeric:tabular-nums}
+.score-num span{font-size:28px;color:var(--faint);letter-spacing:0}
+.score-label{font-size:14px;font-weight:600;color:var(--muted)}
+@media (max-width:640px){header{grid-template-columns:1fr}.score{align-items:flex-start}}
+
+/* category bars */
+.bars{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px 40px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px}
+.bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:baseline}
+.bar-name{font-size:15px;font-weight:500}
+.bar-name em{font-style:normal;color:var(--faint);font-size:13px;margin-left:6px}
+.bar-val{font-variant-numeric:tabular-nums;font-weight:600}
+.track{grid-column:1/-1;height:6px;border-radius:99px;background:var(--sunken);overflow:hidden}
+.fill{height:100%;border-radius:99px;background:var(--text)}
+.bars-note{grid-column:1/-1;font-size:13px;color:var(--faint);border-top:1px solid var(--line);padding-top:12px}
+
+/* deadline callout */
+.deadline{border:1px solid var(--line-strong);border-left:4px solid var(--brand);background:var(--surface);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px}
+.deadline .eyebrow{font-size:13px;font-weight:600;color:var(--brand-ink);letter-spacing:.02em}
+.deadline ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;max-width:72ch}
+
+/* top issues */
+.issues{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line)}
+.issues li{display:grid;grid-template-columns:32px minmax(0,1fr);gap:16px;padding:18px 0;border-bottom:1px solid var(--line)}
+.issues .n{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--faint);font-variant-numeric:tabular-nums;line-height:1.3}
+.issues h3{font-size:18px;margin-bottom:4px}
+.issues p{color:var(--muted);max-width:70ch}
+
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 24px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.panel h3{font-size:18px}
+.panel ul,.panel ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:var(--muted)}
+.works{font-size:15px;color:var(--muted);display:flex;gap:10px;align-items:flex-start;max-width:80ch}
+.works b{color:var(--ok);font-weight:600;white-space:nowrap}
+
+/* tables */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;vertical-align:top;padding:12px 16px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{font-size:13px;font-weight:600;color:var(--faint);background:var(--sunken);white-space:nowrap}
+td{min-width:140px}
+td.sev{min-width:0;width:1%;white-space:nowrap}
+td.num,th.num{font-variant-numeric:tabular-nums;text-align:right;min-width:0;white-space:nowrap}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 10px;border-radius:99px;line-height:1.6;white-space:nowrap}
+.crit{color:var(--crit);background:var(--crit-bg)}
+.high{color:var(--high);background:var(--high-bg)}
+.med{color:var(--med);background:var(--med-bg)}
+.low{color:var(--low);background:var(--low-bg)}
+.info{color:var(--muted);background:var(--sunken)}
+.okp{color:var(--ok);background:var(--ok-bg)}
+.fail{color:var(--crit);font-weight:600}
+.warn{color:var(--high);font-weight:600}
+
+/* phases */
+.phases{display:flex;flex-direction:column;gap:16px}
+.phase{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 24px;display:grid;grid-template-columns:180px minmax(0,1fr);gap:16px 32px}
+.phase-when{display:flex;flex-direction:column;gap:2px}
+.phase-when b{font-family:var(--font-display);font-size:20px;font-weight:700}
+.phase-when span{font-size:14px;color:var(--faint)}
+.phase ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.phase li span{color:var(--muted)}
+.phase.now{border-color:var(--line-strong);border-left:4px solid var(--brand)}
+@media (max-width:640px){.phase{grid-template-columns:1fr}}
+
+footer{font-size:14px;color:var(--faint);border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direction:column;gap:6px}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div>
+    <h1>Showthrough SEO audit</h1>
+    <div class="meta">
+      <span>www.showthrough.com</span>
+      <span>22 November 2026</span>
+      <span>SaaS · pay-once Chrome screen recorder</span>
+      <span>30 pages, full sitemap</span>
+    </div>
+  </div>
+  <div class="score">
+    <div class="score-num">74<span>/100</span></div>
+    <div class="score-label">SEO health score</div>
+  </div>
+</header>
+
+<section aria-label="Category scores">
+  <div class="bars">
+    <div class="bar"><span class="bar-name">Technical SEO<em>22%</em></span><span class="bar-val">82</span><div class="track"><div class="fill" style="width:82%"></div></div></div>
+    <div class="bar"><span class="bar-name">Content quality<em>23%</em></span><span class="bar-val">68</span><div class="track"><div class="fill" style="width:68%"></div></div></div>
+    <div class="bar"><span class="bar-name">On-page SEO<em>20%</em></span><span class="bar-val">80</span><div class="track"><div class="fill" style="width:80%"></div></div></div>
+    <div class="bar"><span class="bar-name">Schema<em>10%</em></span><span class="bar-val">58</span><div class="track"><div class="fill" style="width:58%"></div></div></div>
+    <div class="bar"><span class="bar-name">Performance (lab)<em>10%</em></span><span class="bar-val">74</span><div class="track"><div class="fill" style="width:74%"></div></div></div>
+    <div class="bar"><span class="bar-name">AI search readiness<em>10%</em></span><span class="bar-val">65</span><div class="track"><div class="fill" style="width:65%"></div></div></div>
+    <div class="bar"><span class="bar-name">Images<em>5%</em></span><span class="bar-val">86</span><div class="track"><div class="fill" style="width:86%"></div></div></div>
+    <p class="bars-note">Backlinks are not scored: no Moz, Bing or Search Console data was available, and the domain is not yet in Common Crawl (normal for a new site). Performance figures are single lab runs on simulated mobile, not real-visitor data.</p>
+  </div>
+</section>
+
+<section aria-labelledby="sum">
+  <h2 id="sum">Summary</h2>
+  <p class="lead">The technical basics are solid. Every page returns 200, points to itself as the canonical version, is in the sitemap, renders on the server and is open to every search and AI crawler. The writing is clear and specific, and competitor prices are dated and sourced. What holds the site back is the wrong page type for the main keyword, missing trust signals, and a slow homepage on mobile.</p>
+</section>
+
+<div class="deadline" role="note">
+  <span class="eyebrow">Before the sale ends on 27 November</span>
+  <h3>Make the price markup and sale copy roll over cleanly</h3>
+  <ul>
+    <li>The homepage price markup (Offer schema) has the $49 price but no end date or availability. After the sale it would advertise $99 in stock while checkout is closed until 30 Nov. Add <code>priceValidUntil: 2026-11-27</code>, then switch to <code>PreOrder</code> with <code>availabilityStarts: 2026-11-30</code>. Drive it from <code>currentOffer()</code> in <code>lib/pricing.ts</code>.</li>
+    <li>Check the Black Friday text on the homepage, <code>/pricing</code> and <code>/roadmap</code> changes on its own, including the roadmap sentence "Everyone who buys by Black Friday…". State a concrete price for future updates.</li>
+    <li>Optional: a sitewide sale bar. The offer is only above the fold on the homepage today.</li>
+  </ul>
+</div>
+
+<section aria-labelledby="top">
+  <h2 id="top">Top issues</h2>
+  <ol class="issues">
+    <li><span class="n">1</span><div><h3>Three pages compete for "loom alternative", and none matches what Google shows</h3><p>About 78% of results are roundups comparing many tools. You have a landing page, a one-vs-one page and a free-only roundup that leaves Showthrough out. Turn <code>/alternatives</code> into the roundup, make <code>/alternatives/loom</code> a "Showthrough vs Loom" page for pay-once searches, and keep <code>/blog/free-loom-alternatives</code> about free tools only.</p></div></li>
+    <li><span class="n">2</span><div><h3>The homepage is slow on mobile</h3><p>Lab LCP is 5.0 s and the browser is blocked for 2.6 s; Lighthouse score 52. The server answers in about 100 ms, so the cause is JavaScript: PostHog session recording, surveys and dead-click tracking on load, the <code>ship-or-die.com/hackathon/verify.js</code> script, and hydration delaying the hero text.</p></div></li>
+    <li><span class="n">3</span><div><h3>Two claims are wrong or premature</h3><p>The setup guide says 10 GB holds "roughly 100 hours". The extension records at 2.5 Mbps video plus 128 kbps audio, about 1.2 GB an hour, so it's about 8 hours (<code>components/guide-pages.tsx:65</code>). The site also promises "one payment for your whole team" while team features are listed as coming soon.</p></div></li>
+    <li><span class="n">4</span><div><h3>Few reasons to trust the site yet</h3><p>No About or author page, support on a Gmail address, no reviews, ratings or testimonials, no demo video, and the brand's <code>sameAs</code> lists only X and the Chrome Web Store.</p></div></li>
+    <li><span class="n">5</span><div><h3>The mobile nav is broken</h3><p>At 375 px the "Get Showthrough" button runs off the screen edge, and the nav links are hidden below 1024 px with no menu button (<code>components/site-nav.tsx:30</code>). Google still sees the links in the HTML, so this hurts conversions rather than rankings.</p></div></li>
+  </ol>
+</section>
+
+<section aria-labelledby="qw">
+  <h2 id="qw">Quick wins</h2>
+  <div class="two">
+    <div class="panel"><h3>Under an hour each</h3>
+      <ul>
+        <li>Fix the Offer schema and reuse it on <code>/pricing</code></li>
+        <li>Correct the "100 hours" storage claim</li>
+        <li>Add a sentence near the top of the homepage: "Showthrough is a pay-once Chrome extension for screen recording…"</li>
+        <li>Give <code>/privacy</code> and <code>/terms</code> their own meta descriptions</li>
+      </ul>
+    </div>
+    <div class="panel"><h3>Half a day</h3>
+      <ul>
+        <li>Load PostHog recording, surveys and dead-click tracking after the page is idle</li>
+        <li>Remove the hackathon verify script if it's no longer needed</li>
+        <li>Add a mobile menu, or shorten the nav button label on small screens</li>
+        <li>Verify the site in Bing Webmaster Tools and check Search Console's Links report</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="arch">
+  <div class="sec-head"><h2 id="arch">Keywords and search experience</h2></div>
+  <p class="lead">What Google shows for each target, and whether the page matches it.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Page</th><th>Target</th><th>Fit</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td><code>/alternatives</code></td><td>best loom alternatives</td><td class="sev"><span class="pill high">Mismatch</span></td><td>Make it the roundup: 2,500–3,500 words, grouped by use case, comparison matrix, Showthrough included as the pay-once pick</td></tr>
+      <tr><td><code>/alternatives/loom</code></td><td>loom alternative pay once / no subscription</td><td class="sev"><span class="pill okp">Aligned</span></td><td>Rename the hub heading to "Showthrough vs Loom"; add screenshots, a demo video and "Switching from Loom"; trim the repeated pricing and link to the pricing post</td></tr>
+      <tr><td><code>/blog/free-loom-alternatives</code></td><td>free loom alternatives</td><td class="sev"><span class="pill okp">Aligned</span></td><td>Keep it about free tools only</td></tr>
+      <tr><td><code>/</code></td><td>screen recorder no subscription</td><td class="sev"><span class="pill crit">Mismatch</span></td><td>Results are free in-browser recorders. Stop targeting this on the homepage</td></tr>
+      <tr><td><code>/blog/loom-pricing</code></td><td>loom pricing</td><td class="sev"><span class="pill okp">Aligned</span></td><td>Add "2026" to the title; end with a price and buy link instead of "See how it works"</td></tr>
+      <tr><td><code>/pricing</code></td><td>brand searches</td><td class="sev"><span class="pill okp">Aligned</span></td><td>Add schema, social proof and a concrete price for future updates</td></tr>
+    </tbody>
+  </table></div>
+  <div class="two">
+    <div class="panel"><h3>New posts to write</h3>
+      <ol>
+        <li><b>Self-hosted Loom alternative.</b> <span class="muted">Few pages cover it, and it's your main difference. Link to the R2 guide steps.</span></li>
+        <li><b>Loom 5-minute limit.</b> <span class="muted">Results are almost all Loom's own help pages.</span></li>
+        <li><b>Best screen recorder Chrome extension.</b> <span class="muted">A list post that also covers "loom alternative chrome extension".</span></li>
+      </ol>
+    </div>
+    <div class="panel"><h3>Who the pages serve</h3>
+      <div class="tbl" style="border:0;border-radius:0"><table>
+        <tbody>
+          <tr><td>Solo founder</td><td class="num">78</td></tr>
+          <tr><td>Budget buyer</td><td class="num">66</td></tr>
+          <tr><td>Privacy-conscious developer</td><td class="num">59</td></tr>
+          <tr><td>Small team lead</td><td class="num">55</td></tr>
+        </tbody>
+      </table></div>
+      <p class="faint" style="font-size:14px">Trust is the weakest area for every persona.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="tech">
+  <div class="sec-head"><h2 id="tech">Technical SEO</h2><span class="sec-score">82 <small>/100</small></span></div>
+  <p class="works"><b>Works</b> All 30 URLs return 200 with self-canonicals and full server rendering. Valid sitemap, correct robots.txt, private routes noindexed, HSTS on.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Severity</th><th>Finding</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td class="sev"><span class="pill med">Medium</span></td><td>Homepage, <code>/pricing</code> and <code>/alternatives/loom</code> are sent with <code>no-store</code> and rebuilt on every request. This also blocks the back/forward cache.</td><td>Find the cookie, header or session read in <code>app/layout.tsx</code> or a shared component; make marketing pages static or ISR</td></tr>
+      <tr><td class="sev"><span class="pill med">Medium</span></td><td>Only HSTS is sent. No X-Content-Type-Options, Referrer-Policy, Permissions-Policy or CSP.</td><td>Add <code>headers()</code> in <code>next.config.ts</code>; run CSP in report-only mode first because of the PostHog proxy</td></tr>
+      <tr><td class="sev"><span class="pill low">Low</span></td><td><code>http://showthrough.com</code> takes two redirects to reach www</td><td>Point the apex straight at <code>https://www</code> in Vercel</td></tr>
+      <tr><td class="sev"><span class="pill low">Low</span></td><td><code>/pricing/</code> returns 200 instead of redirecting</td><td>The canonical covers it; optionally redirect trailing-slash URLs</td></tr>
+      <tr><td class="sev"><span class="pill low">Low</span></td><td>Sitemap dates are typed by hand; <code>/</code>, <code>/pricing</code>, <code>/roadmap</code> are older than their last change</td><td>Update <code>app/sitemap.ts</code>; give each guide page its own date in <code>lib/guide.ts</code></td></tr>
+      <tr><td class="sev"><span class="pill low">Low</span></td><td>Non-standard <code>Host:</code> line in robots.txt; 404 page has two <code>&lt;title&gt;</code> tags</td><td>Remove the line in <code>app/robots.ts</code>; fix the not-found metadata</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="onpage">
+  <div class="sec-head"><h2 id="onpage">On-page SEO</h2><span class="sec-score">80 <small>/100</small></span></div>
+  <p class="works"><b>Works</b> Every title and H1 is unique. Open Graph and Twitter images on every page. 18–30 internal links per page.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Severity</th><th>Finding</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td class="sev"><span class="pill high">High</span></td><td>Three URLs compete for "loom alternative(s)"</td><td>Give each page its own target (see Keywords above)</td></tr>
+      <tr><td class="sev"><span class="pill med">Medium</span></td><td><code>/privacy</code> and <code>/terms</code> reuse the homepage meta description</td><td>Add a description to each page's metadata</td></tr>
+      <tr><td class="sev"><span class="pill med">Medium</span></td><td><code>/alternatives</code> and <code>/alternatives/loom</code> link to no blog posts; competitor pages only link to each other through the nav and footer</td><td>Add links inside the body text, following the link plan in <code>findings/cluster.md</code></td></tr>
+      <tr><td class="sev"><span class="pill low">Low</span></td><td>About 11 titles run 62–70 characters and 11 descriptions 162–169, so they may be cut off</td><td>Trim in <code>lib/blog.ts</code> and <code>lib/alternatives.ts</code></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="content">
+  <div class="sec-head"><h2 id="content">Content quality</h2><span class="sec-score">68 <small>/100</small></span></div>
+  <p class="works"><b>Works</b> The 8 alternatives pages are 80–88% unique. Competitor prices are dated and linked. Every post has first-hand founder experience and honest "where X is better" sections. No AI-typical phrasing.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Area</th><th class="num">Score</th></tr></thead>
+    <tbody>
+      <tr><td>Experience</td><td class="num">72</td></tr>
+      <tr><td>Trust</td><td class="num">68</td></tr>
+      <tr><td>Expertise</td><td class="num">58</td></tr>
+      <tr><td>Authority</td><td class="num">40</td></tr>
+    </tbody>
+  </table></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Severity</th><th>Finding</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td class="sev"><span class="pill high">High</span></td><td>"10 GB ≈ 100 hours" is about 12 times too high</td><td>Say "about 8 hours", or give a measured MB per minute</td></tr>
+      <tr><td class="sev"><span class="pill high">High</span></td><td>Team pricing is promoted before team features exist</td><td>Add "team library coming soon, included" next to each team claim</td></tr>
+      <tr><td class="sev"><span class="pill high">High</span></td><td>No About page, author bio, domain email or social proof</td><td>Add <code>/about</code>, an author box on posts, a domain email, Chrome Web Store rating and real testimonials</td></tr>
+      <tr><td class="sev"><span class="pill med">Medium</span></td><td>The setup guide is split into 9 thin pages with 20–100 words of their own</td><td>Merge into <code>/guide</code> with anchors and 301 redirects, or set the steps to <code>noindex,follow</code></td></tr>
+      <tr><td class="sev"><span class="pill med">Medium</span></td><td>Alternatives pages show no modified date or author</td><td>Add WebPage schema with <code>dateModified</code> and an author</td></tr>
+      <tr><td class="sev"><span class="pill med">Medium</span></td><td>Some competitor claims have no source link; "Snagit with Camtasia: from $39" matches standalone Snagit</td><td>Link every claim and re-check the bundle price</td></tr>
+      <tr><td class="sev"><span class="pill low">Low</span></td><td>Posts are 810–1,442 words</td><td>Leave short answer posts as they are; add your own test data to the free-alternatives post</td></tr>
+      <tr><td class="sev"><span class="pill low">Low</span></td><td>"Connected in one click… we handle the rest" appears 23 times across 11 pages</td><td>Keep it to one or two uses on the homepage</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="schema">
+  <div class="sec-head"><h2 id="schema">Schema</h2><span class="sec-score">58 <small>/100</small></span></div>
+  <p class="works"><b>Works</b> Homepage has valid server-rendered Organization, WebSite and SoftwareApplication markup. Blog posts have BlogPosting with author and dates. <code>/pricing</code>, <code>/blog</code> and <code>/guide</code> have none.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Severity</th><th>Finding</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td class="sev"><span class="pill high">High</span></td><td>Offer has no <code>priceValidUntil</code> or <code>availability</code></td><td>See the 27 November note above</td></tr>
+      <tr><td class="sev"><span class="pill high">High</span></td><td><code>/pricing</code> has no schema</td><td>Reference the homepage SoftwareApplication <code>@id</code> with the same Offer, plus a BreadcrumbList</td></tr>
+      <tr><td class="sev"><span class="pill med">Medium</span></td><td>No breadcrumbs on <code>/pricing</code>, <code>/blog</code>, <code>/guide</code> or the guide steps</td><td>WebPage plus BreadcrumbList</td></tr>
+      <tr><td class="sev"><span class="pill med">Medium</span></td><td>SoftwareApplication lacks <code>@id</code>, <code>image</code>, <code>softwareVersion</code> and <code>browserRequirements</code>; <code>operatingSystem</code> is free text</td><td>Ready JSON-LD in <code>findings/schema.md</code></td></tr>
+      <tr><td class="sev"><span class="pill med">Medium</span></td><td>Blog markup repeats the publisher instead of linking it; author has no <code>@id</code></td><td>Link the pieces by <code>@id</code></td></tr>
+      <tr><td class="sev"><span class="pill low">Low</span></td><td>180 px logo; only two <code>sameAs</code> profiles</td><td>Use a 512 px logo; add profiles as you create them</td></tr>
+      <tr><td class="sev"><span class="pill info">Info</span></td><td>FAQPage markup on the homepage, posts, alternatives and support</td><td>Google retired FAQ rich results on 7 May 2026. Leave it in place; don't add more</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="perf">
+  <div class="sec-head"><h2 id="perf">Performance</h2><span class="sec-score">74 <small>/100</small></span></div>
+  <p class="muted">Single Lighthouse runs on simulated mobile. INP can't be measured in a lab; blocking time stands in for it.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Page</th><th class="num">Lighthouse</th><th class="num">LCP</th><th class="num">Blocking time</th><th class="num">CLS</th></tr></thead>
+    <tbody>
+      <tr><td><code>/</code></td><td class="num">52</td><td class="num"><span class="fail">5.0 s</span></td><td class="num"><span class="fail">2,630 ms</span></td><td class="num">0.001</td></tr>
+      <tr><td><code>/alternatives/loom</code></td><td class="num">83</td><td class="num"><span class="warn">4.0 s</span></td><td class="num">240 ms</td><td class="num">0</td></tr>
+      <tr><td><code>/pricing</code></td><td class="num">96</td><td class="num">2.4 s</td><td class="num">140 ms</td><td class="num">0</td></tr>
+      <tr><td><code>/blog/loom-pricing</code></td><td class="num">99</td><td class="num">1.9 s</td><td class="num">90 ms</td><td class="num">0</td></tr>
+    </tbody>
+  </table></div>
+  <div class="panel"><h3>What slows the homepage</h3>
+    <ul>
+      <li>The slowest element on mobile is the hero paragraph, held back 1.5 s by script work. The preloaded dashboard image isn't the slow part, so that preload doesn't help on mobile.</li>
+      <li>PostHog loads its recorder (74 KB), surveys (48 KB) and dead-click tracking on page load.</li>
+      <li>About 195 KB of unused JavaScript and 32 KB of legacy transpilation.</li>
+      <li>The Newsreader variable font is 129 KB; a subset would be smaller.</li>
+    </ul>
+  </div>
+</section>
+
+<section aria-labelledby="img">
+  <div class="sec-head"><h2 id="img">Images</h2><span class="sec-score">86 <small>/100</small></span></div>
+  <p class="works"><b>Works</b> Width and height set everywhere, descriptive alt text, WebP served through Next, main image not lazy-loaded.</p>
+  <ul class="muted" style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px">
+    <li>Turn on AVIF with <code>images.formats</code> in <code>next.config.ts</code> for smaller files.</li>
+    <li>Raise <code>minimumCacheTTL</code>; images are re-checked on every visit today.</li>
+    <li>Trim the blog hero alt text, which runs past 120 characters.</li>
+    <li>Add screenshots to <code>/alternatives/loom</code>, which has none.</li>
+  </ul>
+</section>
+
+<section aria-labelledby="ai">
+  <div class="sec-head"><h2 id="ai">AI search readiness</h2><span class="sec-score">65 <small>/100</small></span></div>
+  <p class="works"><b>Works</b> GPTBot, ClaudeBot, PerplexityBot, Bingbot and the other AI crawlers all get the same content. Blog posts score 85–90 for being easy to quote, thanks to quick-answer boxes and dated prices.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Area</th><th class="num">Score</th></tr></thead>
+    <tbody>
+      <tr><td>Technical access</td><td class="num">85</td></tr>
+      <tr><td>Page structure</td><td class="num">82</td></tr>
+      <tr><td>Quotable content</td><td class="num">80</td></tr>
+      <tr><td>Video and other media</td><td class="num">35</td></tr>
+      <tr><td>Brand authority</td><td class="num">30</td></tr>
+    </tbody>
+  </table></div>
+  <ul class="muted" style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px">
+    <li>"Showthrough" is also a printing term. Pair the name with "Chrome screen recorder" wherever it appears.</li>
+    <li>No demo video anywhere, and YouTube is a strong source for AI answers.</li>
+    <li>No presence found on Product Hunt, Hacker News, AlternativeTo or Wikidata. Reddit couldn't be checked automatically.</li>
+    <li>The Chrome Web Store listing doesn't say "Loom alternative" and shows no ratings yet.</li>
+    <li>No <code>/llms.txt</code>. It's optional and Google ignores it, but it's cheap to add.</li>
+  </ul>
+</section>
+
+<section aria-labelledby="mob">
+  <div class="sec-head"><h2 id="mob">Mobile and layout</h2></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Severity</th><th>Finding</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td class="sev"><span class="pill high">High</span></td><td>Nav button overflows at 375 px; no way to reach nav links on phones</td><td>Add a menu, or shorten the button to "Get it" below the <code>sm</code> breakpoint</td></tr>
+      <tr><td class="sev"><span class="pill med">Medium</span></td><td>Black Friday offer is only above the fold on the homepage</td><td>Sitewide sale bar until 27 Nov</td></tr>
+      <tr><td class="sev"><span class="pill med">Medium</span></td><td><code>/alternatives/loom</code> buy button sits at the very bottom of the first screen</td><td>Shorten the intro, or add a button after the first paragraph</td></tr>
+      <tr><td class="sev"><span class="pill low">Low</span></td><td>Theme toggle (about 30 px) and breadcrumb links (about 20 px) are small to tap</td><td>Give them a 44 px touch area</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="links">
+  <div class="sec-head"><h2 id="links">Backlinks</h2><span class="sec-score"><small>Not scored</small></span></div>
+  <p class="muted" style="max-width:70ch">No referring-domain data was available. Verify the site in Bing Webmaster Tools and check the Links report in Search Console to see real backlinks. Good sources for a Chrome extension: Chrome Web Store reviews, Product Hunt, Show HN, Indie Hackers, AlternativeTo, SaaSHub, G2, and pitches to authors of "best Loom alternatives" roundups.</p>
+</section>
+
+<section aria-labelledby="plan">
+  <h2 id="plan">Action plan</h2>
+  <div class="phases">
+    <div class="phase now">
+      <div class="phase-when"><b>Now</b><span>Before 27 Nov</span></div>
+      <ol>
+        <li>Offer schema end date and availability <span>· <code>app/page.tsx</code>, <code>lib/pricing.ts</code></span></li>
+        <li>Check the Black Friday copy rolls over, including the roadmap sentence</li>
+        <li>Optional sitewide sale bar</li>
+      </ol>
+    </div>
+    <div class="phase">
+      <div class="phase-when"><b>Week 1</b><span>Trust and quick wins</span></div>
+      <ol>
+        <li>Fix the storage claim <span>· <code>components/guide-pages.tsx:65</code></span></li>
+        <li>Qualify every team claim</li>
+        <li>Fix the mobile nav <span>· <code>components/site-nav.tsx</code></span></li>
+        <li>Meta descriptions for privacy and terms</li>
+        <li>Homepage definition sentence</li>
+        <li>Load PostHog extras after idle; drop the hackathon script</li>
+        <li>Bing Webmaster Tools and Search Console Links</li>
+      </ol>
+    </div>
+    <div class="phase">
+      <div class="phase-when"><b>Weeks 2–3</b><span>Biggest ranking levers</span></div>
+      <ol>
+        <li>Split the three "loom alternative" pages by intent and expand <code>/alternatives</code> into the roundup</li>
+        <li>Make marketing pages static or ISR</li>
+        <li>Finish schema: pricing, breadcrumbs, blog linking</li>
+        <li>About page, author box, domain support email</li>
+        <li>Security headers</li>
+      </ol>
+    </div>
+    <div class="phase">
+      <div class="phase-when"><b>Month 2</b><span>Content and authority</span></div>
+      <ol>
+        <li>Internal links from <code>findings/cluster.md</code>; every page gets at least 3 links in</li>
+        <li>Three new posts: self-hosted alternative, 5-minute limit, Chrome extension list</li>
+        <li>Demo video on YouTube, embedded on the homepage and the Loom comparison</li>
+        <li>Chrome Web Store rating and three real testimonials</li>
+        <li>Launch on Product Hunt and Show HN; list on AlternativeTo, SaaSHub, G2</li>
+        <li>Merge the guide steps into one page</li>
+      </ol>
+    </div>
+    <div class="phase">
+      <div class="phase-when"><b>Ongoing</b><span>Monitoring</span></div>
+      <ol>
+        <li>Re-check competitor prices monthly and update the "checked on" dates</li>
+        <li>Add a Google API key for real-visitor Core Web Vitals and Search Console queries</li>
+        <li>Take an SEO baseline now and compare after each deploy</li>
+        <li>Backlog: AVIF, image cache, font subset, shorter titles, one-hop apex redirect</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="left">
+  <h2 id="left">Suggestions left out</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Suggestion</th><th>Why it was dropped</th></tr></thead>
+    <tbody>
+      <tr><td>HowTo schema on the guide pages</td><td>Google retired HowTo rich results in 2023</td></tr>
+      <tr><td>New FAQ markup on <code>/pricing</code></td><td>Google retired FAQ rich results on 7 May 2026</td></tr>
+      <tr><td>"Pages are missing meta descriptions"</td><td>Wrong: the full crawl found a description on every page</td></tr>
+      <tr><td>A new <code>/blog/loom-alternatives</code> roundup</td><td>A fourth page would deepen the overlap; expand <code>/alternatives</code> instead</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<footer>
+  <span>Data limits: lab performance only (PageSpeed API quota exhausted, no real-visitor data); search results came from a web search tool rather than a clean Google top 10; no Search Console, analytics, Moz or Bing data.</span>
+  <span>Full detail for each area is in <code>showthrough.com-audit/findings/</code> in the repo.</span>
+</footer>
+
+</div>
