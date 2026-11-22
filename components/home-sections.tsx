@@ -451,7 +451,7 @@ const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
   },
   {
     q: "Will Cloudflare charge me?",
-    a: "Cloudflare asks for a card before it turns on storage, but you pay nothing while you stay within the free tier: 10 GB of storage, and viewing is always free. That's a lot of screen recordings. Past 10 GB it's about $0.015 per GB a month, billed by Cloudflare.",
+    a: "Cloudflare asks for a card before it turns on storage, but you pay nothing while you stay within the free tier: 10 GB of storage, and viewing is always free. That's about 8 hours of recordings, and you can delete old videos anytime to stay under it. Past 10 GB it's about $0.015 per GB a month, billed by Cloudflare.",
   },
   {
     q: "Where are my videos stored?",

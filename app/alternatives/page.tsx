@@ -55,7 +55,7 @@ function tools(price: number): Tool[] {
       platform: "Chrome on Windows, Mac, Linux and ChromeOS",
       body: [
         "We make Showthrough, so read this one with that in mind. It’s a Chrome extension that records your screen, camera and voice, and gives you a share link the moment you stop. Viewers can watch, comment and react without an account.",
-        "The difference is where your videos live and how you pay. Recordings are stored in your own Cloudflare account, connected in one click while we handle the setup, so there’s no per-seat bill that grows with your team. Cloudflare’s first 10 GB a month are free, which is about 8 hours of recordings; after that it’s $0.015 per GB.",
+        "The difference is where your videos live and how you pay. Recordings are stored in your own Cloudflare account, connected in one click while we handle the setup, so there’s no per-seat bill that grows with your team. Cloudflare’s first 10 GB a month are free, which is about 8 hours of recordings, and you can delete old videos to stay under it; after that it’s $0.015 per GB.",
       ],
       good: ["Freelancers and small teams who send updates every day", "Long walkthroughs and handovers, with no time limit", "Anyone who wants to keep their videos in an account they own"],
       watch: [
