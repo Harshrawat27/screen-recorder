@@ -3,7 +3,7 @@
 //
 //   $29  the first buyers (closed)
 //   $49  the Black Friday sale, until EARLY_ENDS, with every future update
-//   $99  from the Product Hunt launch, without future updates (sales pause until then)
+//   $99  from LAUNCH_LABEL, without future updates (sales pause until then)
 //
 // The deadline is one fixed moment, so the countdown is the same on every device, and the
 // price really changes when it reaches zero. (The tier ids keep their original names because
@@ -15,7 +15,7 @@ export type TierId = "first20" | "first100" | "launch";
 export const EARLY_ENDS = "2026-11-27T23:59:59-08:00";
 export const EARLY_ENDS_LABEL = "Black Friday, 27 November, 11:59 PM PT";
 export const EARLY_ENDS_SHORT = "27 Nov";
-/** The price from the Product Hunt launch; shown crossed out next to the sale price. */
+/** The price after the sale; shown crossed out next to the sale price. */
 export const LAUNCH_PRICE = 99;
 export const LAUNCH_LABEL = "30 November";
 /** The launch day, for structured data (sales reopen then). */
@@ -34,6 +34,10 @@ export const tiers: Tier[] = [
   { id: "first100", name: "Black Friday", price: 49, updates: "Lifetime updates", note: `Until ${EARLY_ENDS_LABEL}.` },
   { id: "launch", name: "Launch", price: 99, updates: "No future updates", note: "After early pricing ends." },
 ];
+
+/** Discount codes a "Buy" link may pre-apply at checkout (/buy?code=...). Create each one in Dodo. */
+export const PUBLIC_CODES = ["INDIA50"] as const;
+export const INDIA_CODE = "INDIA50";
 
 export type TierState = "closed" | "open" | "ended" | "later";
 

@@ -4,6 +4,7 @@ import { site } from '@/lib/site';
 import './globals.css';
 import { Analytics } from '@vercel/analytics/next';
 import { Analytics as ProductAnalytics } from '@/components/analytics';
+import { IndiaOffer } from '@/components/india-offer';
 // Self-hosted (SIL Open Font License) so builds work offline.
 // Newsreader for headings, Instrument Sans for body text and buttons.
 const newsreader = localFont({
@@ -83,6 +84,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         {children}
         <Analytics />
         <ProductAnalytics />
+        <IndiaOffer />
       </body>
     </html>
   );

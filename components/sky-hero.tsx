@@ -25,7 +25,7 @@ export function SkyHero({ price }: { price: number }) {
               </span>
             </>
           ) : (
-            `Back on sale at our Product Hunt launch, ${LAUNCH_LABEL}`
+            `Back on sale ${LAUNCH_LABEL}`
           )}
         </p>
 
@@ -54,31 +54,6 @@ export function SkyHero({ price }: { price: number }) {
         <p className='mt-5 text-sm text-muted'>
           One payment for your whole team. No subscription
         </p>
-
-        {/* Product Hunt badge: links to our launch so visitors can upvote. Light and dark versions follow the site theme. */}
-        <a
-          href='https://www.producthunt.com/products/showthrough-recorder-you-own?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-showthrough-recorder-you-own'
-          target='_blank'
-          rel='noopener noreferrer'
-          className='mt-6 inline-block transition-opacity hover:opacity-85'
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            className='dark:hidden'
-            alt='Showthrough - recorder you own - Loom alternative: pay once, record unlimited videos | Product Hunt'
-            width={250}
-            height={54}
-            src='https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1326020&theme=light&t=1795339487415'
-          />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            className='hidden dark:block'
-            alt='Showthrough - recorder you own - Loom alternative: pay once, record unlimited videos | Product Hunt'
-            width={250}
-            height={54}
-            src='https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1326020&theme=dark&t=1795339487415'
-          />
-        </a>
       </div>
 
       <div className='relative mt-16 px-4 sm:mt-20 sm:px-8'>

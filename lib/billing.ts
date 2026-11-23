@@ -115,22 +115,34 @@ async function dodo<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 /** Starts a Dodo checkout for whichever tier is on sale. Returns null when nothing is on sale. */
-export async function createCheckout(user: { id: string; email: string; name: string }, origin: string): Promise<{ url: string; tier: Tier } | null> {
+export async function createCheckout(user: { id: string; email: string; name: string }, origin: string, code?: string | null): Promise<{ url: string; tier: Tier } | null> {
   const tier = openTier();
   if (!tier) return null;
   const productId = productIds[tier.id];
   if (!productId) throw new Error(`No Dodo product ID set for the ${tier.id} tier`);
 
-  const session = await dodo<{ session_id: string; checkout_url: string | null }>("/checkouts", {
-    method: "POST",
-    body: JSON.stringify({
-      product_cart: [{ product_id: productId, quantity: 1 }],
-      customer: { email: user.email, name: user.name || user.email },
-      return_url: `${origin}/dashboard?checkout=done`,
-      cancel_url: `${origin}/pricing`,
-      metadata: { user_id: user.id, tier: tier.id },
-    }),
-  });
+  const open = (codes: string[]) =>
+    dodo<{ session_id: string; checkout_url: string | null }>("/checkouts", {
+      method: "POST",
+      body: JSON.stringify({
+        product_cart: [{ product_id: productId, quantity: 1 }],
+        customer: { email: user.email, name: user.name || user.email },
+        return_url: `${origin}/dashboard?checkout=done`,
+        cancel_url: `${origin}/pricing`,
+        metadata: { user_id: user.id, tier: tier.id },
+        ...(codes.length ? { discount_codes: codes } : {}),
+      }),
+    });
+  // A code from a "Buy" link is applied for them. If Dodo rejects it (expired, not created yet),
+  // open checkout without it rather than failing; they can still type a code there.
+  let session;
+  try {
+    session = await open(code ? [code] : []);
+  } catch (err) {
+    if (!code) throw err;
+    console.warn(`Discount code ${code} was not accepted; opening checkout without it`, err);
+    session = await open([]);
+  }
   if (!session.checkout_url) throw new Error("Dodo returned no checkout URL");
   return { url: session.checkout_url, tier };
 }

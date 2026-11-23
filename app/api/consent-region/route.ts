@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 
-// Whether this visitor must be asked before analytics load: the EU, the rest of the EEA, the UK
-// and Switzerland. Vercel tells us the country from the request; nothing is stored.
+// The visitor's country (Vercel tells us from the request; nothing is stored), and whether they
+// must be asked before analytics load: the EU, the rest of the EEA, the UK and Switzerland.
+// Also used for country offers (components/india-offer.tsx).
 
 export const dynamic = "force-dynamic";
 
@@ -11,5 +12,5 @@ const ASK = new Set(
 
 export function GET(request: Request) {
   const country = request.headers.get("x-vercel-ip-country")?.toUpperCase() ?? "";
-  return NextResponse.json({ ask: ASK.has(country) }, { headers: { "cache-control": "private, no-store" } });
+  return NextResponse.json({ ask: ASK.has(country), country }, { headers: { "cache-control": "private, no-store" } });
 }

@@ -19,7 +19,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const next = safeNext(params.next);
   if (await getSession()) redirect(next);
   const { error } = params;
-  const buying = next === "/buy";
+  const buying = next === "/buy" || next.startsWith("/buy?");
 
   return (
     <div className="flex min-h-screen flex-col">

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { PostHog } from "posthog-js";
 import { POSTHOG_KEY, POSTHOG_UI, untracked } from "@/lib/analytics";
+import { getRegion } from "@/lib/region";
 
 // PostHog in the browser, and the cookie banner.
 //   Europe (EU, EEA, UK, Switzerland): nothing loads until the visitor chooses Allow.
@@ -126,14 +127,11 @@ export function Analytics() {
     if (choice === "yes") return void startWhenIdle();
     if (choice === "no") return;
     let live = true;
-    fetch("/api/consent-region")
-      .then((res) => res.json())
-      .then((data: { ask?: boolean }) => {
-        if (!live) return;
-        if (data.ask) setBanner(true);
-        else startWhenIdle();
-      })
-      .catch(() => {});
+    getRegion().then((region) => {
+      if (!live) return;
+      if (region.ask) setBanner(true);
+      else startWhenIdle();
+    });
     return () => {
       live = false;
     };

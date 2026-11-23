@@ -568,8 +568,8 @@ export function FinalCta({ price }: { price: number }) {
         </h2>
         <p className="mt-6 max-w-[48ch] text-lg leading-relaxed opacity-75">
           {onSale
-            ? `$49 once, with every future update, until ${EARLY_ENDS_LABEL}. From our Product Hunt launch it's $${LAUNCH_PRICE}, without future updates.`
-            : `Early pricing has ended. Showthrough goes on sale again at our Product Hunt launch on ${LAUNCH_LABEL}, at $99.`}
+            ? `$49 once, with every future update, until ${EARLY_ENDS_LABEL}. After that it's $${LAUNCH_PRICE}, without future updates.`
+            : `Early pricing has ended. Showthrough goes on sale again on ${LAUNCH_LABEL}, at $${LAUNCH_PRICE}.`}
         </p>
         {onSale ? (
           <a
