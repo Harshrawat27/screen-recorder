@@ -172,7 +172,7 @@ export async function recordPayment(payment: DodoPayment) {
     console.warn("Dodo payment without a Showthrough user or product", payment.payment_id);
     return false;
   }
-  // Early buyers ($29 and $49) get every future version; later buyers get the version available today.
+  // Early buyers ($29 and $39) get every future version; later buyers get the version available today.
   const updatesUntil = tiers.find((t) => t.id === tier)?.updates.startsWith("Lifetime") ? null : WORKER_VERSION;
   const inserted = await pool.query(
     `insert into purchase (payment_id, user_id, tier, product_id, amount, currency, updates_until)

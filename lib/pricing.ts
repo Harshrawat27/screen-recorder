@@ -2,7 +2,7 @@
 // environment variables and are only read on the server, in lib/billing.ts.
 //
 //   $29  the first buyers (closed)
-//   $49  the Black Friday sale, until EARLY_ENDS, with every future update
+//   $39  the Black Friday sale, until EARLY_ENDS, with every future update
 //   $99  from LAUNCH_LABEL, without future updates (sales pause until then)
 //
 // The deadline is one fixed moment, so the countdown is the same on every device, and the
@@ -17,6 +17,8 @@ export const EARLY_ENDS_LABEL = "Black Friday, 27 November, 11:59 PM PT";
 export const EARLY_ENDS_SHORT = "27 Nov";
 /** The price after the sale; shown crossed out next to the sale price. */
 export const LAUNCH_PRICE = 99;
+/** The Black Friday price, for copy that mentions it. */
+export const SALE_PRICE = 39;
 export const LAUNCH_LABEL = "30 November";
 /** The launch day, for structured data (sales reopen then). */
 export const LAUNCH_DATE = "2026-11-30";
@@ -31,7 +33,7 @@ export type Tier = {
 
 export const tiers: Tier[] = [
   { id: "first20", name: "First buyers", price: 29, updates: "Lifetime updates", note: "For the people who found us before we found them." },
-  { id: "first100", name: "Black Friday", price: 49, updates: "Lifetime updates", note: `Until ${EARLY_ENDS_LABEL}.` },
+  { id: "first100", name: "Black Friday", price: SALE_PRICE, updates: "Lifetime updates", note: `Until ${EARLY_ENDS_LABEL}.` },
   { id: "launch", name: "Launch", price: 99, updates: "No future updates", note: "After early pricing ends." },
 ];
 

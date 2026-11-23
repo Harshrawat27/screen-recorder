@@ -43,7 +43,7 @@ export function IndiaOffer() {
   }, [hidden]);
 
   if (hidden || !india) return null;
-  const price = tiers.find((t) => t.id === "first100")?.price ?? 49;
+  const price = tiers.find((t) => t.id === "first100")?.price ?? 39;
   const discounted = (price / 2).toFixed(2).replace(/\.00$/, "");
 
   const copy = async () => {

@@ -4,7 +4,7 @@ import { Savings } from "@/components/savings";
 import { CheckIcon, LogoMark, buttonClass } from "@/components/ui";
 import { site } from "@/lib/site";
 import { Countdown } from "@/components/countdown";
-import { EARLY_ENDS, EARLY_ENDS_LABEL, LAUNCH_LABEL, LAUNCH_PRICE, type TierState, earlyOpen, tierStates } from "@/lib/pricing";
+import { EARLY_ENDS, EARLY_ENDS_LABEL, LAUNCH_LABEL, LAUNCH_PRICE, SALE_PRICE, type TierState, earlyOpen, tierStates } from "@/lib/pricing";
 
 // Home page sections below the hero. Black and white for now; every color comes from theme tokens.
 
@@ -485,7 +485,7 @@ const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
   },
   {
     q: "Why are there three prices?",
-    a: `Our first buyers paid $29. Our Black Friday price is $49 until ${EARLY_ENDS_LABEL}, and both include every future update, forever. After that the price is $99, and that purchase covers the version you buy without future updates. Whatever you buy keeps working.`,
+    a: `Our first buyers paid $29. Our Black Friday price is $${SALE_PRICE} until ${EARLY_ENDS_LABEL}, and both include every future update, forever. After that the price is $99, and that purchase covers the version you buy without future updates. Whatever you buy keeps working.`,
   },
   {
     q: "Is it a subscription?",
@@ -564,11 +564,11 @@ export function FinalCta({ price }: { price: number }) {
     <section className="px-2 pb-2 sm:px-3 sm:pb-3">
       <div className="mx-auto flex max-w-[1400px] flex-col items-center rounded-[28px] bg-text px-6 py-20 text-center text-canvas sm:rounded-[32px] sm:py-28">
         <h2 className="max-w-[16ch] text-[44px] leading-[1.02] sm:text-[72px]" style={{ letterSpacing: "-0.03em" }}>
-          {onSale ? `Black Friday: $49, not $${LAUNCH_PRICE}.` : `Back on ${LAUNCH_LABEL}.`}
+          {onSale ? `Black Friday: $${SALE_PRICE}, not $${LAUNCH_PRICE}.` : `Back on ${LAUNCH_LABEL}.`}
         </h2>
         <p className="mt-6 max-w-[48ch] text-lg leading-relaxed opacity-75">
           {onSale
-            ? `$49 once, with every future update, until ${EARLY_ENDS_LABEL}. After that it's $${LAUNCH_PRICE}, without future updates.`
+            ? `$${SALE_PRICE} once, with every future update, until ${EARLY_ENDS_LABEL}. After that it's $${LAUNCH_PRICE}, without future updates.`
             : `Early pricing has ended. Showthrough goes on sale again on ${LAUNCH_LABEL}, at $${LAUNCH_PRICE}.`}
         </p>
         {onSale ? (

@@ -23,7 +23,7 @@ export default function Terms() {
         {site.name} for as long as the product exists.
       </p>
       <p>
-        Purchases made at the early prices ($29, and the $49 Black Friday price until 27 November 2026, 11:59 PM Pacific time) include every future update. Purchases made after
+        Purchases made at the early prices ($29, and the $39 Black Friday price until 27 November 2026, 11:59 PM Pacific time) include every future update. Purchases made after
         that include the version available at the time of purchase, without future updates; that version keeps working.
       </p>
 
