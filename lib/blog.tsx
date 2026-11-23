@@ -194,6 +194,52 @@ const loomDownloadFaqs = [
   },
 ];
 
+const windowsRecordFaqs = [
+  {
+    q: "How do I screen record on Windows 11?",
+    a: "Press Windows + Shift + R to open the Snipping Tool's recorder, drag to select the area, select Start, then Stop when you're done. The recording is saved as an MP4 in Videos > Screen Recordings.",
+  },
+  {
+    q: "How do I screen record on Windows 10?",
+    a: "Use the Xbox Game Bar: open the app you want to record and press Windows + Alt + R to start and stop. It records one app window, not the desktop or File Explorer. Recordings go to Videos > Captures as MP4 files. PowerPoint's Insert > Screen Recording works too.",
+  },
+  {
+    q: "How do I screen record on Windows with audio?",
+    a: "In the Snipping Tool, turn on the microphone (and system audio, in recent versions) before you start. In the Xbox Game Bar, press Windows + Alt + M to toggle the microphone. PowerPoint records your microphone by default.",
+  },
+  {
+    q: "Where do screen recordings go on Windows?",
+    a: "Snipping Tool recordings go to Videos > Screen Recordings when automatic saving is on. Xbox Game Bar recordings go to Videos > Captures. Both are MP4 files.",
+  },
+  {
+    q: "Why isn't Windows + Shift + R working?",
+    a: "Screen recording in the Snipping Tool is a Windows 11 feature. Update Windows and the Snipping Tool from the Microsoft Store. On Windows 10, use the Xbox Game Bar or PowerPoint instead.",
+  },
+];
+
+const chromebookRecorderFaqs = [
+  {
+    q: "What is the best free screen recorder for Chromebook?",
+    a: "The built-in Screen capture tool is free with no sign-up and saves a file. If you want more features for free, Screenity is free and open source with no watermark or time limit, and also saves a file. For free share links, Loom, Screencastify and Vidyard have free plans with limits.",
+  },
+  {
+    q: "Does Chromebook have a built-in screen recorder?",
+    a: "Yes. Press Shift + Ctrl + Show windows, choose Screen record, pick full screen, part of the screen or a window, and start. Stop with Search + Shift + X. The video saves to Downloads as a .webm file.",
+  },
+  {
+    q: "Can I use OBS on a Chromebook?",
+    a: "Not officially. OBS Studio doesn't support ChromeOS, and Linux workarounds often break screen capture. On a Chromebook, use the built-in tool or a Chrome extension.",
+  },
+  {
+    q: "Which Chromebook screen recorder has no watermark?",
+    a: "The built-in Screen capture tool, Screenity and Showthrough add no watermark. Screencastify's free plan adds a watermark.",
+  },
+  {
+    q: "Which Chromebook screen recorder gives you a share link?",
+    a: "Showthrough, Loom, Screencastify and Vidyard all give you a link to send. The built-in tool and Screenity's free recorder save a file instead.",
+  },
+];
+
 export const posts: Post[] = [
   {
     slug: "how-to-screen-record-on-chromebook",
@@ -1511,6 +1557,464 @@ export const posts: Post[] = [
 
         <h2>Questions people ask</h2>
         {loomDownloadFaqs.map((f) => (
+          <div key={f.q}>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </>
+    ),
+  },
+  {
+    slug: "how-to-screen-record-on-windows",
+    title: "How to screen record on Windows 11 and 10 (with audio)",
+    metaTitle: "How to screen record on Windows 11 and 10, with audio",
+    description:
+      "Screen record on Windows 11 with the Snipping Tool, or on Windows 10 with the Xbox Game Bar or PowerPoint. Add your voice, find your recordings and share a link.",
+    excerpt:
+      "Three free ways to record your screen on Windows, with sound, where the files go, and what to do when something doesn't work.",
+    published: "2026-11-23",
+    updated: "2026-11-23",
+    readingMinutes: 7,
+    image: {
+      src: "/blog/how-to-screen-record-on-windows.webp",
+      alt: "A laptop screen with a dashed orange selection box around one app window, an orange record button, and a microphone with a sound wave beside the laptop",
+      width: 1600,
+      height: 900,
+    },
+    faqs: windowsRecordFaqs,
+    Body: () => (
+      <>
+        <p>
+          Windows has screen recording built in, so you don&rsquo;t need to install anything. Which tool you use depends on your version: Windows 11
+          has the Snipping Tool, and both Windows 11 and 10 have the Xbox Game Bar. If you have Microsoft Office, PowerPoint can record too. This
+          guide covers all three, how to include sound, where your recordings go, and what to do when you need to send one to someone.
+        </p>
+
+        <figure>
+          <Image
+            src="/blog/how-to-screen-record-on-windows.webp"
+            alt="A laptop screen with a dashed orange selection box around one app window, an orange record button, and a microphone with a sound wave beside the laptop"
+            width={1600}
+            height={900}
+            sizes="(min-width: 768px) 720px, 100vw"
+            priority
+          />
+        </figure>
+
+        <div className="callout">
+          <p>
+            <strong>Quick answer:</strong> on Windows 11, press <Keys>Windows</Keys> + <Keys>Shift</Keys> + <Keys>R</Keys>, drag to select part
+            of the screen, select <strong>Start</strong>, then <strong>Stop</strong>. The video saves as an MP4 in{" "}
+            <strong>Videos &gt; Screen Recordings</strong>. On Windows 10, open the app you want to record and press <Keys>Windows</Keys> +{" "}
+            <Keys>Alt</Keys> + <Keys>R</Keys> to record with the Xbox Game Bar.
+          </p>
+        </div>
+
+        <h2>Method 1: the Snipping Tool (Windows 11)</h2>
+        <p>
+          The Snipping Tool is the easiest way to record on Windows 11. These steps follow{" "}
+          <a
+            href="https://support.microsoft.com/en-us/windows/use-snipping-tool-to-capture-screenshots-00246869-1843-655f-f220-97299b865f6b"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Microsoft&rsquo;s Snipping Tool guide
+          </a>
+          .
+        </p>
+        <ol>
+          <li>
+            <strong>Open the recorder.</strong> Press <Keys>Windows</Keys> + <Keys>Shift</Keys> + <Keys>R</Keys>. Or open the Snipping Tool,
+            select <strong>Record</strong>, then <strong>New</strong>.
+          </li>
+          <li>
+            <strong>Select the area.</strong> Drag a rectangle over the part of the screen you want to record. Drag across the whole screen to
+            record everything.
+          </li>
+          <li>
+            <strong>Turn on sound if you need it.</strong> In recent versions, the toolbar has a microphone button for your voice and a button for
+            system audio (sound playing on the computer). If you don&rsquo;t see them, update the Snipping Tool from the Microsoft Store.
+          </li>
+          <li>
+            <strong>Select Start.</strong> You can pause and resume from the toolbar while you record.
+          </li>
+          <li>
+            <strong>Select Stop</strong> when you&rsquo;re done. The recording opens in the Snipping Tool, where you can save it, copy it or open it
+            in Clipchamp to edit.
+          </li>
+        </ol>
+        <p>
+          <strong>Where it goes:</strong> Videos &gt; Screen Recordings, as an MP4, if automatic saving is on. If a recording seems to have
+          vanished, open the Snipping Tool&rsquo;s settings and check that <strong>Automatically save original screen recordings</strong> is
+          turned on; without it, an unsaved recording is lost when you close the window.
+        </p>
+
+        <h2>Method 2: the Xbox Game Bar (Windows 10 and 11)</h2>
+        <p>
+          Despite the name, the Game Bar records any app, not just games. It&rsquo;s the built-in option on Windows 10. See{" "}
+          <a
+            href="https://support.microsoft.com/en-us/windows/record-your-screen-with-xbox-game-bar-5328cd25-9046-4472-8a14-c485f138802c"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Microsoft&rsquo;s Game Bar guide
+          </a>{" "}
+          for the full details.
+        </p>
+        <ol>
+          <li>
+            <strong>Turn it on</strong> in Settings: search for &ldquo;Xbox Game Bar&rdquo; and switch it on.
+          </li>
+          <li>
+            <strong>Open the app you want to record,</strong> such as your browser.
+          </li>
+          <li>
+            <strong>Press</strong> <Keys>Windows</Keys> + <Keys>Alt</Keys> + <Keys>R</Keys> to start recording.
+          </li>
+          <li>
+            <strong>Toggle your microphone</strong> with <Keys>Windows</Keys> + <Keys>Alt</Keys> + <Keys>M</Keys>. To see the controls, press{" "}
+            <Keys>Windows</Keys> + <Keys>G</Keys>.
+          </li>
+          <li>
+            <strong>Press</strong> <Keys>Windows</Keys> + <Keys>Alt</Keys> + <Keys>R</Keys> again to stop.
+          </li>
+        </ol>
+        <p>
+          <strong>Where it goes:</strong> Videos &gt; Captures, as an MP4.
+        </p>
+        <p>
+          <strong>The catch:</strong> the Game Bar records one app window at a time. It won&rsquo;t record the desktop or File Explorer, so it&rsquo;s
+          no good for showing someone how to move between apps.
+        </p>
+
+        <h2>Method 3: PowerPoint (if you have Microsoft Office)</h2>
+        <p>
+          PowerPoint has a screen recorder that works on Windows 10 and 11, and it can record the whole screen, which the Game Bar can&rsquo;t.
+        </p>
+        <ol>
+          <li>
+            Open PowerPoint and go to <strong>Insert &gt; Screen Recording</strong>.
+          </li>
+          <li>
+            Choose <strong>Select Area</strong> and drag over what you want to record. PowerPoint records your microphone and mouse pointer by
+            default.
+          </li>
+          <li>
+            Select <strong>Record</strong>. Stop with <Keys>Windows</Keys> + <Keys>Shift</Keys> + <Keys>Q</Keys>.
+          </li>
+          <li>
+            The recording is added to your slide. Right-click it and choose <strong>Save Media as</strong> to keep it as a video file.
+          </li>
+        </ol>
+        <p>
+          PowerPoint records your microphone, but sound playing on the computer usually needs extra Windows sound settings, so use the Snipping Tool
+          if you need system audio.
+        </p>
+
+        <h2>Which one should you use?</h2>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Tool</th>
+                <th scope="col">Windows</th>
+                <th scope="col">Records</th>
+                <th scope="col">Sound</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Snipping Tool</th>
+                <td>11</td>
+                <td>Any area or the full screen</td>
+                <td>Microphone and system audio in recent versions</td>
+              </tr>
+              <tr>
+                <th scope="row">Xbox Game Bar</th>
+                <td>10 and 11</td>
+                <td>One app window, not the desktop</td>
+                <td>System audio, microphone on demand</td>
+              </tr>
+              <tr>
+                <th scope="row">PowerPoint</th>
+                <td>10 and 11, with Office</td>
+                <td>Any area or the full screen</td>
+                <td>Microphone</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Common problems</h2>
+        <ul>
+          <li>
+            <strong>Windows + Shift + R does nothing.</strong> Screen recording in the Snipping Tool needs Windows 11. Update Windows, then update the
+            Snipping Tool from the Microsoft Store. On Windows 10, use the Game Bar or PowerPoint.
+          </li>
+          <li>
+            <strong>There&rsquo;s no sound.</strong> Check the microphone and system audio buttons before you press Start; they&rsquo;re easy to
+            miss. In the Game Bar, the microphone is off until you press <Keys>Windows</Keys> + <Keys>Alt</Keys> + <Keys>M</Keys>.
+          </li>
+          <li>
+            <strong>The Game Bar won&rsquo;t record.</strong> It doesn&rsquo;t work on the desktop or in File Explorer. Click into an app window
+            first.
+          </li>
+          <li>
+            <strong>You can&rsquo;t find the file.</strong> Look in Videos &gt; Screen Recordings (Snipping Tool) or Videos &gt; Captures (Game Bar).
+          </li>
+        </ul>
+
+        <h2>When you need to send it to someone</h2>
+        <p>
+          All three tools give you a video file. That&rsquo;s fine for keeping a copy, but awkward when a client or teammate needs to watch it. A
+          ten-minute recording is too big for most email attachments, and uploading it to a drive and fixing the sharing settings takes longer than
+          the recording did.
+        </p>
+        <p>
+          That&rsquo;s why most people who record to explain something use a recorder that gives them a link instead. I built{" "}
+          <Link href="/">Showthrough</Link> for that: it&rsquo;s a Chrome extension, so it works the same on Windows, Mac and Chromebook. It
+          records your screen, camera and voice, uploads while you talk, and copies a share link the moment you stop. Videos are stored in your
+          own Cloudflare account, connected in one click while we handle the setup. It&rsquo;s a <Link href="/pricing">one-time payment</Link>. For
+          other options, see <Link href="/alternatives">the best Loom alternatives</Link>, or{" "}
+          <Link href="/blog/how-to-screen-record-on-chromebook">how to screen record on a Chromebook</Link>.
+        </p>
+
+        <h2>Questions people ask</h2>
+        {windowsRecordFaqs.map((f) => (
+          <div key={f.q}>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </>
+    ),
+  },
+  {
+    slug: "best-screen-recorders-for-chromebook",
+    title: "The 6 best screen recorders for Chromebook in 2026",
+    metaTitle: "The 6 best screen recorders for Chromebook (2026)",
+    description:
+      "The best screen recorders for Chromebook compared: the built-in tool, Showthrough, Loom, Screencastify, Screenity and Vidyard. Free plans, limits and sharing.",
+    excerpt:
+      "Six screen recorders that work on a Chromebook, what each free plan allows, and which to pick for school, work or client updates.",
+    published: "2026-11-23",
+    updated: "2026-11-23",
+    readingMinutes: 7,
+    image: {
+      src: "/blog/best-screen-recorders-for-chromebook.webp",
+      alt: "A laptop playing a video, surrounded by six screen recorder icons for recording, camera, playback, drawing, links and film, with the drawing icon highlighted in orange",
+      width: 1600,
+      height: 900,
+    },
+    faqs: chromebookRecorderFaqs,
+    Body: () => (
+      <>
+        <p>
+          A Chromebook can&rsquo;t run Windows or Mac recording apps, and OBS Studio{" "}
+          <a href="https://streamyard.com/blog/best-screen-recording-software-for-chromebook" target="_blank" rel="noopener noreferrer nofollow">
+            doesn&rsquo;t officially support ChromeOS
+          </a>
+          . So your choices are the recorder built into ChromeOS, or a Chrome extension. Here are the six worth using, what each free plan really
+          allows, and which one fits what you&rsquo;re recording.
+        </p>
+
+        <figure>
+          <Image
+            src="/blog/best-screen-recorders-for-chromebook.webp"
+            alt="A laptop playing a video, surrounded by six screen recorder icons for recording, camera, playback, drawing, links and film, with the drawing icon highlighted in orange"
+            width={1600}
+            height={900}
+            sizes="(min-width: 768px) 720px, 100vw"
+            priority
+          />
+        </figure>
+
+        <div className="callout">
+          <p>
+            <strong>Quick answer:</strong> for a quick recording you&rsquo;ll keep yourself, use the <strong>built-in Screen capture</strong>{" "}
+            tool. For free recording with no limits, use <strong>Screenity</strong>. To send a link to someone, use a tool that hosts your video:{" "}
+            <strong>Loom</strong> or <strong>Screencastify</strong> on their free plans, or <strong>Showthrough</strong> if you&rsquo;d rather pay
+            once and skip the limits.
+          </p>
+        </div>
+
+        <p className="text-sm">
+          We make Showthrough, so it&rsquo;s on this list, with its trade-offs stated like everyone else&rsquo;s. Free plans checked on 23 November
+          2026 on each tool&rsquo;s own website.
+        </p>
+
+        <h2>The six at a glance</h2>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Recorder</th>
+                <th scope="col">Free plan</th>
+                <th scope="col">Share link</th>
+                <th scope="col">Best for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Built-in Screen capture</th>
+                <td>Free, no sign-up</td>
+                <td>No, saves a .webm file</td>
+                <td>Quick recordings you keep</td>
+              </tr>
+              <tr>
+                <th scope="row">Showthrough</th>
+                <td>No free plan; one payment</td>
+                <td>Yes, the moment you stop</td>
+                <td>Daily updates with no limits</td>
+              </tr>
+              <tr>
+                <th scope="row">Loom</th>
+                <td>25 videos, 5 minutes each</td>
+                <td>Yes</td>
+                <td>Short work videos</td>
+              </tr>
+              <tr>
+                <th scope="row">Screencastify</th>
+                <td>10 videos, 30 minutes each, watermark</td>
+                <td>Yes</td>
+                <td>Teachers and students</td>
+              </tr>
+              <tr>
+                <th scope="row">Screenity</th>
+                <td>Free and open source, no limits</td>
+                <td>No, saves a file</td>
+                <td>Free recording with drawing tools</td>
+              </tr>
+              <tr>
+                <th scope="row">Vidyard</th>
+                <td>5 videos a month, 30 minutes each</td>
+                <td>Yes</td>
+                <td>Sales outreach</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>1. Built-in Screen capture: free and already there</h2>
+        <p>
+          Every Chromebook has a recorder. Press <Keys>Shift</Keys> + <Keys>Ctrl</Keys> + <Keys>Show windows</Keys>, choose{" "}
+          <strong>Screen record</strong>, and record the full screen, part of it or one window, with your microphone, device audio and front camera.
+          Stop with <Keys>Search</Keys> + <Keys>Shift</Keys> + <Keys>X</Keys>. The full steps are in{" "}
+          <Link href="/blog/how-to-screen-record-on-chromebook">how to screen record on a Chromebook</Link>.
+        </p>
+        <p>
+          <strong>The catch:</strong> it saves a .webm file to your Downloads folder, with no editing and no link. Fine for yourself, awkward for
+          sending to someone.
+        </p>
+
+        <h2>2. Showthrough: a link the moment you stop, and no limits</h2>
+        <p>
+          <Link href="/">Showthrough</Link> is our Chrome extension. It records your screen, a tab or a window with your camera and voice, uploads
+          while you talk, and copies a share link the moment you stop. There&rsquo;s no limit on how many videos you record or how long they run,
+          and viewers watch in any browser without an account. Videos are stored in your own Cloudflare account, connected in one click while we
+          handle the setup.
+        </p>
+        <p>
+          <strong>The catch:</strong> there&rsquo;s no free plan. It&rsquo;s a <Link href="/pricing">one-time payment</Link> instead of a
+          subscription, with refunds within 7 days. It also has no AI summaries or video editor yet.
+        </p>
+
+        <h2>3. Loom: the best-known option, with tight free limits</h2>
+        <p>
+          Loom works on Chromebooks through its{" "}
+          <a href="https://www.loom.com/blog/screen-capture-chromebook" target="_blank" rel="noopener noreferrer nofollow">
+            Chrome extension
+          </a>
+          ; its desktop app doesn&rsquo;t run on ChromeOS. It&rsquo;s polished, with comments, reactions and a big library of integrations.
+        </p>
+        <p>
+          <strong>The catch:</strong> the free plan stops at 25 videos and 5 minutes per recording (see{" "}
+          <Link href="/blog/is-loom-free">Is Loom free?</Link>), and paid plans cost $18 per user per month (see{" "}
+          <Link href="/blog/loom-pricing">Loom pricing explained</Link>).
+        </p>
+
+        <h2>4. Screencastify: built for classrooms</h2>
+        <p>
+          <a href="https://www.screencastify.com/buy" target="_blank" rel="noopener noreferrer nofollow">
+            Screencastify
+          </a>{" "}
+          is the recorder many schools use on Chromebooks. The free plan lets you create up to 10 videos of up to 30 minutes each and share them with
+          a link, and paid plans add quizzes, assignments and LMS grade sync.
+        </p>
+        <p>
+          <strong>The catch:</strong> free videos carry a Castify watermark, and you&rsquo;re capped at 10 videos. See{" "}
+          <Link href="/alternatives/screencastify">Showthrough vs Screencastify</Link>.
+        </p>
+
+        <h2>5. Screenity: free, open source and unlimited</h2>
+        <p>
+          <a href="https://screenity.io/extension" target="_blank" rel="noopener noreferrer nofollow">
+            Screenity
+          </a>{" "}
+          is a free, open-source Chrome extension with no watermark and no time limit. You can draw on the screen, blur sensitive parts and
+          highlight clicks while you record.
+        </p>
+        <p>
+          <strong>The catch:</strong> the free recorder saves the video to your Chromebook, so you upload it somewhere yourself to share it. Its
+          editor is a paid upgrade.
+        </p>
+
+        <h2>6. Vidyard: for sales videos</h2>
+        <p>
+          <a href="https://www.vidyard.com/pricing/" target="_blank" rel="noopener noreferrer nofollow">
+            Vidyard
+          </a>{" "}
+          has a Chrome extension and a free plan with 5 videos a month of up to 30 minutes each. It&rsquo;s built for sales teams, with viewer
+          tracking and CRM integrations on paid plans.
+        </p>
+        <p>
+          <strong>The catch:</strong> 5 videos a month goes quickly, and its paid prices aren&rsquo;t listed publicly. See{" "}
+          <Link href="/alternatives/vidyard">Showthrough vs Vidyard</Link>.
+        </p>
+
+        <h2>How to choose</h2>
+        <ul>
+          <li>
+            <strong>Recording for yourself, or once in a while:</strong> the built-in tool or Screenity.
+          </li>
+          <li>
+            <strong>School work and lessons:</strong> Screencastify.
+          </li>
+          <li>
+            <strong>A few short work videos a month:</strong> Loom&rsquo;s free plan.
+          </li>
+          <li>
+            <strong>Sales outreach:</strong> Vidyard.
+          </li>
+          <li>
+            <strong>Updates to clients or teammates every day, or recordings longer than 5 minutes:</strong> Showthrough, or a paid plan elsewhere.
+          </li>
+        </ul>
+        <p>
+          When I was freelancing, the free plans ran out within a week or two, because clients wanted small updates every day. The free tools with
+          no limits solved that, but then I was uploading files and fixing sharing settings for every update. If you&rsquo;re comparing more than
+          Chromebook options, see <Link href="/alternatives">the best Loom alternatives</Link>.
+        </p>
+
+        <h2>How to add a screen recorder extension to a Chromebook</h2>
+        <ol>
+          <li>Open the Chrome Web Store and search for the recorder&rsquo;s name.</li>
+          <li>
+            Select <strong>Add to Chrome</strong>, then <strong>Add extension</strong>.
+          </li>
+          <li>
+            Select the puzzle-piece icon next to the address bar and pin the extension so it&rsquo;s one click away.
+          </li>
+          <li>Open it and allow access to your camera and microphone the first time you record.</li>
+        </ol>
+        <p>
+          On a school or work Chromebook, your administrator may block new extensions. If <strong>Add to Chrome</strong> is greyed out, ask your IT
+          team, or use the built-in recorder.
+        </p>
+
+        <h2>Questions people ask</h2>
+        {chromebookRecorderFaqs.map((f) => (
           <div key={f.q}>
             <h3>{f.q}</h3>
             <p>{f.a}</p>
