@@ -2599,6 +2599,10 @@ export const posts: Post[] = [
             price and payment terms, what&rsquo;s not included, and next steps. Keep it to one or two pages, send it within a day, and add a short
             video walking through it.
           </p>
+          <p>
+            <strong>Free templates:</strong> <a href="#download">download the proposal template</a> as a Word file or as 3 ready-made Figma
+            designs.
+          </p>
         </div>
 
         <h2>The 7 sections of a freelance proposal</h2>
@@ -2682,6 +2686,26 @@ export const posts: Post[] = [
             Reply &ldquo;yes&rdquo; and I&rsquo;ll send the invoice for the first payment. I can start on [date].
           </p>
         </div>
+
+        <h2 id="download">Download the free templates</h2>
+        <ul>
+          <li>
+            <strong>
+              <a href="/templates/freelance-proposal-template.docx" download>
+                Word file (.docx)
+              </a>
+            </strong>
+            : opens in Word, Pages or Google Docs (upload it to Google Drive, then open it with Google Docs).
+          </li>
+          <li>
+            <strong>
+              <a href="https://www.figma.com/design/NUfXuNKp9sXmqYDHJGNYGu" target="_blank" rel="noopener noreferrer">
+                Figma file with 3 designs
+              </a>
+            </strong>
+            : Classic, Bold and Split layouts, A4 size. Duplicate it to your own Figma, edit the text in brackets, and export as PDF.
+          </li>
+        </ul>
 
         <h2>A filled-in example</h2>
         <p>Here&rsquo;s the template used for a small website project:</p>
