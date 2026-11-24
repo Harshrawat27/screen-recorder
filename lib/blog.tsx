@@ -240,6 +240,75 @@ const chromebookRecorderFaqs = [
   },
 ];
 
+const loomExtensionFaqs = [
+  {
+    q: "Is the Loom Chrome extension free?",
+    a: "Yes, the extension is free to install. On Loom's free Starter plan you can keep up to 25 videos per person, each screen recording stops at 5 minutes, and quality goes up to 720p. Paid plans remove those limits.",
+  },
+  {
+    q: "What quality does the Loom Chrome extension record in?",
+    a: "Up to 720p on the free Starter plan and up to 1080p on paid plans. Camera-only recordings stay at 720p. For 4K you need Loom's desktop app on a paid plan.",
+  },
+  {
+    q: "What's the difference between the Loom Chrome extension and the desktop app?",
+    a: "The extension installs in seconds and records your screen, a tab or a window from Chrome. The desktop app adds HD recording up to 4K, drawing on screen, speaker notes and more camera options. Loom suggests installing both.",
+  },
+  {
+    q: "Does the Loom Chrome extension work on a Chromebook?",
+    a: "Yes. Loom's desktop app doesn't run on ChromeOS, so the Chrome extension is the way to use Loom on a Chromebook.",
+  },
+  {
+    q: "What's a good alternative to the Loom Chrome extension?",
+    a: "Showthrough is a Chrome extension that also gives you a link the moment you stop, with no limit on videos or length, for a one-time payment. Screenity is free and open source but saves a file. Screencastify and Vidyard have free plans with limits.",
+  },
+];
+
+const macRecorderFaqs = [
+  {
+    q: "What is the best free screen recorder for Mac?",
+    a: "The built-in Screenshot toolbar (Shift + Command + 5) is free, fast and already on your Mac. If you want more control for free, OBS Studio is free and open source, and Cap has a free plan for personal use.",
+  },
+  {
+    q: "How do I screen record on a Mac?",
+    a: "Press Shift + Command + 5, choose Record Entire Screen or Record Selected Portion, pick your microphone under Options, and select Record. Stop with the button in the menu bar. The video saves as a .mov file, on your desktop by default.",
+  },
+  {
+    q: "Can a Mac screen recording include sound from apps?",
+    a: "The built-in tools have long recorded only your microphone, not sound playing from apps. Check the Options menu in Shift + Command + 5 for a system audio choice on your macOS version. Otherwise, use an app like OBS or Cap, or a Chrome extension that records tab audio.",
+  },
+  {
+    q: "Which Mac screen recorder gives you a share link?",
+    a: "Showthrough, Loom and Cap all give you a link to send. CleanShot X can upload to its own cloud. The built-in tool, QuickTime and OBS save a file instead.",
+  },
+  {
+    q: "Is there a Mac screen recorder without a subscription?",
+    a: "Yes. The built-in tool, QuickTime and OBS are free. CleanShot X and Showthrough are one-time payments. Loom, Screen Studio and Cap Pro are subscriptions.",
+  },
+];
+
+const proposalFaqs = [
+  {
+    q: "What should a freelance project proposal include?",
+    a: "The client's problem in their words, what you'll do, what they'll get, a timeline, the price and payment terms, what isn't included, and the next step. Seven short sections is enough for most projects.",
+  },
+  {
+    q: "How long should a freelance proposal be?",
+    a: "One to two pages for most freelance projects. The client should be able to read it in a few minutes and know what they're paying for, by when.",
+  },
+  {
+    q: "Should I give one price or several options?",
+    a: "Both work. One price keeps the decision simple. Two or three options, such as a basic and a full version, let the client choose instead of deciding yes or no, but keep them clearly different.",
+  },
+  {
+    q: "How do I make my proposal stand out?",
+    a: "Restate the client's problem in their own words, keep it short, and send it fast. A two-minute video walking through the proposal also helps, because the client hears your voice and sees you understood the brief.",
+  },
+  {
+    q: "When should I ask for payment in a proposal?",
+    a: "Put payment terms in the proposal itself. A common setup is part of the fee upfront before work starts and the rest at delivery, or payments tied to milestones for longer projects.",
+  },
+];
+
 export const posts: Post[] = [
   {
     slug: "how-to-screen-record-on-chromebook",
@@ -2015,6 +2084,678 @@ export const posts: Post[] = [
 
         <h2>Questions people ask</h2>
         {chromebookRecorderFaqs.map((f) => (
+          <div key={f.q}>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </>
+    ),
+  },
+  {
+    slug: "loom-chrome-extension",
+    title: "Loom Chrome extension: what it does, its limits, and alternatives",
+    metaTitle: "Loom Chrome extension: how it works, limits and alternatives",
+    description:
+      "How the Loom Chrome extension works, what the free plan allows (25 videos, 5 minutes, 720p), how it differs from the desktop app, and the best alternatives.",
+    excerpt:
+      "What the Loom Chrome extension does, what you get for free, where it falls short of the desktop app, and alternatives if the limits get in the way.",
+    published: "2026-11-24",
+    updated: "2026-11-24",
+    readingMinutes: 6,
+    image: {
+      src: "/blog/loom-chrome-extension.webp",
+      alt: "A browser window with the extensions menu open and a record extension highlighted, above three recording choices: screen, screen with camera, and camera only",
+      width: 1600,
+      height: 900,
+    },
+    faqs: loomExtensionFaqs,
+    Body: () => (
+      <>
+        <p>
+          The Loom Chrome extension is the quickest way to start using Loom: install it, click the icon, and record your screen and camera from
+          the browser. When you stop, you get a link to send. It&rsquo;s free to install, but the free plan has firm limits, and some features only
+          exist in Loom&rsquo;s desktop app. Here&rsquo;s what you get, what you don&rsquo;t, and what to use if the limits get in your way.
+        </p>
+
+        <figure>
+          <Image
+            src="/blog/loom-chrome-extension.webp"
+            alt="A browser window with the extensions menu open and a record extension highlighted, above three recording choices: screen, screen with camera, and camera only"
+            width={1600}
+            height={900}
+            sizes="(min-width: 768px) 720px, 100vw"
+            priority
+          />
+        </figure>
+
+        <div className="callout">
+          <p>
+            <strong>Quick answer:</strong> the Loom Chrome extension is free and records your screen, a tab, a window or your camera. On the free
+            Starter plan you get{" "}
+            <a href="https://www.loom.com/products/chrome-screen-recorder" target="_blank" rel="noopener noreferrer nofollow">
+              25 videos per person
+            </a>
+            , 5 minutes per recording, and up to 720p. Paid plans start at $18 per user per month. For 4K, drawing or speaker notes you need the
+            desktop app.
+          </p>
+        </div>
+
+        <p className="text-sm">Checked on 24 November 2026 against Loom&rsquo;s own help pages.</p>
+
+        <h2>What the Loom Chrome extension does</h2>
+        <ul>
+          <li>Records your full screen, one window or one Chrome tab, with or without your camera.</li>
+          <li>Records your camera on its own, for a quick talking-head message.</li>
+          <li>Records your voice through your microphone.</li>
+          <li>Uploads as you record, then gives you a link to share.</li>
+          <li>Lets viewers comment and react on the video page.</li>
+        </ul>
+
+        <h2>How to install and use it</h2>
+        <ol>
+          <li>
+            Open the Chrome Web Store, search for <strong>Loom</strong>, and select <strong>Add to Chrome</strong>.
+          </li>
+          <li>Pin the extension from the puzzle-piece icon next to the address bar, then sign in or create a free account.</li>
+          <li>
+            Click the Loom icon and choose what to record: <strong>Screen and Camera</strong>, <strong>Screen only</strong> or{" "}
+            <strong>Camera only</strong>.
+          </li>
+          <li>Pick your microphone and camera, then select Start recording and choose a tab, window or your entire screen.</li>
+          <li>Stop from the Loom controls. The video opens in Loom, ready to share with a link.</li>
+        </ol>
+
+        <h2>Its limits on the free plan</h2>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Limit</th>
+                <th scope="col">Free Starter plan</th>
+                <th scope="col">Paid plans</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Videos you can keep</th>
+                <td>25 per person</td>
+                <td>Unlimited</td>
+              </tr>
+              <tr>
+                <th scope="row">Length per screen recording</th>
+                <td>5 minutes</td>
+                <td>Unlimited</td>
+              </tr>
+              <tr>
+                <th scope="row">Quality in the extension</th>
+                <td>Up to 720p</td>
+                <td>Up to 1080p</td>
+              </tr>
+              <tr>
+                <th scope="row">Price</th>
+                <td>$0</td>
+                <td>From $18 per user per month</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Loom&rsquo;s help centre also says{" "}
+          <a
+            href="https://support.atlassian.com/loom/kb/adjust-and-troubleshoot-loom-video-recording-resolution-settings/"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+          >
+            camera-only recordings in the extension stay at 720p
+          </a>{" "}
+          on every plan. For the full breakdown, see <Link href="/blog/is-loom-free">Is Loom free?</Link> and{" "}
+          <Link href="/blog/loom-pricing">Loom pricing explained</Link>.
+        </p>
+
+        <h2>Chrome extension vs desktop app</h2>
+        <p>
+          Loom{" "}
+          <a href="https://www.atlassian.com/software/loom/screen-recorder" target="_blank" rel="noopener noreferrer nofollow">
+            describes the extension as its basic option
+          </a>
+          . The desktop app, for Mac and Windows, adds the extras:
+        </p>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Feature</th>
+                <th scope="col">Chrome extension</th>
+                <th scope="col">Desktop app</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Install</th>
+                <td>Seconds, from the Chrome Web Store</td>
+                <td>Download and install</td>
+              </tr>
+              <tr>
+                <th scope="row">Best quality</th>
+                <td>1080p on paid plans</td>
+                <td>Up to 4K on paid plans</td>
+              </tr>
+              <tr>
+                <th scope="row">Drawing on screen</th>
+                <td>No</td>
+                <td>Yes</td>
+              </tr>
+              <tr>
+                <th scope="row">Speaker notes</th>
+                <td>No</td>
+                <td>Yes</td>
+              </tr>
+              <tr>
+                <th scope="row">Works on a Chromebook</th>
+                <td>Yes</td>
+                <td>No</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          If you only record quick updates in Chrome, the extension is enough. If you want polished demos, Loom itself points you to the desktop app.
+        </p>
+
+        <h2>Alternatives to the Loom Chrome extension</h2>
+        <p>
+          The usual reasons to look elsewhere are the 25-video cap, the 5-minute limit, or paying $18 for every person on the team, every month.
+        </p>
+        <ul>
+          <li>
+            <strong>
+              <Link href="/">Showthrough</Link>
+            </strong>{" "}
+            is a Chrome extension that works the same way: record your screen, a tab or a window with your camera, and a link is copied the moment
+            you stop. There&rsquo;s no limit on videos or length, and you pay once instead of every month (see{" "}
+            <Link href="/pricing">pricing</Link>). The catch: there&rsquo;s no free plan, and no AI summaries or editor yet. We make it.
+          </li>
+          <li>
+            <strong>Screenity</strong> is free and open source with no time limit, but it saves a file you have to upload and share yourself.
+          </li>
+          <li>
+            <strong>Screencastify</strong> has a free plan with 10 videos of up to 30 minutes each, with a watermark. It&rsquo;s popular in schools.
+          </li>
+          <li>
+            <strong>Vidyard</strong> has a free plan with 5 videos a month and is built for sales teams.
+          </li>
+        </ul>
+        <p>
+          For the full comparison, including desktop apps, see <Link href="/alternatives">the best Loom alternatives</Link>.
+        </p>
+
+        <h2>Questions people ask</h2>
+        {loomExtensionFaqs.map((f) => (
+          <div key={f.q}>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </>
+    ),
+  },
+  {
+    slug: "best-screen-recorders-for-mac",
+    title: "The 8 best screen recorders for Mac in 2026",
+    metaTitle: "The 8 best screen recorders for Mac (2026), free and paid",
+    description:
+      "The best screen recorders for Mac compared: the built-in tool, QuickTime, Showthrough, Loom, CleanShot X, Screen Studio, OBS and Cap. Prices, limits and sharing.",
+    excerpt:
+      "Eight screen recorders for Mac, from the free built-in tool to polished demo apps, with what each costs and which to pick for what you're recording.",
+    published: "2026-11-24",
+    updated: "2026-11-24",
+    readingMinutes: 8,
+    image: {
+      src: "/blog/best-screen-recorders-for-mac.webp",
+      alt: "A laptop playing a video, with eight screen recorder app icons in an arc above it and the link icon highlighted in orange",
+      width: 1600,
+      height: 900,
+    },
+    faqs: macRecorderFaqs,
+    Body: () => (
+      <>
+        <p>
+          Every Mac comes with a screen recorder, and for a lot of people it&rsquo;s enough. You reach for something else when you want to send a
+          link instead of a file, record sound from apps, or make a demo that looks polished. Here are the eight worth knowing, what each costs, and
+          which one fits what you&rsquo;re recording.
+        </p>
+
+        <figure>
+          <Image
+            src="/blog/best-screen-recorders-for-mac.webp"
+            alt="A laptop playing a video, with eight screen recorder app icons in an arc above it and the link icon highlighted in orange"
+            width={1600}
+            height={900}
+            sizes="(min-width: 768px) 720px, 100vw"
+            priority
+          />
+        </figure>
+
+        <div className="callout">
+          <p>
+            <strong>Quick answer:</strong> for a quick recording you keep yourself, use the free <strong>Shift + Command + 5</strong> toolbar. To
+            send a link to a client or teammate, use <strong>Showthrough</strong> or <strong>Loom</strong>. For polished product demos, use{" "}
+            <strong>Screen Studio</strong>. For screenshots and recordings in one app, use <strong>CleanShot X</strong>. For full control for free,
+            use <strong>OBS</strong>.
+          </p>
+        </div>
+
+        <p className="text-sm">
+          We make Showthrough, so it&rsquo;s on this list, with its trade-offs stated like everyone else&rsquo;s. Prices checked on 24 November 2026.
+        </p>
+
+        <h2>The eight at a glance</h2>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Recorder</th>
+                <th scope="col">Price</th>
+                <th scope="col">Share link</th>
+                <th scope="col">Best for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Screenshot toolbar</th>
+                <td>Free, built in</td>
+                <td>No, saves a .mov</td>
+                <td>Quick recordings you keep</td>
+              </tr>
+              <tr>
+                <th scope="row">QuickTime Player</th>
+                <td>Free, built in</td>
+                <td>No, saves a .mov</td>
+                <td>Recording plus a quick trim</td>
+              </tr>
+              <tr>
+                <th scope="row">Showthrough</th>
+                <td>Pay once</td>
+                <td>Yes, the moment you stop</td>
+                <td>Updates to clients and teams</td>
+              </tr>
+              <tr>
+                <th scope="row">Loom</th>
+                <td>Free plan; $18 per user per month</td>
+                <td>Yes</td>
+                <td>Teams already on Loom</td>
+              </tr>
+              <tr>
+                <th scope="row">CleanShot X</th>
+                <td>$35 once, 1 year of updates</td>
+                <td>Yes, via its cloud</td>
+                <td>Screenshots and short recordings</td>
+              </tr>
+              <tr>
+                <th scope="row">Screen Studio</th>
+                <td>$9 a month yearly, or $29 monthly</td>
+                <td>Yes</td>
+                <td>Polished product demos</td>
+              </tr>
+              <tr>
+                <th scope="row">OBS Studio</th>
+                <td>Free, open source</td>
+                <td>No, saves a file</td>
+                <td>Full control, streaming</td>
+              </tr>
+              <tr>
+                <th scope="row">Cap</th>
+                <td>Free for personal use; Pro from $8.16 a month</td>
+                <td>Yes</td>
+                <td>Open-source Loom-style recording</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>1. Screenshot toolbar: free and already on your Mac</h2>
+        <p>
+          Press <Keys>Shift</Keys> + <Keys>Command</Keys> + <Keys>5</Keys>, choose <strong>Record Entire Screen</strong> or{" "}
+          <strong>Record Selected Portion</strong>, pick your microphone under <strong>Options</strong>, and select <strong>Record</strong>. Stop
+          from the button in the menu bar. The video saves as a .mov file, on your desktop by default.
+        </p>
+        <p>
+          <strong>The catch:</strong> it saves a file, with no link, and for years it has{" "}
+          <a href="https://macpaw.com/how-to/screen-record-with-audio-mac" target="_blank" rel="noopener noreferrer nofollow">
+            recorded only your microphone, not sound from apps
+          </a>
+          . Check Options for a system audio choice on your macOS version.
+        </p>
+
+        <h2>2. QuickTime Player: the built-in tool with a trim button</h2>
+        <p>
+          Open QuickTime Player and choose <strong>File &gt; New Screen Recording</strong>. It opens the same toolbar as Shift + Command + 5, but
+          the recording opens in QuickTime afterwards, where you can trim the start and end before saving.
+        </p>
+        <p>
+          <strong>The catch:</strong> the same limits as the toolbar: a file, not a link, and microphone audio only.
+        </p>
+
+        <h2>3. Showthrough: a link the moment you stop</h2>
+        <p>
+          <Link href="/">Showthrough</Link> is a Chrome extension, so it works on any Mac with Chrome. It records your screen, a tab or a window
+          with your camera, voice and tab audio, uploads while you talk, and copies a share link the moment you stop. There&rsquo;s no limit on how
+          many videos you record or how long they run, and viewers watch in any browser without an account. Videos are stored in your own
+          Cloudflare account, set up in one click.
+        </p>
+        <p>
+          <strong>The catch:</strong> there&rsquo;s no free plan. You pay once instead of every month (see <Link href="/pricing">pricing</Link>
+          ). It has no editor, AI summaries or zoom effects yet, so it&rsquo;s for updates, not polished demos. We make it.
+        </p>
+
+        <h2>4. Loom: the best-known option for teams</h2>
+        <p>
+          Loom has a Mac desktop app and a <Link href="/blog/loom-chrome-extension">Chrome extension</Link>. The desktop app records{" "}
+          <a href="https://support.loom.com/hc/en-us/articles/360002241197" target="_blank" rel="noopener noreferrer nofollow">
+            up to 4K on paid plans
+          </a>
+          , with drawing tools, camera filters and comments on every video.
+        </p>
+        <p>
+          <strong>The catch:</strong> the free plan stops at 25 videos and 5 minutes per recording, at up to 720p, and paid plans cost $18 per user
+          per month (see <Link href="/blog/loom-pricing">Loom pricing explained</Link>).
+        </p>
+
+        <h2>5. CleanShot X: screenshots and recordings in one app</h2>
+        <p>
+          <a href="https://cleanshot.com/pricing" target="_blank" rel="noopener noreferrer nofollow">
+            CleanShot X
+          </a>{" "}
+          replaces the built-in screenshot tool with a better one: scrolling screenshots, annotations, text recognition, and screen recording as
+          video or GIF. Its Basic license costs{" "}
+          <a href="https://academy.techpresso.co/reviews/is-cleanshot-x-worth-it" target="_blank" rel="noopener noreferrer nofollow">
+            $35 once with a year of updates
+          </a>
+          , and you can upload recordings to CleanShot Cloud to share a link.
+        </p>
+        <p>
+          <strong>The catch:</strong> it&rsquo;s built for screenshots and short clips first. For long recordings with your camera, a dedicated
+          video recorder suits better.
+        </p>
+
+        <h2>6. Screen Studio: the prettiest demos</h2>
+        <p>
+          <a href="https://screen.studio" target="_blank" rel="noopener noreferrer nofollow">
+            Screen Studio
+          </a>{" "}
+          is what many product launch videos are made with. It zooms in on your clicks automatically, smooths your cursor and adds backgrounds, so
+          a plain recording looks edited without editing.
+        </p>
+        <p>
+          <strong>The catch:</strong> it&rsquo;s a subscription now,{" "}
+          <a href="https://www.softwares.com/software/screen-studio/pricing" target="_blank" rel="noopener noreferrer nofollow">
+            $9 a month billed yearly or $29 monthly
+          </a>
+          , with a 14-day trial. It&rsquo;s Mac-only, and it&rsquo;s more than you need for a quick update.
+        </p>
+
+        <h2>7. OBS Studio: free and powerful</h2>
+        <p>
+          <a href="https://obsproject.com" target="_blank" rel="noopener noreferrer nofollow">
+            OBS Studio
+          </a>{" "}
+          is free and open source. You can combine your screen, camera, images and several audio sources into scenes, record at high quality, and
+          stream live.
+        </p>
+        <p>
+          <strong>The catch:</strong> it takes real setup to get right, and it saves a file, so sharing is up to you.
+        </p>
+
+        <h2>8. Cap: open source, Loom-style</h2>
+        <p>
+          <a href="https://cap.so/pricing" target="_blank" rel="noopener noreferrer nofollow">
+            Cap
+          </a>{" "}
+          is an open-source recorder for Mac and Windows with an editor and share links. The free plan is for personal use, with{" "}
+          <a href="https://androidexperto.com/apps/cap/" target="_blank" rel="noopener noreferrer nofollow">
+            local recording with no time limit and share links up to 5 minutes
+          </a>
+          .
+        </p>
+        <p>
+          <strong>The catch:</strong> commercial use and longer share links need Cap Pro, at $12 per user per month or $8.16 billed yearly. See{" "}
+          <Link href="/alternatives/cap">Showthrough vs Cap</Link>.
+        </p>
+
+        <h2>How to choose</h2>
+        <ul>
+          <li>
+            <strong>Recording for yourself, now and then:</strong> the Screenshot toolbar or QuickTime.
+          </li>
+          <li>
+            <strong>Sending updates to clients or teammates:</strong> Showthrough, if you&rsquo;d rather pay once, or Loom, if your team already
+            uses it.
+          </li>
+          <li>
+            <strong>Product demos and launch videos:</strong> Screen Studio.
+          </li>
+          <li>
+            <strong>Lots of screenshots, some short clips:</strong> CleanShot X.
+          </li>
+          <li>
+            <strong>Full control for free, or live streaming:</strong> OBS.
+          </li>
+        </ul>
+        <p>
+          Comparing tools for a whole team? See <Link href="/alternatives">the best Loom alternatives</Link>.
+        </p>
+
+        <h2>Questions people ask</h2>
+        {macRecorderFaqs.map((f) => (
+          <div key={f.q}>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </>
+    ),
+  },
+  {
+    slug: "freelance-project-proposal-template",
+    title: "Freelance project proposal template (free, with an example)",
+    metaTitle: "Freelance project proposal template, free with an example",
+    description:
+      "A free project proposal template for freelancers: the seven sections to include, a filled-in example for a website project, and one trick that makes proposals stand out.",
+    excerpt:
+      "Seven sections that make a freelance proposal easy to say yes to, a template to copy, a filled-in example, and why a two-minute video helps you win.",
+    published: "2026-11-24",
+    updated: "2026-11-24",
+    readingMinutes: 7,
+    image: {
+      src: "/blog/freelance-project-proposal-template.webp",
+      alt: "A proposal document with seven checked sections, a pen, and a video thumbnail clipped to the corner",
+      width: 1600,
+      height: 900,
+    },
+    faqs: proposalFaqs,
+    Body: () => (
+      <>
+        <p>
+          A good proposal doesn&rsquo;t need to be long or clever. It needs to show the client you understood their problem, tell them exactly what
+          they&rsquo;ll get, by when and for how much, and make saying yes easy. After four years and 150+ freelance projects, this is the template
+          I&rsquo;d use.
+        </p>
+
+        <figure>
+          <Image
+            src="/blog/freelance-project-proposal-template.webp"
+            alt="A proposal document with seven checked sections, a pen, and a video thumbnail clipped to the corner"
+            width={1600}
+            height={900}
+            sizes="(min-width: 768px) 720px, 100vw"
+            priority
+          />
+        </figure>
+
+        <div className="callout">
+          <p>
+            <strong>Quick answer:</strong> a freelance project proposal needs seven sections: the problem, your solution, deliverables, timeline,
+            price and payment terms, what&rsquo;s not included, and next steps. Keep it to one or two pages, send it within a day, and add a short
+            video walking through it.
+          </p>
+        </div>
+
+        <h2>The 7 sections of a freelance proposal</h2>
+        <ol>
+          <li>
+            <strong>The problem.</strong> Two or three sentences in the client&rsquo;s own words. This is where they decide whether you listened.
+          </li>
+          <li>
+            <strong>Your solution.</strong> What you&rsquo;ll do, in plain language. Not your process, just the plan.
+          </li>
+          <li>
+            <strong>Deliverables.</strong> The exact things they&rsquo;ll receive: pages, screens, files, rounds of changes.
+          </li>
+          <li>
+            <strong>Timeline.</strong> Dates for each stage, and what you need from them to hit those dates.
+          </li>
+          <li>
+            <strong>Price and payment terms.</strong> The total, what&rsquo;s paid when, and how they pay.
+          </li>
+          <li>
+            <strong>Not included.</strong> The things that look included but aren&rsquo;t. This section prevents most scope arguments.
+          </li>
+          <li>
+            <strong>Next steps.</strong> What happens when they say yes, and how long the proposal stays valid.
+          </li>
+        </ol>
+
+        <h2>The template</h2>
+        <p>Copy this into a doc and replace everything in [brackets].</p>
+
+        <div className="callout">
+          <p>
+            <strong>Proposal: [Project name] for [Client name]</strong>
+            <br />
+            [Your name] &middot; [Date] &middot; Valid until [date, 14 days from now]
+          </p>
+          <p>
+            <strong>1. The problem</strong>
+            <br />
+            You told me [their problem, in their words]. Right now this means [the cost to them: lost sales, wasted time, a launch that&rsquo;s
+            stuck].
+          </p>
+          <p>
+            <strong>2. What I&rsquo;ll do</strong>
+            <br />
+            I&rsquo;ll [your solution in one or two sentences], so that [the result they care about].
+          </p>
+          <p>
+            <strong>3. What you&rsquo;ll get</strong>
+            <br />
+            &bull; [Deliverable 1]
+            <br />
+            &bull; [Deliverable 2]
+            <br />
+            &bull; [Number] rounds of changes
+          </p>
+          <p>
+            <strong>4. Timeline</strong>
+            <br />
+            &bull; [Stage 1]: [date]
+            <br />
+            &bull; [Stage 2]: [date]
+            <br />
+            &bull; Launch or handover: [date]
+            <br />
+            To keep to these dates, I&rsquo;ll need [content, logins, feedback within X days] from you.
+          </p>
+          <p>
+            <strong>5. Price</strong>
+            <br />
+            [Total price]. [Part] upfront to start, [part] on [milestone or delivery]. Paid by [bank transfer, Payoneer, card].
+          </p>
+          <p>
+            <strong>6. Not included</strong>
+            <br />
+            [Hosting, copywriting, extra pages, ongoing maintenance]. Happy to quote for these separately.
+          </p>
+          <p>
+            <strong>7. Next steps</strong>
+            <br />
+            Reply &ldquo;yes&rdquo; and I&rsquo;ll send the invoice for the first payment. I can start on [date].
+          </p>
+        </div>
+
+        <h2>A filled-in example</h2>
+        <p>Here&rsquo;s the template used for a small website project:</p>
+        <ul>
+          <li>
+            <strong>The problem:</strong> &ldquo;Our site looks outdated and people leave before booking a call.&rdquo; Visitors can&rsquo;t tell
+            what the agency does from the homepage.
+          </li>
+          <li>
+            <strong>What I&rsquo;ll do:</strong> redesign and rebuild the homepage, services page and contact page so visitors understand the
+            offer in five seconds and can book a call from any page.
+          </li>
+          <li>
+            <strong>What you&rsquo;ll get:</strong> designs for 3 pages, the built pages on your current platform, a booking button on every page,
+            and 2 rounds of changes.
+          </li>
+          <li>
+            <strong>Timeline:</strong> designs in week 1, build in weeks 2 and 3, launch at the end of week 3. I need your logo, photos and
+            service descriptions before day 2.
+          </li>
+          <li>
+            <strong>Price:</strong> one fixed price, half upfront and half at launch.
+          </li>
+          <li>
+            <strong>Not included:</strong> new copywriting, a blog, and changes after launch.
+          </li>
+          <li>
+            <strong>Next steps:</strong> reply yes, I send the first invoice, and we start Monday.
+          </li>
+        </ul>
+
+        <h2>The trick that helps you win: send a 2-minute video with it</h2>
+        <p>
+          Most clients get several proposals that look alike. A short screen recording walking through yours stands out: they hear your voice,
+          see you understood the brief, and get their questions answered before they ask. It also works for clients in other time zones, because
+          they watch it when it suits them. We wrote more about this in{" "}
+          <Link href="/blog/async-communication">async communication</Link>.
+        </p>
+        <p>Keep it simple:</p>
+        <ol>
+          <li>Open the proposal and record your screen with your camera on.</li>
+          <li>Spend 20 seconds restating their problem.</li>
+          <li>Scroll through the deliverables, timeline and price, explaining anything that could raise a question.</li>
+          <li>End with the next step: &ldquo;If this looks right, just reply yes.&rdquo;</li>
+          <li>Put the link at the top of your email or message.</li>
+        </ol>
+        <p>
+          You can do this with any screen recorder that gives you a link. <Link href="/">Showthrough</Link> is the one we make: it copies a link
+          the moment you stop, has no limit on videos or length, and you pay once instead of every month (see <Link href="/pricing">pricing</Link>
+          ).
+        </p>
+
+        <h2>Five mistakes that lose proposals</h2>
+        <ul>
+          <li>
+            <strong>Talking about yourself first.</strong> Start with their problem. Your experience belongs in a line or a link.
+          </li>
+          <li>
+            <strong>Vague deliverables.</strong> &ldquo;A modern website&rdquo; invites arguments. &ldquo;3 pages, 2 rounds of changes&rdquo;
+            doesn&rsquo;t.
+          </li>
+          <li>
+            <strong>No &ldquo;not included&rdquo; section.</strong> Whatever you leave unsaid, the client will assume is included.
+          </li>
+          <li>
+            <strong>No deadline on the offer.</strong> A validity date gives the client a reason to decide now.
+          </li>
+          <li>
+            <strong>Sending it days later.</strong> The client is most interested right after your call. Send it the same day if you can.
+          </li>
+        </ul>
+
+        <h2>Questions people ask</h2>
+        {proposalFaqs.map((f) => (
           <div key={f.q}>
             <h3>{f.q}</h3>
             <p>{f.a}</p>
