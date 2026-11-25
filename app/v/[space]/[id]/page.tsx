@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Logo } from "@/components/header";
 import { VideoSocial } from "@/components/video-social";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { MEDIA_URL } from "@/lib/config";
+import { getWorkspaceBySpace } from "@/lib/db";
 
 const SPACE = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
 const ID = /^[a-z0-9]{8,64}$/;
 
-type Meta = { title?: string | null; thumbnail?: string | null };
+type Meta = { title?: string | null; thumbnail?: string | null; createdAt?: number | null };
 
 async function readMeta(base: string): Promise<Meta | null> {
   try {
@@ -46,23 +45,23 @@ export default async function SharedVideoPage({ params, searchParams }: PageProp
   const finishing = (await searchParams).finishing !== undefined;
   if (!SPACE.test(space) || !ID.test(id)) notFound();
   const base = `${MEDIA_URL}/${space}/videos/${id}`;
+  // Read on the server so the page arrives with its title and its final layout: comments need
+  // version 2 of the owner's Worker.
+  const [meta, ws] = await Promise.all([readMeta(base), getWorkspaceBySpace(space).catch(() => null)]);
 
   return (
     <div className="min-h-screen">
-      <header className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-8">
-        <Logo />
-        <ThemeToggle />
-      </header>
-      <main className="mx-auto max-w-7xl px-5 pb-16 sm:px-8">
-        <VideoSocial
-          space={space}
-          id={id}
-          src={`${base}/master.m3u8`}
-          metaUrl={`${base}/meta.json`}
-          poster={`${base}/thumb.jpg`}
-          finishing={finishing}
-        />
-      </main>
+      <VideoSocial
+        space={space}
+        id={id}
+        src={`${base}/master.m3u8`}
+        metaUrl={`${base}/meta.json`}
+        poster={`${base}/thumb.jpg`}
+        finishing={finishing}
+        title={meta?.title || null}
+        createdAt={typeof meta?.createdAt === "number" ? meta.createdAt : null}
+        commentsOn={Boolean(ws && ws.worker_version >= 2)}
+      />
     </div>
   );
 }

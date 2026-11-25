@@ -32,7 +32,7 @@ export function VideoVisibility({ space, id }: { space: string; id: string }) {
   if (!state) return null;
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className={buttonClass("ghost", "sm")}>
+      <button type="button" onClick={() => setOpen(true)} className={buttonClass("secondary", "sm")}>
         <svg viewBox="0 0 24 24" fill="none" aria-hidden className="size-4">
           <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
           <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.8" />

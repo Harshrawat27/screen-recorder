@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { buttonClass } from "@/components/ui";
 import { VideoVisibility } from "@/components/video-visibility";
-import { VideoDownloads, useVideoDownload } from "@/components/video-download";
+import { useVideoDownload } from "@/components/video-download";
 import { type Cta, CTA_LABEL_MAX, CTA_MAX, cleanButtons, ctaHost } from "@/lib/cta";
 
-// The call-to-action buttons under a shared video. Each button shows, in small type, the site
-// it opens. The owner adds, changes and removes them right here on the page.
+// The call-to-action buttons under a shared video, and the owner's tools for the video (shown
+// in the share page's top bar). Each button shows, in small type, the site it opens. The owner
+// adds, changes and removes them right on the page.
 
 const inputClass =
   "h-11 w-full min-w-0 rounded-xl border border-line bg-canvas px-3.5 text-[15px] text-text outline-none! transition-colors placeholder:text-faint focus:border-text";
@@ -29,33 +30,68 @@ function DownloadButton({ src }: { src: string }) {
   // The page title is the recording's title ("Title | Showthrough").
   const title = () => document.title.replace(/\s*\|\s*Showthrough\s*$/, "");
   return (
-    <button type="button" onClick={() => download(src, title())} className={buttonClass("ghost", "sm")}>
+    <button type="button" onClick={() => download(src, title())} className={buttonClass("secondary", "sm")}>
       Download MP4
     </button>
   );
 }
 
-export function VideoCta({ space, id, src }: { space: string; id: string; src?: string }) {
-  const [state, setState] = useState<{ buttons: Cta[]; isOwner: boolean } | null>(null);
-  const [open, setOpen] = useState(false);
-  const [rows, setRows] = useState<Row[]>([]);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-  const api = `/api/v/${space}/${id}/cta`;
+export type CtaState = { buttons: Cta[]; isOwner: boolean; loaded: boolean };
 
+/** The video's buttons and whether the viewer may edit them, loaded once for the page. */
+export function useCta(space: string, id: string) {
+  const [state, setState] = useState<CtaState>({ buttons: [], isOwner: false, loaded: false });
+  const api = `/api/v/${space}/${id}/cta`;
   useEffect(() => {
     let live = true;
     fetch(api)
       .then((res) => res.json())
-      .then((data: { buttons?: Cta[]; isOwner?: boolean }) => live && setState({ buttons: data.buttons ?? [], isOwner: Boolean(data.isOwner) }))
-      .catch(() => {});
+      .then((data: { buttons?: Cta[]; isOwner?: boolean }) => live && setState({ buttons: data.buttons ?? [], isOwner: Boolean(data.isOwner), loaded: true }))
+      .catch(() => live && setState((s) => ({ ...s, loaded: true })));
     return () => {
       live = false;
     };
   }, [api]);
+  return { ...state, api, setButtons: (buttons: Cta[]) => setState((s) => ({ ...s, buttons })) };
+}
+export type CtaHandle = ReturnType<typeof useCta>;
 
-  if (!state || (!state.buttons.length && !state.isOwner)) return null;
-  const { buttons, isOwner } = state;
+/** The buttons viewers see under the video. Each shows, in small type, the site it opens. */
+export function CtaButtons({ cta }: { cta: CtaHandle }) {
+  if (!cta.buttons.length) return null;
+  return (
+    <div className="mt-4 flex flex-wrap items-center gap-2">
+      {cta.buttons.map((b, i) => (
+        <a
+          key={`${b.url}-${i}`}
+          href={b.url}
+          target="_blank"
+          rel="noopener noreferrer nofollow ugc"
+          title={b.url}
+          className={buttonClass(i === 0 ? "primary" : "secondary", "md", "h-auto min-h-11 max-w-full py-1.5")}
+        >
+          <span className="flex min-w-0 flex-col items-start leading-tight">
+            <span className="truncate">{b.label}</span>
+            <span className="truncate text-[11.5px] font-normal opacity-60">{ctaHost(b.url)}</span>
+          </span>
+          <ArrowIcon />
+        </a>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * The owner's tools for this video, shown in the page's top bar: the buttons under it,
+ * Download MP4 and (on a team) who can see it. Needs a <VideoDownloads> around it.
+ */
+export function CtaOwnerTools({ cta, space, id, src }: { cta: CtaHandle; space: string; id: string; src?: string }) {
+  const [open, setOpen] = useState(false);
+  const [rows, setRows] = useState<Row[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  if (!cta.isOwner) return null;
+  const { buttons } = cta;
 
   function edit() {
     setRows(buttons.length ? buttons.map((b) => row(b)) : [row()]);
@@ -74,10 +110,10 @@ export function VideoCta({ space, id, src }: { space: string; id: string; src?: 
     setBusy(true);
     setError("");
     try {
-      const res = await fetch(api, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ buttons: filled }) });
+      const res = await fetch(cta.api, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ buttons: filled }) });
       const data = (await res.json().catch(() => ({}))) as { buttons?: Cta[]; error?: string };
       if (!res.ok) throw new Error(data.error || "Something went wrong. Try again.");
-      setState({ buttons: data.buttons ?? [], isOwner });
+      cta.setButtons(data.buttons ?? []);
       setOpen(false);
     } catch (err) {
       setError((err as Error).message);
@@ -87,38 +123,18 @@ export function VideoCta({ space, id, src }: { space: string; id: string; src?: 
   }
 
   return (
-    <VideoDownloads>
-    <div className="mt-4 flex flex-wrap items-center gap-2">
-      {buttons.map((b, i) => (
-        <a
-          key={`${b.url}-${i}`}
-          href={b.url}
-          target="_blank"
-          rel="noopener noreferrer nofollow ugc"
-          title={b.url}
-          className={buttonClass(i === 0 ? "primary" : "secondary", "md", "h-auto min-h-11 max-w-full py-1.5")}
-        >
-          <span className="flex min-w-0 flex-col items-start leading-tight">
-            <span className="truncate">{b.label}</span>
-            <span className="truncate text-[11.5px] font-normal opacity-60">{ctaHost(b.url)}</span>
-          </span>
-          <ArrowIcon />
-        </a>
-      ))}
-      {isOwner && (
-        <button type="button" onClick={edit} className={buttonClass("ghost", "sm", buttons.length ? "" : "border border-dashed border-line")}>
-          {buttons.length ? (
-            "Edit buttons"
-          ) : (
-            <>
-              <span aria-hidden className="text-base leading-none">+</span> Add a button
-            </>
-          )}
-        </button>
-      )}
-
-      {isOwner && src && <DownloadButton src={src} />}
-      {isOwner && <VideoVisibility space={space} id={id} />}
+    <>
+      <button type="button" onClick={edit} className={buttonClass("secondary", "sm")}>
+        {buttons.length ? (
+          "Edit buttons"
+        ) : (
+          <>
+            <span aria-hidden className="text-base leading-none">+</span> Add a button
+          </>
+        )}
+      </button>
+      {src && <DownloadButton src={src} />}
+      <VideoVisibility space={space} id={id} />
 
       <Dialog open={open} onOpenChange={(next) => !next && !busy && setOpen(false)}>
         <DialogContent className="max-w-lg">
@@ -188,7 +204,6 @@ export function VideoCta({ space, id, src }: { space: string; id: string; src?: 
           </form>
         </DialogContent>
       </Dialog>
-    </div>
-    </VideoDownloads>
+    </>
   );
 }

@@ -67,6 +67,7 @@ export function Player({
   onVideo,
   stats,
   belowVideo,
+  bare = false,
 }: {
   src?: string;
   metaUrl?: string;
@@ -78,6 +79,8 @@ export function Player({
   stats?: React.ReactNode;
   /** Shown right under the video (reactions). */
   belowVideo?: React.ReactNode;
+  /** Just the video: the page around it shows the title, stats and Copy link (share pages). */
+  bare?: boolean;
 } = {}) {
   const hash = useSyncExternalStore(subscribeHash, () => window.location.hash, () => null);
   const src = srcProp ?? readSource(hash);
@@ -184,7 +187,7 @@ export function Player({
 
   return (
     <div>
-      {(meta?.title || stats) && (
+      {!bare && (meta?.title || stats) && (
         <div className="mb-5">
           {meta?.title && <h1 className="text-[28px] font-bold leading-tight tracking-[-0.02em]">{meta.title}</h1>}
           <p className="mt-1 flex flex-wrap items-center gap-x-2 text-sm text-muted">
@@ -241,6 +244,7 @@ export function Player({
 
       {belowVideo}
 
+      {!bare && (
       <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
         <p className="text-sm text-muted">
           Recorded with{" "}
@@ -259,6 +263,7 @@ export function Player({
           </button>
         )}
       </div>
+      )}
     </div>
   );
 }
