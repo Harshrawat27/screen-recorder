@@ -274,7 +274,7 @@ const macRecorderFaqs = [
   },
   {
     q: "Can a Mac screen recording include sound from apps?",
-    a: "The built-in tools have long recorded only your microphone, not sound playing from apps. Check the Options menu in Shift + Command + 5 for a system audio choice on your macOS version. Otherwise, use an app like OBS or Cap, or a Chrome extension that records tab audio.",
+    a: "On macOS 27 or later, yes: in Shift + Command + 5, open Options and turn on Include System Audio. Older versions record only your microphone, so use an app like OBS or Cap, or a Chrome extension that records tab audio.",
   },
   {
     q: "Which Mac screen recorder gives you a share link?",
@@ -306,6 +306,52 @@ const proposalFaqs = [
   {
     q: "When should I ask for payment in a proposal?",
     a: "Put payment terms in the proposal itself. A common setup is part of the fee upfront before work starts and the rest at delivery, or payments tied to milestones for longer projects.",
+  },
+];
+
+const macHowToFaqs = [
+  {
+    q: "How do I screen record on a Mac?",
+    a: "Press Shift + Command + 5, choose Record Entire Screen, Record Selected Window or Record Selected Portion, and click Record. To stop, click the Stop button in the menu bar or press Command + Control + Esc.",
+  },
+  {
+    q: "How do I screen record on a Mac with sound?",
+    a: "For your voice, open Options in the Shift + Command + 5 toolbar and pick a microphone. For sound from apps, turn on Include System Audio in Options on macOS 27 or later. On older versions, use OBS Studio, a virtual audio driver like BlackHole, or a Chrome extension that records tab audio.",
+  },
+  {
+    q: "Where do Mac screen recordings go?",
+    a: "To your Desktop by default, named \"Screen Recording [date] at [time].mov\". You can change the folder under Options > Save to.",
+  },
+  {
+    q: "Why is my Mac screen recording silent?",
+    a: "Usually because no microphone was selected in Options, or because you expected sound from an app on a macOS version older than 27, which can't record system audio with the built-in tool.",
+  },
+  {
+    q: "How do I stop a screen recording on a Mac?",
+    a: "Click the Stop button in the menu bar at the top of the screen, or press Command + Control + Esc.",
+  },
+];
+
+const loomVsVidyardFaqs = [
+  {
+    q: "Is Loom or Vidyard better?",
+    a: "Loom is better for teams sending quick updates and walkthroughs to each other. Vidyard is better for sales teams that send video to prospects and want to track who watched and connect it to their CRM.",
+  },
+  {
+    q: "Is Vidyard cheaper than Loom?",
+    a: "No. Vidyard's Starter plan is $59 per user per month billed yearly, or $89 monthly. Loom Business is $18 per user per month, or about $15 billed yearly. Both have free plans.",
+  },
+  {
+    q: "Which has the better free plan, Loom or Vidyard?",
+    a: "It depends on what you record. Loom's free plan keeps up to 25 videos, each up to 5 minutes. Vidyard's free plan gives you 5 videos a month, each up to 30 minutes. For a few longer videos, Vidyard's is better; for many short ones, Loom's is.",
+  },
+  {
+    q: "Does Loom have sales features like Vidyard?",
+    a: "Loom has some, like seeing who viewed a video, but it isn't built around sales. Vidyard adds sales-focused analytics, branded sharing pages, calls to action and CRM integrations on its paid plans.",
+  },
+  {
+    q: "Is there an alternative to Loom and Vidyard without a monthly fee?",
+    a: "Yes. Showthrough is a Chrome extension that gives you a share link the moment you stop recording, with no limit on videos or length, for a one-time payment. It has no sales analytics or CRM integrations.",
   },
 ];
 
@@ -2421,11 +2467,12 @@ export const posts: Post[] = [
           from the button in the menu bar. The video saves as a .mov file, on your desktop by default.
         </p>
         <p>
-          <strong>The catch:</strong> it saves a file, with no link, and for years it has{" "}
-          <a href="https://macpaw.com/how-to/screen-record-with-audio-mac" target="_blank" rel="noopener noreferrer nofollow">
-            recorded only your microphone, not sound from apps
+          <strong>The catch:</strong> it saves a file, with no link. Recording sound from apps needs{" "}
+          <a href="https://support.apple.com/102618" target="_blank" rel="noopener noreferrer nofollow">
+            macOS 27 or later
           </a>
-          . Check Options for a system audio choice on your macOS version.
+          , where Options has an Include System Audio choice. Older versions record only your microphone. See{" "}
+          <Link href="/blog/how-to-screen-record-on-mac">how to screen record on Mac with audio</Link>.
         </p>
 
         <h2>2. QuickTime Player: the built-in tool with a trim button</h2>
@@ -2434,7 +2481,7 @@ export const posts: Post[] = [
           the recording opens in QuickTime afterwards, where you can trim the start and end before saving.
         </p>
         <p>
-          <strong>The catch:</strong> the same limits as the toolbar: a file, not a link, and microphone audio only.
+          <strong>The catch:</strong> it saves a file, not a link, and it records your microphone, not sound from apps.
         </p>
 
         <h2>3. Showthrough: a link the moment you stop</h2>
@@ -2780,6 +2827,383 @@ export const posts: Post[] = [
 
         <h2>Questions people ask</h2>
         {proposalFaqs.map((f) => (
+          <div key={f.q}>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </>
+    ),
+  },
+  {
+    slug: "how-to-screen-record-on-mac",
+    title: "How to screen record on Mac (with audio)",
+    metaTitle: "How to screen record on Mac, with sound from apps and your mic",
+    description:
+      "How to screen record on a Mac with Shift + Command + 5 or QuickTime, how to record your voice and sound from apps, where recordings save, and fixes for common problems.",
+    excerpt:
+      "The two built-in ways to record your Mac's screen, how to get sound from apps as well as your voice, where the file goes, and what to do when something goes wrong.",
+    published: "2026-11-25",
+    updated: "2026-11-25",
+    readingMinutes: 7,
+    image: {
+      src: "/blog/showthrough-recording-controls.webp",
+      alt: "Screen recording controls on a web page, with pause, stop and camera buttons",
+      width: 1600,
+      height: 912,
+    },
+    faqs: macHowToFaqs,
+    Body: () => (
+      <>
+        <p>
+          Every Mac has a screen recorder built in, and it takes about three seconds to start. The part that trips people up is sound: by default
+          you get your microphone, and recording sound from apps depends on your macOS version. Here&rsquo;s how to record your screen, get the
+          audio you want, and find the file afterwards.
+        </p>
+
+        <div className="callout">
+          <p>
+            <strong>Quick answer:</strong> press <strong>Shift + Command + 5</strong>, choose what to record, pick your microphone under{" "}
+            <strong>Options</strong>, and click <strong>Record</strong>. Stop with <strong>Command + Control + Esc</strong>. The video saves to your
+            Desktop as a .mov file. For sound from apps, turn on <strong>Include System Audio</strong> in Options on macOS 27 or later.
+          </p>
+        </div>
+
+        <p className="text-sm">Steps checked on 25 November 2026 against Apple&rsquo;s own support page.</p>
+
+        <h2>Method 1: the Screenshot toolbar (Shift + Command + 5)</h2>
+        <p>This is the quickest way and works on macOS Mojave and later.</p>
+        <ol>
+          <li>
+            Press <Keys>Shift</Keys> + <Keys>Command</Keys> + <Keys>5</Keys>. A toolbar appears at the bottom of the screen.
+          </li>
+          <li>
+            Choose <strong>Record Entire Screen</strong>, <strong>Record Selected Window</strong> (macOS Tahoe 26 or later) or{" "}
+            <strong>Record Selected Portion</strong>, and drag the edges to adjust a portion.
+          </li>
+          <li>
+            Click <strong>Options</strong> to pick your microphone, turn on system audio (macOS 27 or later), set a timer, show mouse clicks, or
+            change where the file saves.
+          </li>
+          <li>
+            Click <strong>Record</strong>. For a selected window, click the window you want.
+          </li>
+          <li>
+            To stop, click the Stop button in the menu bar or press <Keys>Command</Keys> + <Keys>Control</Keys> + <Keys>Esc</Keys>.
+          </li>
+        </ol>
+        <p>
+          A thumbnail appears in the corner. Click it to trim the recording, or leave it and the video saves to your Desktop. Apple&rsquo;s{" "}
+          <a href="https://support.apple.com/102618" target="_blank" rel="noopener noreferrer nofollow">
+            support page
+          </a>{" "}
+          lists every option.
+        </p>
+
+        <h2>Method 2: QuickTime Player</h2>
+        <ol>
+          <li>Open QuickTime Player from Applications.</li>
+          <li>
+            Choose <strong>File &gt; New Screen Recording</strong>, or press <Keys>Control</Keys> + <Keys>Command</Keys> + <Keys>N</Keys>. On
+            recent macOS versions this opens the same toolbar as Method 1.
+          </li>
+          <li>
+            On older versions, click the arrow next to the Record button to pick a microphone and show mouse clicks, then click Record and either
+            click to record the full screen or drag to select an area.
+          </li>
+          <li>Stop from the menu bar. The recording opens in QuickTime, where you can trim it before saving.</li>
+        </ol>
+
+        <h2>How to record sound from apps (system audio)</h2>
+        <p>
+          Recording your voice is easy: pick a microphone in Options. Recording the sound your Mac plays, like a video, a browser tab or a call,
+          depends on your macOS version.
+        </p>
+        <ul>
+          <li>
+            <strong>macOS 27 or later:</strong> in the Shift + Command + 5 toolbar, open Options and turn on <strong>Include System Audio</strong>.
+            You can record it together with your microphone.
+          </li>
+          <li>
+            <strong>Older versions:</strong> the built-in tools record your microphone only. You have three options:
+            <ul>
+              <li>
+                <strong>OBS Studio:</strong> free, and records sound from apps on recent macOS versions. It takes some setup.
+              </li>
+              <li>
+                <strong>BlackHole:</strong> a free virtual audio driver that routes your Mac&rsquo;s sound into the recorder. It works with the
+                built-in tools but needs setup in Audio MIDI Setup.
+              </li>
+              <li>
+                <strong>A Chrome extension that records tab audio:</strong> if the sound is playing in a browser tab, a recorder like{" "}
+                <Link href="/">Showthrough</Link> captures the tab&rsquo;s sound and your voice with no extra setup.
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+        <h2>Which method to use</h2>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Method</th>
+                <th scope="col">Cost</th>
+                <th scope="col">Sound from apps</th>
+                <th scope="col">You get</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Shift + Command + 5</th>
+                <td>Free</td>
+                <td>macOS 27 or later</td>
+                <td>A .mov file</td>
+              </tr>
+              <tr>
+                <th scope="row">QuickTime Player</th>
+                <td>Free</td>
+                <td>Microphone only</td>
+                <td>A .mov file, easy to trim</td>
+              </tr>
+              <tr>
+                <th scope="row">OBS Studio</th>
+                <td>Free</td>
+                <td>Yes</td>
+                <td>A file, with full control</td>
+              </tr>
+              <tr>
+                <th scope="row">Showthrough (Chrome)</th>
+                <td>Pay once</td>
+                <td>Tab audio</td>
+                <td>A share link the moment you stop</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          For more options, including paid apps like CleanShot X and Screen Studio, see{" "}
+          <Link href="/blog/best-screen-recorders-for-mac">the 8 best screen recorders for Mac</Link>.
+        </p>
+
+        <h2>If it isn&rsquo;t working</h2>
+        <ul>
+          <li>
+            <strong>No sound:</strong> open Options and check a microphone is selected. For sound from apps, check your macOS version (above).
+          </li>
+          <li>
+            <strong>An app asks for permission, or records a blank screen:</strong> open System Settings &gt; Privacy &amp; Security &gt; Screen
+            &amp; System Audio Recording, and turn the app on.
+          </li>
+          <li>
+            <strong>A window records as black:</strong> some apps, like the Apple TV app, don&rsquo;t allow their windows to be recorded.
+          </li>
+          <li>
+            <strong>You can&rsquo;t find the file:</strong> look on your Desktop for &ldquo;Screen Recording [date] at [time].mov&rdquo;, or check
+            Options &gt; Save to.
+          </li>
+          <li>
+            <strong>The file is too big to send:</strong> record a smaller area, or send a link instead of a file (below).
+          </li>
+        </ul>
+
+        <h2>Need to send it to someone? Send a link, not a file</h2>
+        <p>
+          A few minutes of Mac screen recording can be hundreds of megabytes, too big for most email and slow to upload to chat. If you&rsquo;re
+          recording to show a client or teammate something, a recorder that gives you a link saves the upload step.
+        </p>
+        <p>
+          <Link href="/">Showthrough</Link> is the one we make. It&rsquo;s a Chrome extension: record your screen, a window or a tab with your camera
+          and voice, and a share link is copied the moment you stop. There&rsquo;s no limit on videos or length, viewers watch in any browser, and
+          you pay once instead of every month (see <Link href="/pricing">pricing</Link>). It has no editor yet, so for polished demos the
+          built-in tools plus an editor still suit better.
+        </p>
+
+        <h2>Questions people ask</h2>
+        {macHowToFaqs.map((f) => (
+          <div key={f.q}>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </>
+    ),
+  },
+  {
+    slug: "loom-vs-vidyard",
+    title: "Loom vs Vidyard: which should you pick in 2026?",
+    metaTitle: "Loom vs Vidyard (2026): pricing, free plans and which to pick",
+    description:
+      "Loom vs Vidyard compared on price, free plans, recording limits, analytics and integrations, with a clear answer on which suits your team, and an option without a monthly fee.",
+    excerpt:
+      "Loom is built for team updates, Vidyard for sales. Here's how they compare on price, free plans and features, and how to choose.",
+    published: "2026-11-25",
+    updated: "2026-11-25",
+    readingMinutes: 6,
+    image: {
+      src: "/blog/showthrough-recording-panel.webp",
+      alt: "A screen recorder panel open in Chrome, with camera, microphone and tab audio settings and a Start recording button",
+      width: 1600,
+      height: 912,
+    },
+    faqs: loomVsVidyardFaqs,
+    Body: () => (
+      <>
+        <p>
+          Loom and Vidyard both let you record your screen and camera and send a link. They look alike, but they&rsquo;re built for different
+          jobs, and their prices are far apart. Here&rsquo;s how they compare, and which one fits what you&rsquo;re doing.
+        </p>
+
+        <div className="callout">
+          <p>
+            <strong>Quick answer:</strong> pick <strong>Loom</strong> for quick updates, walkthroughs and feedback inside a team. It&rsquo;s{" "}
+            $18 per user per month. Pick <strong>Vidyard</strong> if you&rsquo;re in sales and want to track who watched your videos and connect
+            them to your CRM. Its paid plans start at $59 per user per month, billed yearly.
+          </p>
+        </div>
+
+        <p className="text-sm">
+          Prices checked on 25 November 2026 on{" "}
+          <a href="https://www.vidyard.com/pricing/" target="_blank" rel="noopener noreferrer nofollow">
+            Vidyard&rsquo;s pricing page
+          </a>{" "}
+          and Loom&rsquo;s. We make Showthrough, a third option mentioned near the end.
+        </p>
+
+        <h2>Loom vs Vidyard at a glance</h2>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Loom</th>
+                <th scope="col">Vidyard</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Built for</th>
+                <td>Team updates and walkthroughs</td>
+                <td>Sales outreach</td>
+              </tr>
+              <tr>
+                <th scope="row">Free plan</th>
+                <td>25 videos, up to 5 minutes each</td>
+                <td>5 videos a month, up to 30 minutes each</td>
+              </tr>
+              <tr>
+                <th scope="row">Paid from</th>
+                <td>$18 per user per month (about $15 yearly)</td>
+                <td>$59 per user per month yearly, or $89 monthly</td>
+              </tr>
+              <tr>
+                <th scope="row">Recording</th>
+                <td>Chrome extension, desktop and mobile apps</td>
+                <td>Chrome extension and desktop app</td>
+              </tr>
+              <tr>
+                <th scope="row">Analytics</th>
+                <td>Views and viewers</td>
+                <td>Full video and team analytics on paid plans</td>
+              </tr>
+              <tr>
+                <th scope="row">CRM integrations</th>
+                <td>Not the focus</td>
+                <td>On the Teams plan and up</td>
+              </tr>
+              <tr>
+                <th scope="row">AI features</th>
+                <td>Titles, summaries, chapters on Business + AI ($24)</td>
+                <td>AI scripts and avatars; paid Video Agent add-on</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Pricing</h2>
+        <p>
+          <strong>Loom</strong> has a free Starter plan, Business at $18 per user per month (about $15 billed yearly) and Business + AI at $24.
+          See <Link href="/blog/loom-pricing">Loom pricing explained</Link> for the details.
+        </p>
+        <p>
+          <strong>Vidyard</strong> has a free plan, Starter at{" "}
+          <a href="https://www.vidyard.com/pricing.md" target="_blank" rel="noopener noreferrer nofollow">
+            $59 per seat per month billed yearly, or $89 monthly
+          </a>
+          , and Teams and Enterprise plans priced by quote. A 5-person team pays about $900 a year on Loom Business and about $3,540 on Vidyard
+          Starter.
+        </p>
+
+        <h2>Free plans</h2>
+        <p>
+          The two free plans limit different things. Loom&rsquo;s keeps up to 25 videos in total, each up to 5 minutes, at up to 720p (see{" "}
+          <Link href="/blog/is-loom-free">Is Loom free?</Link>). Vidyard&rsquo;s resets every month: 5 videos, each up to 30 minutes.
+        </p>
+        <p>
+          If you record a few longer videos, Vidyard&rsquo;s free plan goes further. If you record lots of short ones, Loom&rsquo;s does, until you
+          hit 25.
+        </p>
+
+        <h2>Where Loom wins</h2>
+        <ul>
+          <li>
+            <strong>Price.</strong> About a third of Vidyard&rsquo;s cost per person.
+          </li>
+          <li>
+            <strong>Team use.</strong> Comments, reactions, shared libraries and integrations with tools like Slack make it easy for a team to
+            reply to each other&rsquo;s videos.
+          </li>
+          <li>
+            <strong>More ways to record.</strong> A Chrome extension, desktop apps and a mobile app. See{" "}
+            <Link href="/blog/loom-chrome-extension">the Loom Chrome extension</Link>.
+          </li>
+        </ul>
+
+        <h2>Where Vidyard wins</h2>
+        <ul>
+          <li>
+            <strong>Sales analytics.</strong> Paid plans show who watched, how much, and how your team&rsquo;s videos perform.
+          </li>
+          <li>
+            <strong>Branded pages and calls to action.</strong> Send prospects to a page with your branding and a button to book a call.
+          </li>
+          <li>
+            <strong>CRM integrations.</strong> On Teams and Enterprise, video activity can flow into your CRM.
+          </li>
+          <li>
+            <strong>Longer free videos.</strong> 30 minutes each on the free plan, against Loom&rsquo;s 5.
+          </li>
+        </ul>
+
+        <h2>Which should you pick?</h2>
+        <ul>
+          <li>
+            <strong>A team sending updates, bug reports and walkthroughs:</strong> Loom.
+          </li>
+          <li>
+            <strong>A sales team sending video to prospects:</strong> Vidyard, if you&rsquo;ll use the analytics and CRM features enough to justify
+            the price.
+          </li>
+          <li>
+            <strong>Just a few videos a month:</strong> either free plan may be enough.
+          </li>
+        </ul>
+
+        <h2>Or neither: video updates without a monthly bill</h2>
+        <p>
+          If you&rsquo;re comparing these two because of the price, and you mostly need to record a quick video and send a link, there&rsquo;s a
+          third option. <Link href="/">Showthrough</Link> is a Chrome extension that copies a share link the moment you stop recording. There&rsquo;s
+          no limit on videos or length, and you pay once instead of every month (see <Link href="/pricing">pricing</Link>).
+        </p>
+        <p>
+          To be clear about the trade-off: it has no sales analytics, CRM integrations or AI features. If you need those, Vidyard or Loom is the
+          better pick. We make Showthrough. Compare it directly with{" "}
+          <Link href="/alternatives/loom">Loom</Link> or <Link href="/alternatives/vidyard">Vidyard</Link>, or see{" "}
+          <Link href="/alternatives">the best Loom alternatives</Link>.
+        </p>
+
+        <h2>Questions people ask</h2>
+        {loomVsVidyardFaqs.map((f) => (
           <div key={f.q}>
             <h3>{f.q}</h3>
             <p>{f.a}</p>

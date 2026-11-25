@@ -21,9 +21,9 @@ const UPDATED = "2026-11-22";
 const CHECKED = "between 10 and 22 November 2026";
 
 export const metadata: Metadata = {
-  title: "10 best Loom alternatives in 2026, compared",
+  title: "10 best Loom alternatives and competitors in 2026, compared",
   description:
-    "The best Loom alternatives compared on price, free-plan limits and recording length: Vidyard, Screencastify, Tella, Cap, Screenity, OBS, Zight and more.",
+    "The best Loom alternatives and competitors compared on price, free-plan limits and recording length: Vidyard, Screencastify, Tella, Cap, Screenity, OBS, Zight and more.",
   alternates: { canonical: "/alternatives" },
 };
 

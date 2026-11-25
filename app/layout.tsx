@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { ThemeKeeper } from "@/components/theme-keeper";
 import localFont from 'next/font/local';
 import { site } from '@/lib/site';
 import './globals.css';
@@ -83,6 +84,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         ></script>
       </head>
       <body className='min-h-screen bg-canvas text-text'>
+        <ThemeKeeper />
         {children}
         <Analytics />
         <ProductAnalytics />

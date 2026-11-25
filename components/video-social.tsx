@@ -456,7 +456,9 @@ export function VideoSocial({
   ].sort((a, b) => a.at - b.at);
   const statsLine = (
     <p className="flex min-h-5 flex-wrap items-center gap-x-2 text-sm text-muted">
-      {meta.createdAt && <span>Recorded {recordedAgo(meta.createdAt)}</span>}
+      {/* Worked out on the server too, where the clock, time zone and date format differ:
+          let the browser's version win instead of failing the whole page's hydration. */}
+      {meta.createdAt && <span suppressHydrationWarning>Recorded {recordedAgo(meta.createdAt)}</span>}
       {commentsOn &&
         (enabled ? (
           <>
