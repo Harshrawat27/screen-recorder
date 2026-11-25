@@ -13,7 +13,9 @@ import { redirect } from "next/navigation";
 
 export const metadata: Metadata = { title: "Connect the extension", robots: { index: false } };
 
-export default async function ExtensionConnectPage() {
+export default async function ExtensionConnectPage({ searchParams }: { searchParams: Promise<{ after?: string }> }) {
+  // Straight after joining a team: connect quietly, then carry on to the dashboard.
+  const afterJoin = (await searchParams).after === "join";
   const { user } = await requireSession();
   if (!(await getAccess(user)).paid) redirect("/pricing?locked");
   const team = await getTeamContext(user);
@@ -52,6 +54,7 @@ export default async function ExtensionConnectPage() {
             </div>
           ) : workspace ? (
             <ExtensionHandoff
+              afterJoin={afterJoin}
               config={{
                 version: 1,
                 email: user.email,

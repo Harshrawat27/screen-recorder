@@ -26,7 +26,6 @@ async function call(url: string, method: string, body?: unknown) {
 
 /** "Join team" on an invite link. */
 export function JoinTeamButton({ token }: { token: string }) {
-  const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   async function join() {
@@ -34,8 +33,11 @@ export function JoinTeamButton({ token }: { token: string }) {
     setError("");
     try {
       await call("/api/team/join", "POST", { token });
-      router.push("/dashboard");
-      router.refresh();
+      // Connect the extension to the new team right away, if it's installed. A full page load,
+      // because the extension only listens on /extension/connect when that page loads. Without
+      // the extension it sends them on to the dashboard, where the setup card takes over.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- needs a full page load (see above)
+      window.location.assign("/extension/connect?after=join");
     } catch (err) {
       setError((err as Error).message);
       setBusy(false);
