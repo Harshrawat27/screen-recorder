@@ -1,4 +1,4 @@
-import { HeroShowcase } from '@/components/hero-showcase';
+import { HeroVideo } from '@/components/hero-video';
 import { SayNoHeadline } from '@/components/say-no';
 import { SendToComputer } from '@/components/send-to-computer';
 import { SiteNav } from '@/components/site-nav';
@@ -67,7 +67,7 @@ export function SkyHero({ price }: { price: number }) {
       </div>
 
       <div className='relative mt-16 px-4 sm:mt-20 sm:px-8'>
-        <HeroShowcase />
+        <HeroVideo />
       </div>
     </section>
     </>
