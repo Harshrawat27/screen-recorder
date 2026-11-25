@@ -2847,10 +2847,10 @@ export const posts: Post[] = [
     updated: "2026-11-25",
     readingMinutes: 7,
     image: {
-      src: "/blog/showthrough-recording-controls.webp",
-      alt: "Screen recording controls on a web page, with pause, stop and camera buttons",
+      src: "/blog/how-to-screen-record-on-mac.webp",
+      alt: "A laptop with a floating screen recording toolbar and an orange record button, next to a speaker and a microphone with sound waves",
       width: 1600,
-      height: 912,
+      height: 900,
     },
     faqs: macHowToFaqs,
     Body: () => (
@@ -2860,6 +2860,17 @@ export const posts: Post[] = [
           you get your microphone, and recording sound from apps depends on your macOS version. Here&rsquo;s how to record your screen, get the
           audio you want, and find the file afterwards.
         </p>
+
+        <figure>
+          <Image
+            src="/blog/how-to-screen-record-on-mac.webp"
+            alt="A laptop with a floating screen recording toolbar and an orange record button, next to a speaker and a microphone with sound waves"
+            width={1600}
+            height={900}
+            sizes="(min-width: 768px) 720px, 100vw"
+            priority
+          />
+        </figure>
 
         <div className="callout">
           <p>
@@ -3041,10 +3052,10 @@ export const posts: Post[] = [
     updated: "2026-11-25",
     readingMinutes: 6,
     image: {
-      src: "/blog/showthrough-recording-panel.webp",
-      alt: "A screen recorder panel open in Chrome, with camera, microphone and tab audio settings and a Start recording button",
+      src: "/blog/loom-vs-vidyard.webp",
+      alt: "Two browser windows with video players side by side and a balance scale between them, with a third smaller video link card below",
       width: 1600,
-      height: 912,
+      height: 900,
     },
     faqs: loomVsVidyardFaqs,
     Body: () => (
@@ -3053,6 +3064,17 @@ export const posts: Post[] = [
           Loom and Vidyard both let you record your screen and camera and send a link. They look alike, but they&rsquo;re built for different
           jobs, and their prices are far apart. Here&rsquo;s how they compare, and which one fits what you&rsquo;re doing.
         </p>
+
+        <figure>
+          <Image
+            src="/blog/loom-vs-vidyard.webp"
+            alt="Two browser windows with video players side by side and a balance scale between them, with a third smaller video link card below"
+            width={1600}
+            height={900}
+            sizes="(min-width: 768px) 720px, 100vw"
+            priority
+          />
+        </figure>
 
         <div className="callout">
           <p>
