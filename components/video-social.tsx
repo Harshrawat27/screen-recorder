@@ -491,8 +491,8 @@ export function VideoSocial({
   );
 
   const topBar = (
-    <header className="border-b border-line">
-      <div className="mx-auto max-w-[1440px] px-5 py-4 sm:px-8">
+    <header className="shrink-0 border-b border-line">
+      <div className="px-5 py-4 sm:px-8">
         <div className="flex items-center gap-4">
           <Logo />
           <span aria-hidden className="hidden h-6 w-px bg-line sm:block" />
@@ -585,9 +585,10 @@ export function VideoSocial({
   );
 
   const panel = (
-    // A fixed height, so a long conversation scrolls inside the panel instead of growing the
-    // page. On wide screens it stays in view (sticky) while the page scrolls.
-    <aside className="flex h-[min(70dvh,640px)] flex-col overflow-hidden rounded-panel border border-line bg-surface lg:sticky lg:top-6 lg:h-[max(420px,calc(100dvh-9.5rem))]">
+    // On wide screens a full-height column on the right edge, under the top bar. On phones a
+    // box under the video. Either way it has a fixed height, so a long conversation scrolls
+    // inside it instead of growing the page.
+    <aside className="mx-5 mb-10 flex h-[min(70dvh,640px)] flex-col overflow-hidden rounded-panel border border-line bg-surface sm:mx-8 lg:m-0 lg:h-auto lg:w-[380px] lg:shrink-0 lg:rounded-none lg:border-0 lg:border-l">
       <div className="flex items-center justify-between border-b border-line px-5 py-4">
         <h2 className="text-lg">Comments</h2>
         {enabled ? (
@@ -763,17 +764,23 @@ export function VideoSocial({
 
   return (
     <VideoDownloads>
-      {topBar}
-      <main className="mx-auto max-w-[1440px] px-5 pb-16 pt-6 sm:px-8">
+      {/* Wide screens: the page fills the window. The top bar spans it, the video scrolls on
+          the left and comments fill the right edge. Phones: one normal scrolling page. */}
+      <div className="flex flex-col lg:h-dvh">
+        {topBar}
         {commentsOn ? (
-          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-            <div className="min-w-0">{player}</div>
+          <div className="lg:flex lg:min-h-0 lg:flex-1">
+            <main className="min-w-0 px-5 pb-10 pt-6 sm:px-8 lg:flex-1 lg:overflow-y-auto lg:pb-16">
+              <div className="mx-auto max-w-6xl">{player}</div>
+            </main>
             {panel}
           </div>
         ) : (
-          <div className="mx-auto max-w-5xl">{player}</div>
+          <main className="px-5 pb-16 pt-6 sm:px-8">
+            <div className="mx-auto max-w-5xl">{player}</div>
+          </main>
         )}
-      </main>
+      </div>
 
       <Dialog open={signInOpen} onOpenChange={setSignInOpen}>
         <DialogContent>
