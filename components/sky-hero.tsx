@@ -52,7 +52,15 @@ export function SkyHero({ price }: { price: number }) {
           </WatchDemoButton>
         </div>
         <p className='mt-5 text-sm text-muted'>
-          One payment for your whole team. No subscription
+          One payment for your whole team. No subscription ·{' '}
+          <a
+            href='https://appsumo.com/pl/hielhvnokZ/'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='font-semibold text-text underline underline-offset-2 hover:text-muted'
+          >
+            Want to purchase from AppSumo?
+          </a>
         </p>
         {/* The most asked question on this page (most-opened FAQ). */}
         <p className='mt-1.5 text-sm text-muted'>
