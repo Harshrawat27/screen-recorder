@@ -72,6 +72,13 @@ export default async function TeamPage() {
     <main className="px-5 py-8 sm:px-10 sm:py-10">
       {header}
       {body}
+      <p className="mt-8 max-w-3xl text-sm text-muted">
+        How inviting, joining and recording for a team works, step by step:{" "}
+        <a href="/guide/team" target="_blank" className="underline underline-offset-2 hover:text-text">
+          team guide
+        </a>
+        .
+      </p>
     </main>
   );
 

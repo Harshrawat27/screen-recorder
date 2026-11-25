@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { alternatives } from "@/lib/alternatives";
-import { guidePages, guidePath } from "@/lib/guide";
+import { guidePages, guidePath, teamGuidePages } from "@/lib/guide";
 import { posts } from "@/lib/blog";
 import { site } from "@/lib/site";
 
@@ -23,6 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...pages.map((page) => ({ url: `${site.url}${page.path === "/" ? "" : page.path}`, lastModified: page.updated })),
     ...alternatives.map((alt) => ({ url: `${site.url}/alternatives/${alt.slug}`, lastModified: alt.updated })),
     ...guidePages.map((page) => ({ url: `${site.url}${guidePath(page.slug)}`, lastModified: "2026-11-21" })),
+    ...teamGuidePages.map((page) => ({ url: `${site.url}${guidePath(page.slug, "/guide/team")}`, lastModified: "2026-11-25" })),
     ...posts.map((post) => ({ url: `${site.url}/blog/${post.slug}`, lastModified: post.updated })),
   ];
 }

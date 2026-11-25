@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { SiteFooter } from "@/components/home-sections";
 import { SiteNav } from "@/components/site-nav";
-import { guidePages, guidePath } from "@/lib/guide";
+import { type Guide, guidePath, setupGuide, teamGuide } from "@/lib/guide";
 
 // Building blocks for the setup guide (/guide): the page frame with its sidebar and
 // Previous / Next links, screenshots with hand-drawn highlights, and short notes.
@@ -93,13 +93,16 @@ export function Note({ title, children }: { title: string; children: React.React
 
 // ---- Page frame ------------------------------------------------------------------------------
 
-function StepList({ current }: { current: number }) {
+function StepList({ guide, current }: { guide: Guide; current: number }) {
   return (
     <ol className="space-y-0.5">
-      {guidePages.map((p, i) => (
+      {guide.pages.map((p, i) => (
         <li key={p.slug}>
+          {p.group && p.group !== guide.pages[i - 1]?.group && (
+            <p className="mb-1 mt-4 px-3 text-xs font-semibold uppercase tracking-wide text-faint">{p.group}</p>
+          )}
           <Link
-            href={guidePath(p.slug)}
+            href={guidePath(p.slug, guide.base)}
             aria-current={i === current ? "page" : undefined}
             className={`flex gap-2.5 rounded-control px-3 py-2 text-[15px] transition-colors ${
               i === current ? "bg-sunken font-semibold text-text" : "text-muted hover:text-text"
@@ -114,14 +117,14 @@ function StepList({ current }: { current: number }) {
   );
 }
 
-function Pager({ current }: { current: number }) {
-  const prev = guidePages[current - 1];
-  const next = guidePages[current + 1];
+function Pager({ guide, current }: { guide: Guide; current: number }) {
+  const prev = guide.pages[current - 1];
+  const next = guide.pages[current + 1];
   const card = "group flex flex-col gap-1 rounded-card border border-line p-4 transition-colors hover:border-line-strong hover:bg-sunken";
   return (
     <nav aria-label="Guide pages" className="mt-14 grid gap-3 border-t border-line pt-8 sm:grid-cols-2">
       {prev ? (
-        <Link href={guidePath(prev.slug)} className={card}>
+        <Link href={guidePath(prev.slug, guide.base)} className={card}>
           <span className="text-sm text-muted">← Previous</span>
           <span className="font-semibold">{prev.nav}</span>
         </Link>
@@ -129,7 +132,7 @@ function Pager({ current }: { current: number }) {
         <span className="hidden sm:block" />
       )}
       {next && (
-        <Link href={guidePath(next.slug)} className={`${card} sm:items-end sm:text-right`}>
+        <Link href={guidePath(next.slug, guide.base)} className={`${card} sm:items-end sm:text-right`}>
           <span className="text-sm text-muted">Next →</span>
           <span className="font-semibold">{next.nav}</span>
         </Link>
@@ -138,18 +141,22 @@ function Pager({ current }: { current: number }) {
   );
 }
 
-export function GuideFrame({ slug, children }: { slug: string; children: React.ReactNode }) {
-  const current = guidePages.findIndex((p) => p.slug === slug);
-  const page = guidePages[current];
-  const steps = guidePages.length - 1;
+export function GuideFrame({ slug, guide = setupGuide, children }: { slug: string; guide?: Guide; children: React.ReactNode }) {
+  const current = guide.pages.findIndex((p) => p.slug === slug);
+  const page = guide.pages[current];
+  const steps = guide.pages.length - 1;
+  const other = guide === teamGuide ? setupGuide : teamGuide;
   return (
     <>
       <SiteNav />
       <div className="mx-auto max-w-6xl px-5 pb-20 pt-10 sm:px-8 sm:pt-16 lg:grid lg:grid-cols-[250px_minmax(0,1fr)] lg:gap-14">
         <aside className="hidden lg:block">
           <div className="sticky top-6">
-            <p className="mb-3 px-3 text-sm font-semibold">Setup guide</p>
-            <StepList current={current} />
+            <p className="mb-3 px-3 text-sm font-semibold">{guide.name}</p>
+            <StepList guide={guide} current={current} />
+            <Link href={other.base} className="mt-6 block border-t border-line px-3 pt-4 text-sm text-muted hover:text-text">
+              {other === teamGuide ? "Setting up a team? Team guide →" : "← Setup guide"}
+            </Link>
           </div>
         </aside>
 
@@ -157,16 +164,20 @@ export function GuideFrame({ slug, children }: { slug: string; children: React.R
           {/* On phones the step list folds away above the page. */}
           <details className="mb-8 rounded-card border border-line lg:hidden">
             <summary className="cursor-pointer px-4 py-3 text-[15px] font-semibold">
-              Setup guide{current > 0 && <span className="font-normal text-muted"> · Step {current} of {steps}</span>}
+              {guide.name}
+              {current > 0 && <span className="font-normal text-muted"> · Step {current} of {steps}</span>}
             </summary>
             <div className="border-t border-line p-2">
-              <StepList current={current} />
+              <StepList guide={guide} current={current} />
+              <Link href={other.base} className="mt-2 block border-t border-line px-3 pb-1 pt-3 text-sm text-muted hover:text-text">
+                {other === teamGuide ? "Setting up a team? Team guide →" : "← Setup guide"}
+              </Link>
             </div>
           </details>
 
           <p className="text-sm text-muted">
-            <Link href="/guide" className="hover:text-text">
-              Setup guide
+            <Link href={guide.base} className="hover:text-text">
+              {guide.name}
             </Link>
             {current > 0 && (
               <>
@@ -179,7 +190,7 @@ export function GuideFrame({ slug, children }: { slug: string; children: React.R
             {page.title}
           </h1>
           {children}
-          <Pager current={current} />
+          <Pager guide={guide} current={current} />
         </main>
       </div>
       <SiteFooter />

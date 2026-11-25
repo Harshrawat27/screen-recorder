@@ -603,6 +603,7 @@ const footerColumns = [
       { href: "/roadmap", label: "Roadmap" },
       { href: "/blog", label: "Blog" },
       { href: "/guide", label: "Setup guide" },
+      { href: "/guide/team", label: "Team guide" },
       { href: "/support", label: "Support" },
     ],
   },
