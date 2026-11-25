@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { WatchDemoButton } from "@/components/hero-video";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FinalCta, SiteFooter } from "@/components/home-sections";
@@ -101,9 +102,7 @@ export default async function AlternativePage({ params }: PageProps<"/alternativ
             <a href="/buy" className={buttonClass("primary", "lg", "rounded-full px-7")}>
               Buy for ${price}
             </a>
-            <Link href="/#how" className={buttonClass("secondary", "lg", "rounded-full px-7")}>
-              See how it works
-            </Link>
+            <WatchDemoButton className={buttonClass("secondary", "lg", "rounded-full px-7")}>See how it works</WatchDemoButton>
           </div>
           <p className="mt-5 text-sm text-faint">
             {alt.name} prices checked on {alt.checked} from{" "}

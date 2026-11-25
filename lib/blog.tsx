@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { WatchDemoButton } from "@/components/hero-video";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { site } from "@/lib/site";
@@ -528,7 +529,7 @@ export const posts: Post[] = [
         <p>
           Two things are different from most recorders. There&rsquo;s no limit on the number of videos or their length. And the videos are stored in
           your own Cloudflare account, not on our servers, so they stay yours. {site.name} is a one-time purchase with no subscription.{" "}
-          <Link href="/">See how it works</Link>.
+          <WatchDemoButton className="cursor-pointer font-medium text-text underline underline-offset-2">See how it works</WatchDemoButton>.
         </p>
         <p>
           If you only record now and then for yourself, the free Chromebook recorder above does the job. {site.name} is for when you send recordings

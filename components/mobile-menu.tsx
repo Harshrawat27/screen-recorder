@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { DemoDialog } from "@/components/hero-video";
 
 // The navbar's links on screens narrower than `lg`, behind a menu button.
-export function MobileMenu({ links, chromeStoreUrl }: { links: { href: string; label: string }[]; chromeStoreUrl: string }) {
+export function MobileMenu({ links, chromeStoreUrl }: { links: { href: string; label: string; demo?: boolean }[]; chromeStoreUrl: string }) {
   const [open, setOpen] = useState(false);
+  const [demo, setDemo] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => setOpen(false), [pathname]);
@@ -45,9 +47,22 @@ export function MobileMenu({ links, chromeStoreUrl }: { links: { href: string; l
           <ul className="flex flex-col text-[16px]">
             {links.map((link) => (
               <li key={link.href}>
-                <a href={link.href} onClick={() => setOpen(false)} className="block rounded-2xl px-4 py-3 hover:bg-sunken">
-                  {link.label}
-                </a>
+                {link.demo ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpen(false);
+                      setDemo(true);
+                    }}
+                    className="block w-full cursor-pointer rounded-2xl px-4 py-3 text-left hover:bg-sunken"
+                  >
+                    {link.label}
+                  </button>
+                ) : (
+                  <a href={link.href} onClick={() => setOpen(false)} className="block rounded-2xl px-4 py-3 hover:bg-sunken">
+                    {link.label}
+                  </a>
+                )}
               </li>
             ))}
             <li>
@@ -63,6 +78,7 @@ export function MobileMenu({ links, chromeStoreUrl }: { links: { href: string; l
           </ul>
         </div>
       )}
+      <DemoDialog open={demo} onOpenChange={setDemo} />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { site } from "@/lib/site";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { WatchDemoButton } from "@/components/hero-video";
 import { LogoMark, buttonClass } from "@/components/ui";
 
 export function Logo() {
@@ -22,9 +23,7 @@ export function Header() {
             <Link href="/#pricing" className={buttonClass("ghost", "sm")}>
               Pricing
             </Link>
-            <Link href="/#how" className={buttonClass("ghost", "sm")}>
-              How it works
-            </Link>
+            <WatchDemoButton className={buttonClass("ghost", "sm")}>How it works</WatchDemoButton>
           </div>
           <ThemeToggle />
           <Link href="/login" className={buttonClass("ghost", "sm")}>

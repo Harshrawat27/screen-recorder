@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { WatchDemoButton } from "@/components/hero-video";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AuthorBox } from "@/components/author-box";
@@ -132,9 +133,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
             {site.name} works in Chrome on any computer. No video or time limits, videos stay in your own Cloudflare, and you pay once.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Link href="/" className={buttonClass("primary", "lg", "rounded-full px-7")}>
-              See how it works
-            </Link>
+            <WatchDemoButton className={buttonClass("primary", "lg", "rounded-full px-7")}>See how it works</WatchDemoButton>
             <Link href="/pricing" className={buttonClass("secondary", "lg", "rounded-full px-7")}>
               Pricing
             </Link>

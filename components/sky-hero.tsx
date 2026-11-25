@@ -1,4 +1,4 @@
-import { HeroVideo } from '@/components/hero-video';
+import { HeroVideo, WatchDemoButton } from '@/components/hero-video';
 import { SayNoHeadline } from '@/components/say-no';
 import { SendToComputer } from '@/components/send-to-computer';
 import { SiteNav } from '@/components/site-nav';
@@ -47,12 +47,9 @@ export function SkyHero({ price }: { price: number }) {
           >
             {onSale ? `Buy for $${price}` : 'See pricing'}
           </a>
-          <a
-            href='#how'
-            className={buttonClass('secondary', 'lg', 'rounded-full px-7')}
-          >
+          <WatchDemoButton className={buttonClass('secondary', 'lg', 'rounded-full px-7')}>
             See how it works
-          </a>
+          </WatchDemoButton>
         </div>
         <p className='mt-5 text-sm text-muted'>
           One payment for your whole team. No subscription

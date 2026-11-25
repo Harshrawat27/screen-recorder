@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MobileMenu } from "@/components/mobile-menu";
+import { WatchDemoButton } from "@/components/hero-video";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LogoMark } from "@/components/ui";
 import { site } from "@/lib/site";
@@ -7,9 +8,9 @@ import "./sky-hero.css";
 
 // Floating navbar, fixed to the top of the window on every page that uses it.
 // The <header> keeps the navbar's height in the page so content starts below it.
-// (Roadmap and FAQ are linked from the footer.)
-const links = [
-  { href: "/#how", label: "How it works" },
+// (Roadmap and FAQ are linked from the footer.) "How it works" opens the demo video popup.
+const links: { href: string; label: string; demo?: boolean }[] = [
+  { href: "/#how", label: "How it works", demo: true },
   { href: "/#pricing", label: "Pricing" },
   { href: "/guide", label: "Setup guide" },
   { href: "/blog", label: "Blog" },
@@ -31,9 +32,13 @@ export function SiteNav() {
         <ul className="hidden items-center gap-7 text-[15px] text-text lg:flex">
           {links.map((link) => (
             <li key={link.href}>
-              <a href={link.href} className="transition-colors hover:text-muted">
-                {link.label}
-              </a>
+              {link.demo ? (
+                <WatchDemoButton className="cursor-pointer transition-colors hover:text-muted">{link.label}</WatchDemoButton>
+              ) : (
+                <a href={link.href} className="transition-colors hover:text-muted">
+                  {link.label}
+                </a>
+              )}
             </li>
           ))}
           <li>

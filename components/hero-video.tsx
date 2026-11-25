@@ -59,6 +59,42 @@ function DemoPlayer() {
   );
 }
 
+/** The demo in a large popup, playing with the sound off. Used by every "Watch the demo" / "See how it works". */
+export function DemoDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+  return (
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Dialog.Portal>
+        <Dialog.Backdrop className='fixed inset-0 z-50 bg-black/80 backdrop-blur-sm transition-opacity duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0' />
+        <Dialog.Popup className='fixed left-1/2 top-1/2 z-50 w-[min(94vw,1200px,calc((100dvh-7rem)*16/9))] -translate-x-1/2 -translate-y-1/2 outline-none transition duration-200 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0'>
+          <Dialog.Title className='sr-only'>Showthrough demo</Dialog.Title>
+          <Dialog.Close
+            aria-label='Close the video'
+            className='absolute -top-12 right-0 grid size-10 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20'
+          >
+            <svg viewBox='0 0 24 24' aria-hidden className='size-5'>
+              <path d='M18 6 6 18M6 6l12 12' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
+            </svg>
+          </Dialog.Close>
+          {open && <DemoPlayer />}
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
+/** A button that opens the demo popup ("See how it works" across the site). */
+export function WatchDemoButton({ className, children }: { className?: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button type='button' onClick={() => setOpen(true)} className={className}>
+        {children}
+      </button>
+      <DemoDialog open={open} onOpenChange={setOpen} />
+    </>
+  );
+}
+
 export function HeroVideo() {
   const [open, setOpen] = useState(false);
 
@@ -92,23 +128,7 @@ export function HeroVideo() {
         </span>
       </button>
 
-      <Dialog.Root open={open} onOpenChange={setOpen}>
-        <Dialog.Portal>
-          <Dialog.Backdrop className='fixed inset-0 z-50 bg-black/80 backdrop-blur-sm transition-opacity duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0' />
-          <Dialog.Popup className='fixed left-1/2 top-1/2 z-50 w-[min(94vw,1200px,calc((100dvh-7rem)*16/9))] -translate-x-1/2 -translate-y-1/2 outline-none transition duration-200 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0'>
-            <Dialog.Title className='sr-only'>Showthrough demo</Dialog.Title>
-            <Dialog.Close
-              aria-label='Close the video'
-              className='absolute -top-12 right-0 grid size-10 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20'
-            >
-              <svg viewBox='0 0 24 24' aria-hidden className='size-5'>
-                <path d='M18 6 6 18M6 6l12 12' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
-              </svg>
-            </Dialog.Close>
-            {open && <DemoPlayer />}
-          </Dialog.Popup>
-        </Dialog.Portal>
-      </Dialog.Root>
+      <DemoDialog open={open} onOpenChange={setOpen} />
     </>
   );
 }
