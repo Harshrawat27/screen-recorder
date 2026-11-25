@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { type Workspace, getWorkspaceBySpace } from "@/lib/db";
 import { type Cta, cleanButtons, readButtons } from "@/lib/cta";
 import { getSession } from "@/lib/session";
+import { managesVideo } from "@/lib/video-files";
 
 // The call-to-action buttons on a shared video.
 //   GET  anyone: the buttons, and whether you're the owner
@@ -39,14 +40,15 @@ export async function GET(_request: Request, { params }: Params) {
   const found = await resolve(params);
   if (!found) return NextResponse.json({ buttons: [], isOwner: false });
   const [buttons, session] = await Promise.all([readCta(found.ws, found.id), getSession()]);
-  return NextResponse.json({ buttons, isOwner: session?.user.id === found.ws.owner_id });
+  return NextResponse.json({ buttons, isOwner: await managesVideo(found.ws, found.id, session?.user.id) });
 }
 
 export async function PUT(request: Request, { params }: Params) {
   const found = await resolve(params);
   if (!found) return NextResponse.json({ error: "not_found" }, { status: 404 });
   const session = await getSession();
-  if (!session || session.user.id !== found.ws.owner_id) return NextResponse.json({ error: "not_owner" }, { status: 403 });
+  // The admin, or (on a team) whoever recorded the video.
+  if (!(await managesVideo(found.ws, found.id, session?.user.id))) return NextResponse.json({ error: "not_owner" }, { status: 403 });
 
   const input = (await request.json().catch(() => null)) as { buttons?: unknown } | null;
   const buttons = cleanButtons(input?.buttons);

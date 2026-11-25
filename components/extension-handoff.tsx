@@ -13,6 +13,10 @@ export type ExtensionConfig = {
   space: string;
   uploadUrl: string;
   uploadKey: string;
+  ownerId?: string;
+  teamName?: string;
+  /** Spaces of every team they're still on; the extension forgets the others. */
+  teams?: string[];
   mediaBase: string;
   playerBase: string;
 };
@@ -57,9 +61,15 @@ export function ExtensionHandoff({ config }: { config: ExtensionConfig }) {
           Click the Showthrough icon in Chrome&rsquo;s toolbar and choose <b>Start recording</b>. Your videos go straight to your own
           Cloudflare.
         </p>
-        <Link href="/dashboard" className={buttonClass("primary", "md", "mt-8")}>
-          Go to your library
-        </Link>
+        <div className="mt-8 flex flex-wrap gap-3">
+          {/* A full page load, not a client-side one: the extension only adds its panel to /record when the page loads. */}
+          <a href="/record" className={buttonClass("primary", "md")}>
+            Start recording
+          </a>
+          <Link href="/dashboard" className={buttonClass("secondary", "md")}>
+            Go to your library
+          </Link>
+        </div>
       </div>
     );
   }

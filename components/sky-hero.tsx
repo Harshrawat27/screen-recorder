@@ -1,5 +1,6 @@
 import { HeroShowcase } from '@/components/hero-showcase';
 import { SayNoHeadline } from '@/components/say-no';
+import { SendToComputer } from '@/components/send-to-computer';
 import { SiteNav } from '@/components/site-nav';
 import { buttonClass } from '@/components/ui';
 import { EARLY_ENDS_SHORT, LAUNCH_LABEL, LAUNCH_PRICE, earlyOpen } from '@/lib/pricing';
@@ -12,7 +13,9 @@ export function SkyHero({ price }: { price: number }) {
     <SiteNav />
     <section className='sky relative isolate overflow-hidden'>
 
-      <div className='relative mx-auto flex max-w-5xl flex-col items-center px-5 pt-20 text-center sm:px-8 sm:pt-28'>
+      <div className='relative mx-auto flex max-w-5xl flex-col items-center px-5 pt-8 text-center sm:px-8 sm:pt-28'>
+        {/* Phones only: about half of visitors arrive on a phone, where Showthrough can't record. */}
+        <SendToComputer />
         <p className='sky-glass inline-flex items-center gap-2 whitespace-nowrap rounded-full py-1.5 pl-3.5 pr-4 text-[13px] font-medium sm:text-sm'>
           <span className='live-dot' aria-hidden />
           {onSale ? (
@@ -53,6 +56,13 @@ export function SkyHero({ price }: { price: number }) {
         </div>
         <p className='mt-5 text-sm text-muted'>
           One payment for your whole team. No subscription
+        </p>
+        {/* The most asked question on this page (most-opened FAQ). */}
+        <p className='mt-1.5 text-sm text-muted'>
+          Uses a free Cloudflare account, first 10 GB free ·{' '}
+          <a href='#faq' className='underline underline-offset-2 hover:text-text'>
+            Will Cloudflare charge me?
+          </a>
         </p>
       </div>
 

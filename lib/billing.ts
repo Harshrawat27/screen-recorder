@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { getMemberships, getPerson } from "@/lib/team";
 import { after } from "next/server";
 import { track } from "@/lib/analytics";
 import { pool } from "@/lib/db";
@@ -94,12 +95,26 @@ function hasFreeAccess(email: string) {
     .includes(email.toLowerCase());
 }
 
-export type Access = { paid: boolean; purchase: Purchase | null; free: boolean };
+/** `viaTeam`: covered by the admin's purchase, as a member of their team. */
+export type Access = { paid: boolean; purchase: Purchase | null; free: boolean; viaTeam?: boolean };
 
-export async function getAccess(user: { id: string; email: string }): Promise<Access> {
+async function ownAccess(user: { id: string; email: string }): Promise<Access> {
   if (hasFreeAccess(user.email)) return { paid: true, purchase: null, free: true };
   const purchase = await getPurchase(user.id);
   return { paid: Boolean(purchase), purchase, free: false };
+}
+
+/** Whether someone can use Showthrough: their own purchase, or the admin's of any team they're in. */
+export async function getAccess(user: { id: string; email: string }): Promise<Access> {
+  const own = await ownAccess(user);
+  if (own.paid) return own;
+  for (const membership of await getMemberships(user.id)) {
+    const admin = await getPerson(membership.owner_id);
+    if (!admin) continue;
+    const team = await ownAccess(admin);
+    if (team.paid) return { ...team, viaTeam: true };
+  }
+  return own;
 }
 
 async function dodo<T>(path: string, init?: RequestInit): Promise<T> {

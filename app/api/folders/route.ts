@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getWorkspace } from "@/lib/db";
+import { getTeamContext } from "@/lib/team";
 import { FOLDER_NAME_MAX, createFolder, foldersEnabled, listFolders } from "@/lib/folders";
 import { clearSearchCache } from "@/lib/search";
 import { getSession } from "@/lib/session";
@@ -11,7 +11,8 @@ export const dynamic = "force-dynamic";
 async function workspace() {
   const session = await getSession();
   if (!session) return { error: NextResponse.json({ error: "sign_in" }, { status: 401 }) };
-  const ws = await getWorkspace(session.user.id);
+  // Folders are shared by the whole team: anyone in it can see them and create new ones.
+  const ws = (await getTeamContext(session.user)).workspace;
   if (!ws) return { error: NextResponse.json({ error: "not_connected" }, { status: 409 }) };
   if (!foldersEnabled(ws)) return { error: NextResponse.json({ error: "update_needed" }, { status: 409 }) };
   return { ws };

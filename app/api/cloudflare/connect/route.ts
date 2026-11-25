@@ -14,6 +14,11 @@ export async function POST(request: Request) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
   const access = await getAccess(session.user);
+  // This connects their own Cloudflare, so it needs their own purchase: being on someone
+  // else's team covers recording into that team only.
+  if (access.viaTeam) {
+    return NextResponse.json({ error: "Buy Showthrough to connect your own Cloudflare. Your team's admin manages the team's." }, { status: 402 });
+  }
   if (!access.paid) {
     return NextResponse.json({ error: "Buy Showthrough to connect Cloudflare." }, { status: 402 });
   }

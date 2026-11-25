@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { AVATAR_MAX_BYTES, avatarEnabled, deleteAvatar, saveAvatar } from "@/lib/avatar";
-import { getWorkspace } from "@/lib/db";
+import { getTeamContext } from "@/lib/team";
 import { getSession } from "@/lib/session";
 
 // The signed-in person's profile photo, kept in their own Cloudflare.
@@ -12,7 +12,8 @@ export const dynamic = "force-dynamic";
 async function owner() {
   const session = await getSession();
   if (!session) return null;
-  const ws = await getWorkspace(session.user.id);
+  // Photos live in the team's Cloudflare (each person's own file), so members can have one too.
+  const ws = (await getTeamContext(session.user)).workspace;
   return avatarEnabled(ws) ? { userId: session.user.id, ws } : null;
 }
 

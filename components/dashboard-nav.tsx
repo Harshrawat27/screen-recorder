@@ -93,6 +93,14 @@ const workspace: Item[] = [
 /** Every dashboard page, for search. */
 export const dashboardPages = [...library, ...workspace].map(({ href, label, icon }) => ({ href, label, icon }));
 
+/** Team members don't see the admin's Usage and Billing, and "Manage team" is just "Team". */
+function workspaceItems(member: boolean): Item[] {
+  if (!member) return workspace;
+  return workspace
+    .filter((item) => item.href !== "/dashboard/usage" && item.href !== "/dashboard/billing")
+    .map((item) => (item.href === "/dashboard/team" ? { ...item, label: "Team" } : item));
+}
+
 function isActive(pathname: string, href: string) {
   return href === "/dashboard" ? pathname === "/dashboard" : pathname === href || pathname.startsWith(`${href}/`);
 }
@@ -113,7 +121,7 @@ function NavLink({ item, pathname, compact = false }: { item: Item; pathname: st
   );
 }
 
-export function SidebarNav() {
+export function SidebarNav({ member = false }: { member?: boolean }) {
   const pathname = usePathname();
   return (
     <nav aria-label="Dashboard" className="space-y-6">
@@ -125,7 +133,7 @@ export function SidebarNav() {
       <div>
         <p className="px-3 pb-2 text-xs font-medium text-faint">Workspace</p>
         <div className="space-y-0.5">
-          {workspace.map((item) => (
+          {workspaceItems(member).map((item) => (
             <NavLink key={item.href} item={item} pathname={pathname} />
           ))}
         </div>
@@ -134,7 +142,7 @@ export function SidebarNav() {
   );
 }
 
-export function MobileNav() {
+export function MobileNav({ member = false }: { member?: boolean }) {
   const pathname = usePathname();
   const ref = useRef<HTMLElement>(null);
   // Keep the current page's tab in view when it sits past the edge of the screen.
@@ -143,7 +151,7 @@ export function MobileNav() {
   }, [pathname]);
   return (
     <nav ref={ref} aria-label="Dashboard" className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1">
-      {[...library, ...workspace].map((item) => (
+      {[...library, ...workspaceItems(member)].map((item) => (
         <NavLink key={item.href} item={item} pathname={pathname} compact />
       ))}
     </nav>

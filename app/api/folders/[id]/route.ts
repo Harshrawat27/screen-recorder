@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getWorkspace } from "@/lib/db";
+import { getTeamContext } from "@/lib/team";
 import { FOLDER_ID, FOLDER_NAME_MAX, deleteFolder, foldersEnabled, renameFolder } from "@/lib/folders";
 import { getSession } from "@/lib/session";
 
@@ -14,7 +14,10 @@ async function folder(params: Params["params"]) {
   if (!FOLDER_ID.test(id)) return { error: NextResponse.json({ error: "bad_id" }, { status: 400 }) };
   const session = await getSession();
   if (!session) return { error: NextResponse.json({ error: "sign_in" }, { status: 401 }) };
-  const ws = await getWorkspace(session.user.id);
+  // Renaming and deleting a team's shared folders is for the admin.
+  const team = await getTeamContext(session.user);
+  if (team.role === "member") return { error: NextResponse.json({ error: "admin_only" }, { status: 403 }) };
+  const ws = team.workspace;
   if (!ws || !foldersEnabled(ws)) return { error: NextResponse.json({ error: "update_needed" }, { status: 409 }) };
   return { ws, id };
 }

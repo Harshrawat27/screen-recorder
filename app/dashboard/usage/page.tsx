@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/dashboard-ui";
 import { buttonClass } from "@/components/ui";
 import { listVideos } from "@/lib/cloudflare";
 import { pages } from "@/lib/dashboard-pages";
-import { getWorkspace } from "@/lib/db";
+import { firstName, getTeamContext } from "@/lib/team";
 import { requireSession } from "@/lib/session";
 import { FREE, PRICE, getUsage } from "@/lib/usage";
 
@@ -73,8 +73,18 @@ function Message({ title, body, action }: { title: string; body: string; action?
 
 export default async function UsagePage() {
   const { user } = await requireSession();
-  const workspace = await getWorkspace(user.id);
+  const team = await getTeamContext(user);
   const header = <PageHeader title={pages.usage.title} description={pages.usage.description} />;
+  // Usage is the admin's Cloudflare, so it's theirs to see.
+  if (team.role === "member") {
+    return (
+      <main className="px-5 py-8 sm:px-10 sm:py-10">
+        {header}
+        <Message title="Managed by your admin" body={`Your team's storage is in ${firstName(team.owner)}'s Cloudflare, so its usage is on their dashboard.`} />
+      </main>
+    );
+  }
+  const workspace = team.workspace;
 
   if (!workspace) {
     return (

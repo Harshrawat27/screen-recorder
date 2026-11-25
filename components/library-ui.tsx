@@ -48,7 +48,17 @@ export type LibraryVideo = {
   comments: number;
   reactions: number;
   folderId: string | null;
+  /** Who recorded it (account id). */
+  recordedBy?: string;
+  /** Whether the viewer may rename, move, delete and share it (their own, or anything for the admin). */
+  canManage?: boolean;
+  /** Who can find it in the dashboard: the whole team, or only chosen members. */
+  visibility?: 'team' | 'chosen';
+  sharedWith?: string[];
 };
+
+/** Someone in the team, for "Who can see this". */
+export type TeamPerson = { id: string; name: string; email: string };
 
 export type LibraryFolder = {
   id: string;
@@ -72,6 +82,9 @@ type VideoActions = {
   /** Videos in the viewer's Watch later; null when Watch later isn't available yet. */
   later: Set<string> | null;
   toggleLater: (id: string) => void;
+  /** The team, when the library is a team's (version 7+); null otherwise. */
+  team: { people: TeamPerson[]; ownerId: string } | null;
+  shared: (id: string, visibility: 'team' | 'chosen', sharedWith: string[]) => void;
 };
 const Actions = createContext<VideoActions>({
   renamed: () => {},
@@ -81,6 +94,8 @@ const Actions = createContext<VideoActions>({
   foldersEnabled: false,
   later: null,
   toggleLater: () => {},
+  team: null,
+  shared: () => {},
 });
 type View = 'grid' | 'list';
 
@@ -217,8 +232,8 @@ function Initial({
   className?: string;
 }) {
   if (image) {
-    // eslint-disable-next-line @next/next/no-img-element
     return (
+      // eslint-disable-next-line @next/next/no-img-element -- Google profile photos, tiny and already sized
       <img
         src={image}
         alt=''
@@ -357,11 +372,13 @@ function VideoMenu({
   video: LibraryVideo;
   trigger: string;
 }) {
-  const [dialog, setDialog] = useState<'rename' | 'delete' | 'move' | null>(
-    null
-  );
-  const { folders, foldersEnabled, moved, later, toggleLater } =
+  const [dialog, setDialog] = useState<
+    'rename' | 'delete' | 'move' | 'share' | null
+  >(null);
+  const { folders, foldersEnabled, moved, later, toggleLater, team } =
     useContext(Actions);
+  // Teammates' videos can be watched, saved and downloaded, but only changed by whoever made them.
+  const manage = video.canManage !== false;
   const download = useVideoDownload();
   const copy = () =>
     navigator.clipboard?.writeText(
@@ -384,28 +401,41 @@ function VideoMenu({
           >
             {later?.has(video.id) ? 'Remove from Watch later' : 'Watch later'}
           </DropdownMenuItem>
-          <DropdownMenuItem
-            disabled={!foldersEnabled}
-            onClick={() => setDialog('move')}
-          >
-            Add to folder
-          </DropdownMenuItem>
+          {manage && (
+            <DropdownMenuItem
+              disabled={!foldersEnabled}
+              onClick={() => setDialog('move')}
+            >
+              Add to folder
+            </DropdownMenuItem>
+          )}
+          {manage && team && team.people.length > 1 && (
+            <DropdownMenuItem onClick={() => setDialog('share')}>
+              {video.visibility === 'chosen'
+                ? 'Who can see this · Chosen people'
+                : 'Who can see this · Team'}
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem
             disabled={!video.ready}
             onClick={() => download(video.src, video.title)}
           >
             Download MP4
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setDialog('rename')}>
-            Rename
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            variant='destructive'
-            onClick={() => setDialog('delete')}
-          >
-            Delete
-          </DropdownMenuItem>
+          {manage && (
+            <>
+              <DropdownMenuItem onClick={() => setDialog('rename')}>
+                Rename
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                variant='destructive'
+                onClick={() => setDialog('delete')}
+              >
+                Delete
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
       <RenameDialog
@@ -413,6 +443,13 @@ function VideoMenu({
         open={dialog === 'rename'}
         onClose={() => setDialog(null)}
       />
+      {team && (
+        <ShareDialog
+          video={video}
+          open={dialog === 'share'}
+          onClose={() => setDialog(null)}
+        />
+      )}
       <DeleteDialog
         video={video}
         open={dialog === 'delete'}
@@ -434,6 +471,144 @@ function VideoMenu({
 }
 
 const TITLE_MAX = 120;
+
+/**
+ * "Who can see this": the whole team (the default), or only chosen teammates. The admin and
+ * whoever recorded it can always see it. This is about finding it in the dashboard; anyone
+ * with the share link can still watch.
+ */
+function ShareDialog({
+  video,
+  open,
+  onClose,
+}: {
+  video: LibraryVideo;
+  open: boolean;
+  onClose: () => void;
+}) {
+  const { team, shared } = useContext(Actions);
+  const [visibility, setVisibility] = useState<'team' | 'chosen'>(
+    video.visibility ?? 'team'
+  );
+  const [chosen, setChosen] = useState<Set<string>>(
+    () => new Set(video.sharedWith ?? [])
+  );
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  if (!team) return null;
+  // The admin and the recorder always see it, so they aren't in the list.
+  const people = team.people.filter(
+    (p) => p.id !== team.ownerId && p.id !== video.recordedBy
+  );
+
+  async function save(event: React.FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    setError(null);
+    const sharedWith = visibility === 'chosen' ? [...chosen] : [];
+    try {
+      const res = await fetch(`/api/videos/${video.id}`, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ visibility, sharedWith }),
+      });
+      if (!res.ok) throw new Error();
+      shared(video.id, visibility, sharedWith);
+      onClose();
+    } catch {
+      setError('Couldn’t save. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const option = (value: 'team' | 'chosen', title: string, body: string) => (
+    <label
+      className={`flex cursor-pointer gap-3 rounded-card border p-3.5 transition-colors ${
+        visibility === value ? 'border-text bg-sunken' : 'border-line hover:bg-sunken/60'
+      }`}
+    >
+      <input
+        type='radio'
+        name='visibility'
+        checked={visibility === value}
+        onChange={() => setVisibility(value)}
+        className='mt-1 accent-[var(--color-text)]'
+      />
+      <span>
+        <span className='block font-semibold'>{title}</span>
+        <span className='block text-sm text-muted'>{body}</span>
+      </span>
+    </label>
+  );
+
+  return (
+    <Dialog open={open} onOpenChange={(next) => !next && !busy && onClose()}>
+      <DialogContent>
+        <form onSubmit={save}>
+          <DialogHeader>
+            <DialogTitle>Who can see this</DialogTitle>
+            <DialogDescription>
+              Who can find &ldquo;{video.title}&rdquo; in their dashboard. Anyone
+              you send the link to can still watch it.
+            </DialogDescription>
+          </DialogHeader>
+          <div className='mt-5 space-y-2'>
+            {option('team', 'Everyone on the team', 'Teammates can find it in your library.')}
+            {option('chosen', 'Only people I choose', 'Your admin and the people you pick.')}
+          </div>
+          {visibility === 'chosen' && (
+            <div className='mt-3 max-h-56 space-y-1 overflow-y-auto rounded-card border border-line p-2'>
+              {people.length ? (
+                people.map((p) => (
+                  <label
+                    key={p.id}
+                    className='flex cursor-pointer items-center gap-3 rounded-control px-2 py-2 hover:bg-sunken'
+                  >
+                    <input
+                      type='checkbox'
+                      checked={chosen.has(p.id)}
+                      onChange={() =>
+                        setChosen((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(p.id)) next.delete(p.id);
+                          else next.add(p.id);
+                          return next;
+                        })
+                      }
+                      className='accent-[var(--color-text)]'
+                    />
+                    <span className='min-w-0'>
+                      <span className='block truncate text-sm font-semibold'>{p.name}</span>
+                      <span className='block truncate text-xs text-muted'>{p.email}</span>
+                    </span>
+                  </label>
+                ))
+              ) : (
+                <p className='px-2 py-2 text-sm text-muted'>
+                  No one else to choose yet. Only you and your admin will see it.
+                </p>
+              )}
+            </div>
+          )}
+          {error && (
+            <p role='alert' className='mt-3 text-sm text-danger'>
+              {error}
+            </p>
+          )}
+          <DialogFooter>
+            <DialogClose className={buttonClass('ghost', 'md')} disabled={busy}>
+              Cancel
+            </DialogClose>
+            <button type='submit' disabled={busy} className={buttonClass('primary', 'md')}>
+              {busy ? 'Saving…' : 'Save'}
+            </button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 function RenameDialog({
   video,
@@ -687,6 +862,7 @@ function VideoCard({
           <span aria-hidden>·</span>
           <span className='shrink-0'>
             {video.ready ? video.when : 'Uploading'}
+            {video.visibility === 'chosen' && ' · Only chosen people'}
           </span>
         </div>
         <Link
@@ -736,6 +912,7 @@ function VideoRow({
           <span aria-hidden>·</span>
           <span className='shrink-0'>
             {video.ready ? video.when : 'Uploading'}
+            {video.visibility === 'chosen' && ' · Only chosen people'}
           </span>
         </div>
       </div>
@@ -852,7 +1029,10 @@ export function LibraryView({
   scope = null,
   space,
   watchLater,
+  team = null,
 }: {
+  /** The team behind this library, for sharing within it; leave out when there's none. */
+  team?: { people: TeamPerson[]; ownerId: string } | null;
   videos: LibraryVideo[];
   /** Folder cards shown above the videos (the library's top level only). */
   folders: LibraryFolder[];
@@ -873,6 +1053,9 @@ export function LibraryView({
   const [titles, setTitles] = useState<Record<string, string>>({});
   const [removed, setRemoved] = useState<Set<string>>(() => new Set());
   const [movedTo, setMovedTo] = useState<Record<string, string | null>>({});
+  const [sharing, setSharing] = useState<
+    Record<string, { visibility: 'team' | 'chosen'; sharedWith: string[] }>
+  >({});
   const [later, setLater] = useState<Set<string> | null>(() =>
     watchLater && space ? new Set(watchLater) : null
   );
@@ -911,6 +1094,11 @@ export function LibraryView({
       setRemoved((prev) => new Set(prev).add(id));
       router.refresh();
     },
+    team,
+    shared: (id, visibility, sharedWith) => {
+      setSharing((prev) => ({ ...prev, [id]: { visibility, sharedWith } }));
+      router.refresh();
+    },
   };
   const all = videos
     .filter((v) => !removed.has(v.id))
@@ -918,7 +1106,8 @@ export function LibraryView({
     // The library shows every video; a folder shows only its own. A video taken out of the
     // folder being shown leaves it right away.
     .filter((v) => scope === null || v.folderId === scope)
-    .map((v) => (titles[v.id] ? { ...v, title: titles[v.id] } : v));
+    .map((v) => (titles[v.id] ? { ...v, title: titles[v.id] } : v))
+    .map((v) => (sharing[v.id] ? { ...v, ...sharing[v.id] } : v));
 
   const toggleStar = (id: string) =>
     setStars((prev) => {
@@ -1041,13 +1230,17 @@ export function LibraryView({
 /** The two buttons beside the page title. */
 export function LibraryActions({
   foldersEnabled = false,
+  updateHint,
 }: {
   foldersEnabled?: boolean;
+  /** Hover text on features that need an update the viewer can't install (team members). */
+  updateHint?: string;
 }) {
   return (
     <div className='flex items-center gap-2'>
       <NewFolderButton
         enabled={foldersEnabled}
+        updateHint={updateHint}
         className='inline-flex h-10 items-center gap-2 rounded-control border border-line bg-surface px-4 text-sm font-semibold transition-colors hover:border-line-strong hover:bg-sunken'
       />
       {/* /record opens the extension's recording panel by itself (or explains how to install it). */}

@@ -1,4 +1,6 @@
+import type { VideoSummary } from "@/lib/cloudflare";
 import type { Workspace } from "@/lib/db";
+import { canManage } from "@/lib/team-access";
 
 // Renaming and deleting recordings. Version 3 Workers do both themselves (and keep D1 in
 // step). Older ones are handled through the upload endpoints every Worker has (PUT and
@@ -26,6 +28,37 @@ async function workerCall(ws: Workspace, id: string, method: "PATCH" | "DELETE",
     body: body === undefined ? undefined : JSON.stringify(body),
     signal: AbortSignal.timeout(20000),
   });
+}
+
+/** One recording's details, with who recorded it (version 7 Workers). Null if it doesn't exist. */
+export async function getVideo(ws: Workspace, id: string): Promise<VideoSummary | null> {
+  const res = await fetch(`${ws.worker_url}/api/videos/${id}`, {
+    headers: auth(ws),
+    cache: "no-store",
+    signal: AbortSignal.timeout(8000),
+  });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Could not read the video (${res.status})`);
+  return ((await res.json()) as { video: VideoSummary }).video;
+}
+
+/**
+ * Whether someone manages a recording: the admin always; on a team (version 7), also whoever
+ * recorded it. Used for share pages (deleting comments, editing buttons, not counting own views).
+ */
+export async function managesVideo(ws: Workspace, id: string, userId: string | null | undefined): Promise<boolean> {
+  if (!userId) return false;
+  if (userId === ws.owner_id) return true;
+  if (ws.worker_version < 7) return false;
+  const video = await getVideo(ws, id).catch(() => null);
+  return Boolean(video && canManage(video, userId, ws.owner_id));
+}
+
+/** Who can find a recording in the dashboard: the whole team, or only chosen members (version 7). */
+export async function setVisibility(ws: Workspace, id: string, visibility: "team" | "chosen", sharedWith: string[]): Promise<number> {
+  const res = await workerCall(ws, id, "PATCH", { visibility, sharedWith });
+  if (!res.ok && res.status !== 404) throw new Error(`Could not save who can see the video (${res.status})`);
+  return res.status;
 }
 
 /** Moves a recording into a folder (version 3 Workers), or back to the library with null. */

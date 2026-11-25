@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getWorkspace } from "@/lib/db";
+import { getTeamContext } from "@/lib/team";
 import { addPersonal, getPersonal, personalEnabled, removePersonal } from "@/lib/personal";
 import { getSession } from "@/lib/session";
 
@@ -16,7 +16,7 @@ const ID = /^[a-z0-9]{8,64}$/;
 async function viewer() {
   const session = await getSession();
   if (!session) return null;
-  const ws = await getWorkspace(session.user.id);
+  const ws = (await getTeamContext(session.user)).workspace;
   return personalEnabled(ws) ? { userId: session.user.id, ws } : null;
 }
 

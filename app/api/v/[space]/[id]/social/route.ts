@@ -1,6 +1,8 @@
 import { cookies } from "next/headers";
 import { NextResponse, after } from "next/server";
-import { type Workspace, getWorkspace, getWorkspaceBySpace } from "@/lib/db";
+import { type Workspace, getWorkspaceBySpace } from "@/lib/db";
+import { getTeamContext } from "@/lib/team";
+import { managesVideo } from "@/lib/video-files";
 import { addPersonal, personalEnabled } from "@/lib/personal";
 import { getSession } from "@/lib/session";
 
@@ -74,7 +76,8 @@ export async function GET(_request: Request, { params }: Params) {
   if (!found) return NextResponse.json({ enabled: false, reason: "not_found" });
   const { ws, id } = found;
   const session = await getSession();
-  const isOwner = session?.user.id === ws.owner_id;
+  // The admin, or (on a team) whoever recorded this video.
+  const isOwner = await managesVideo(ws, id, session?.user.id);
   const me = session ? viewer(session.user) : null;
   // Comments arrived with version 2 of the Worker; older ones need the owner to update.
   if (ws.worker_version < 2) return NextResponse.json({ enabled: false, reason: "update", isOwner, me });
@@ -104,11 +107,11 @@ export async function POST(request: Request, { params }: Params) {
     if (session) {
       const viewerId = session.user.id;
       after(async () => {
-        const mine = session.user.id === ws.owner_id ? ws : await getWorkspace(viewerId);
+        const mine = session.user.id === ws.owner_id ? ws : (await getTeamContext(session.user)).workspace;
         if (personalEnabled(mine)) await addPersonal(mine, viewerId, "recent", ws.space, id).catch(() => {});
       });
     }
-    if (session?.user.id === ws.owner_id) return NextResponse.json({ counted: false });
+    if (await managesVideo(ws, id, session?.user.id)) return NextResponse.json({ counted: false });
     const jar = await cookies();
     const cookie = `stv_${id}`;
     if (jar.get(cookie)) return NextResponse.json({ counted: false });
@@ -150,7 +153,7 @@ export async function POST(request: Request, { params }: Params) {
     if (!input.commentId || !/^[0-9a-f-]{36}$/.test(input.commentId)) return NextResponse.json({ error: "bad_id" }, { status: 400 });
     const res = await workerCall(ws, `${id}/comments/${input.commentId}`, {
       method: "DELETE",
-      body: { userId: me.id, isOwner: me.id === ws.owner_id },
+      body: { userId: me.id, isOwner: await managesVideo(ws, id, me.id) },
     });
     return res.ok ? NextResponse.json({ ok: true }) : NextResponse.json({ error: "failed" }, { status: res.status === 403 ? 403 : 502 });
   }

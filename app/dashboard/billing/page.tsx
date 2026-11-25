@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/dashboard-ui";
 import { buttonClass } from "@/components/ui";
 import { getAccess } from "@/lib/billing";
+import { firstName, getTeamContext } from "@/lib/team";
 import { pages } from "@/lib/dashboard-pages";
 import { tiers } from "@/lib/pricing";
 import { requireSession } from "@/lib/session";
@@ -19,7 +20,22 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 
 export default async function BillingPage() {
   const { user } = await requireSession();
-  const { paid, purchase, free } = await getAccess(user);
+  const { paid, purchase, free, viaTeam } = await getAccess(user);
+  // Team members are covered by their admin's license.
+  if (viaTeam) {
+    const team = await getTeamContext(user);
+    return (
+      <main className="px-5 py-8 sm:px-10 sm:py-10">
+        <PageHeader title={pages.billing.title} description={pages.billing.description} />
+        <section className="mt-10 max-w-2xl rounded-panel border border-line bg-surface p-6 sm:p-8">
+          <h2 className="text-xl">Covered by your team</h2>
+          <p className="mt-2 text-muted">
+            You&rsquo;re on {firstName(team.owner)}&rsquo;s team, and their license covers everyone on it. There&rsquo;s nothing for you to pay.
+          </p>
+        </section>
+      </main>
+    );
+  }
   const tier = purchase ? tiers.find((t) => t.id === purchase.tier) : null;
   const appsumo = purchase?.tier === "appsumo";
 

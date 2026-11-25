@@ -10,7 +10,7 @@ import { buttonClass } from "@/components/ui";
 
 const WORD = "disconnect";
 
-export function DisconnectCloudflare({ accountName, email }: { accountName: string | null; email: string }) {
+export function DisconnectCloudflare({ accountName, email, space }: { accountName: string | null; email: string; space: string }) {
   const [open, setOpen] = useState(false);
   const [typed, setTyped] = useState("");
   const [busy, setBusy] = useState(false);
@@ -27,7 +27,7 @@ export function DisconnectCloudflare({ accountName, email }: { accountName: stri
       const res = await fetch("/api/cloudflare/disconnect", { method: "POST" });
       if (!res.ok) throw new Error();
       // Tell the extension (if it's installed) to forget this connection too.
-      window.postMessage({ type: "showthrough:disconnected", email }, window.location.origin);
+      window.postMessage({ type: "showthrough:disconnected", email, space }, window.location.origin);
       router.push("/dashboard");
       router.refresh();
     } catch {

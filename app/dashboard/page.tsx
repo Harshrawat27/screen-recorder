@@ -7,10 +7,10 @@ import { pages } from "@/lib/dashboard-pages";
 import { CheckIcon, Pill, buttonClass } from "@/components/ui";
 import { listVideos } from "@/lib/cloudflare";
 import { MEDIA_URL } from "@/lib/config";
-import { getWorkspace } from "@/lib/db";
+import { firstName, getTeamContext, teamPeople, teamsEnabled } from "@/lib/team";
 import { LibraryActions, LibraryView } from "@/components/library-ui";
 import { foldersEnabled, listFolders } from "@/lib/folders";
-import { toLibraryVideos } from "@/lib/library";
+import { toLibraryVideos, videosBy } from "@/lib/library";
 import { getPersonal, personalEnabled } from "@/lib/personal";
 import { requireSession } from "@/lib/session";
 import { getAccess, syncPayment } from "@/lib/billing";
@@ -67,25 +67,35 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
 
   if (!access.paid) return <LockedLibrary pending={returning} />;
 
-  const workspace = await getWorkspace(user.id);
-  const [library, folders, later] = await Promise.all([
+  const team = await getTeamContext(user);
+  const member = team.role === "member";
+  const workspace = team.workspace;
+  const [library, folders, later, people] = await Promise.all([
     workspace ? listVideos(workspace.worker_url, workspace.upload_key) : { videos: [], reachable: true },
     listFolders(workspace),
     personalEnabled(workspace) ? getPersonal(workspace, user.id, "watch_later") : null,
+    teamsEnabled(workspace) ? teamPeople(team.ownerId) : [],
   ]);
   const canFolder = foldersEnabled(workspace);
-  const videos = library.videos;
+  // My library: only the recordings I made. Teammates' recordings are under Team.
+  const videos = workspace ? videosBy(library.videos, workspace, user.id, user.id) : [];
 
   const connected = Boolean(workspace);
-  const extension = Boolean(workspace?.extension_connected_at);
+  const extension = team.extensionConnected;
   const recorded = videos.length > 0;
   const setupDone = connected && extension && recorded;
 
   return (
     <main className="px-5 py-8 sm:px-10 sm:py-10">
-        {!connected && <GuideBar />}
-        <PageHeader title={pages.library.title} description={pages.library.description}>
-          <LibraryActions foldersEnabled={canFolder} />
+        {!connected && !member && <GuideBar />}
+        <PageHeader
+          title={pages.library.title}
+          description={member ? `Your recordings, stored in ${firstName(team.owner)}'s Cloudflare for the team.` : pages.library.description}
+        >
+          <LibraryActions
+            foldersEnabled={canFolder}
+            updateHint={member ? `Your admin (${firstName(team.owner)}) hasn't installed this update yet` : undefined}
+          />
         </PageHeader>
 
         {returning && (
@@ -102,7 +112,36 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
           </p>
         )}
 
-        {!setupDone && (
+        {!setupDone && member && (
+          <section aria-labelledby="setup" className="mt-10 max-w-3xl rounded-panel border border-line bg-surface p-6 sm:p-8">
+            <h2 id="setup" className="text-xl font-bold tracking-tight">
+              Get ready to record
+            </h2>
+            <p className="mt-1 text-muted">
+              {connected
+                ? `Two steps. Storage is managed by ${firstName(team.owner)}, your team's admin.`
+                : `${firstName(team.owner)}, your team's admin, hasn't connected Cloudflare yet. You can connect your extension once they do.`}
+            </p>
+            <ol className="mt-6 divide-y divide-line">
+              <Step n={1} done={extension} title="Connect the Chrome extension" body={extensionBody}>
+                {extension ? (
+                  <Pill>Done</Pill>
+                ) : connected ? (
+                  <a href="/extension/connect" className={buttonClass("primary", "md")}>
+                    Connect extension
+                  </a>
+                ) : (
+                  <Pill>Waiting for your admin</Pill>
+                )}
+              </Step>
+              <Step n={2} done={recorded} title="Record your first video" body="Click the Showthrough icon, record, stop. The link is copied for you.">
+                {recorded ? <Pill>Done</Pill> : <Pill>{extension ? "Ready when you are" : "After step 1"}</Pill>}
+              </Step>
+            </ol>
+          </section>
+        )}
+
+        {!setupDone && !member && (
           <section aria-labelledby="setup" className="mt-10 max-w-3xl rounded-panel border border-line bg-surface p-6 sm:p-8">
             <h2 id="setup" className="text-xl font-bold tracking-tight">
               Get ready to record
@@ -160,11 +199,13 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
             scope={null}
             space={workspace.space}
             watchLater={later?.filter((i) => i.space === workspace.space).map((i) => i.videoId)}
-            videos={toLibraryVideos(videos, workspace)}
+            videos={toLibraryVideos(videos, workspace, user.id)}
+            team={people.length > 1 ? { people: people.map(({ id, name, email }) => ({ id, name, email })), ownerId: team.ownerId } : null}
           />
         ) : null}
 
-        {workspace && !setupDone && (
+        {/* The check uses the admin's key in the browser, so it's for the admin only. */}
+        {workspace && !setupDone && !member && (
           <ConnectionCheck workerUrl={workspace.worker_url} uploadKey={workspace.upload_key} space={workspace.space} mediaBase={MEDIA_URL} />
         )}
 

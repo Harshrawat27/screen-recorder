@@ -1,6 +1,7 @@
 import { listVideos } from "@/lib/cloudflare";
 import { MEDIA_URL } from "@/lib/config";
 import type { Workspace } from "@/lib/db";
+import { type TeamVideo, canSee } from "@/lib/team-access";
 
 // Search for the dashboard's command palette. The answer is grouped by kind so more kinds
 // (comments, team members) can be added later without changing the palette.
@@ -61,19 +62,23 @@ function score(title: string, words: string[], phrase: string): number {
   return words.every((w) => t.startsWith(w) || t.includes(` ${w}`)) ? 1 : 0;
 }
 
-/** Version 3 Workers search their own D1. */
-async function searchInD1(ws: Workspace, query: string, limit: number): Promise<SearchResults> {
-  const url = `${ws.worker_url}/api/search?q=${encodeURIComponent(query)}&limit=${limit}`;
+/** Version 3 Workers search their own D1. A team member only gets what they're allowed to find. */
+async function searchInD1(ws: Workspace, query: string, limit: number, viewerId?: string): Promise<SearchResults> {
+  const member = Boolean(viewerId && viewerId !== ws.owner_id);
+  // Members' results are filtered here, so ask for more than will be shown.
+  const url = `${ws.worker_url}/api/search?q=${encodeURIComponent(query)}&limit=${member ? 50 : limit}`;
   const res = await fetch(url, { headers: { authorization: `Bearer ${ws.upload_key}` }, cache: "no-store", signal: AbortSignal.timeout(6000) });
   if (!res.ok) throw new Error(`Search failed (${res.status})`);
   const data = (await res.json()) as {
-    videos: { id: string; title: string | null; createdAt: number | null; durationSec: number | null }[];
+    videos: ({ id: string; title: string | null; createdAt: number | null; durationSec: number | null } & TeamVideo)[];
     folders?: { id: string; name: string; videos: number }[];
   };
   return {
     folders: (data.folders ?? []).map((f) => ({ ...f, href: `/dashboard/folders/${f.id}` })),
     videos: data.videos
       .filter((v) => !v.id.startsWith("stcheck"))
+      .filter((v) => !member || canSee(v, viewerId as string, ws.owner_id))
+      .slice(0, limit)
       .map((v) => ({
         id: v.id,
         title: v.title || "Untitled recording",
@@ -85,8 +90,8 @@ async function searchInD1(ws: Workspace, query: string, limit: number): Promise<
   };
 }
 
-export async function search(ws: Workspace, query: string, limit = 8): Promise<SearchResults> {
-  if (ws.worker_version >= 3) return searchInD1(ws, query.trim() ? query : "", query.trim() ? limit : Math.min(limit, 5));
+export async function search(ws: Workspace, query: string, limit = 8, viewerId?: string): Promise<SearchResults> {
+  if (ws.worker_version >= 3) return searchInD1(ws, query.trim() ? query : "", query.trim() ? limit : Math.min(limit, 5), viewerId);
   const videos = await allVideos(ws);
   const phrase = normalize(query).replace(/\s+/g, " ").trim();
   if (!phrase) return { videos: videos.slice(0, Math.min(limit, 5)) }; // newest first

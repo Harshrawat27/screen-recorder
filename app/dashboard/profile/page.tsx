@@ -6,7 +6,7 @@ import { DisconnectCloudflare } from "@/components/disconnect-cloudflare";
 import { buttonClass } from "@/components/ui";
 import { avatarEnabled, getAvatar } from "@/lib/avatar";
 import { pages } from "@/lib/dashboard-pages";
-import { getWorkspace } from "@/lib/db";
+import { firstName, getTeamContext } from "@/lib/team";
 import { requireSession } from "@/lib/session";
 
 export const metadata: Metadata = { title: pages.profile.title, robots: { index: false } };
@@ -23,9 +23,12 @@ function Message({ title, body, action }: { title: string; body: string; action?
 
 export default async function ProfilePage() {
   const { user } = await requireSession();
-  const workspace = await getWorkspace(user.id);
+  const team = await getTeamContext(user);
+  const member = team.role === "member";
+  const workspace = team.workspace;
   const header = <PageHeader title={pages.profile.title} description={pages.profile.description} />;
-  const disconnect = workspace && <DisconnectCloudflare accountName={workspace.cf_account_name} email={user.email} />;
+  // Only the admin owns the Cloudflare connection.
+  const disconnect = workspace && !member && <DisconnectCloudflare accountName={workspace.cf_account_name} email={user.email} space={workspace.space} />;
 
   if (!workspace) {
     return (
@@ -33,7 +36,11 @@ export default async function ProfilePage() {
         {header}
         <Message
           title="Connect Cloudflare first"
-          body="Your photo is kept in your own Cloudflare, next to your videos, so you can add one once it's connected. Connecting is one click from your library, and we handle the rest."
+          body={
+            member
+              ? `Your photo is kept in your team's Cloudflare, next to your videos, so you can add one once ${firstName(team.owner)} connects it.`
+              : "Your photo is kept in your own Cloudflare, next to your videos, so you can add one once it's connected. Connecting is one click from your library, and we handle the rest."
+          }
           action={
             <Link href="/dashboard" className={buttonClass("primary", "md", "mt-6")}>
               Go to your library
@@ -49,7 +56,11 @@ export default async function ProfilePage() {
         {header}
         <Message
           title="Update to add a photo"
-          body="Profile photos come with the latest version of your video backend. Press Update in the sidebar; it takes about 30 seconds and keeps everything as it is."
+          body={
+            member
+              ? `Profile photos come with the latest version of your team's video backend. Ask ${firstName(team.owner)}, your admin, to update.`
+              : "Profile photos come with the latest version of your video backend. Press Update in the sidebar; it takes about 30 seconds and keeps everything as it is."
+          }
         />
         {disconnect}
       </main>

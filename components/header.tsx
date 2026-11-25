@@ -30,9 +30,10 @@ export function Header() {
           <Link href="/login" className={buttonClass("ghost", "sm")}>
             Sign in
           </Link>
-          <Link href="/#pricing" className={buttonClass("primary", "sm", "ml-1")}>
+          {/* Straight to buying: sign in first if needed, then Dodo checkout for the plan on sale (see /buy). */}
+          <a href="/buy" className={buttonClass("primary", "sm", "ml-1")}>
             Get {site.name}
-          </Link>
+          </a>
         </nav>
       </div>
     </header>

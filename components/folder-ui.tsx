@@ -125,7 +125,8 @@ function NameDialog({
 }
 
 /** "New folder" beside the library title. */
-export function NewFolderButton({ enabled, className }: { enabled: boolean; className: string }) {
+/** `updateHint`: why it's greyed out, shown on hover (team members can't update themselves). */
+export function NewFolderButton({ enabled, className, updateHint = "Press Update in the sidebar to use folders" }: { enabled: boolean; className: string; updateHint?: string }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   return (
@@ -134,7 +135,7 @@ export function NewFolderButton({ enabled, className }: { enabled: boolean; clas
         type="button"
         onClick={() => setOpen(true)}
         disabled={!enabled}
-        title={enabled ? undefined : "Press Update in the sidebar to use folders"}
+        title={enabled ? undefined : updateHint}
         className={`${className} disabled:cursor-not-allowed disabled:opacity-50`}
       >
         <FolderIcon />

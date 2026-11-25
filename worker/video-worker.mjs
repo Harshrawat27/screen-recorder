@@ -26,7 +26,17 @@
 //   POST   /api/social/<id>/reactions       add a reaction (needs UPLOAD_KEY)
 //   POST   /api/social/<id>/views           count a view (needs UPLOAD_KEY)
 //   GET    /videos/<id>/<file>              public: stream a file (what share links play)
+//   GET    /api/videos/<id>                 one recording, with who recorded it (needs UPLOAD_KEY)
+//   PATCH  /api/videos/<id>                 also { visibility, sharedWith } (needs UPLOAD_KEY)
+//   POST   /api/members                     register a team member's upload key (needs UPLOAD_KEY)
+//   DELETE /api/members/<userId>            revoke it (needs UPLOAD_KEY)
 //   GET    /health                          version check
+//
+// From version 7, team members record with their own key (a member key). A member key can
+// only upload and delete the files of recordings that member made, and read their own profile
+// photo; it can't list, read or change anyone else's recordings. Every recording remembers who
+// made it (videos.recorded_by; empty means the account owner). Who may see what in the
+// dashboard is decided by the Showthrough website, which holds the main key.
 //
 // From version 3 each recording also has a row in D1 (title, date, length, thumbnail), kept
 // in step with its meta.json: the row is written when the extension uploads meta.json. The
@@ -37,7 +47,7 @@
 // endpoints are only called by the Showthrough website, which checks who is signed in and
 // passes their name along. Viewers never talk to these endpoints directly.
 
-const VERSION = 6;
+const VERSION = 7;
 const VIDEO_ID = /^[a-z0-9]{8,64}$/;
 const EMOJIS = ["👍", "❤️", "😂", "🎉", "😮", "🔥"];
 const FILE = /^videos\/[a-z0-9]{8,64}\/[A-Za-z0-9._-]{1,100}$/;
@@ -56,13 +66,40 @@ function json(body, status = 200) {
   });
 }
 
+const bearer = (request) => (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+
 function authorized(request, env) {
-  const given = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+  const given = bearer(request);
   const expected = env.UPLOAD_KEY || "";
   if (!expected || given.length !== expected.length) return false;
   let diff = 0;
   for (let i = 0; i < given.length; i++) diff |= given.charCodeAt(i) ^ expected.charCodeAt(i);
   return diff === 0;
+}
+
+async function sha256(text) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// Member keys are looked up by their SHA-256 (only the hash is stored). Results are kept for a
+// minute per Worker instance, so a recording's many uploads don't each read the database; a
+// revoked key stops working within that minute.
+const memberCache = new Map(); // hash -> { userId, at }
+const MEMBER_CACHE_MS = 60_000;
+
+/** The team member a key belongs to, or null. */
+async function memberFor(request, env) {
+  const given = bearer(request);
+  if (!env.DB || given.length < 32 || given.length > 200) return null;
+  const hash = await sha256(given);
+  const hit = memberCache.get(hash);
+  if (hit && Date.now() - hit.at < MEMBER_CACHE_MS) return hit.userId;
+  await ensureSchema(env);
+  const row = await env.DB.prepare("select user_id from members where key_hash = ?").bind(hash).first();
+  const userId = row?.user_id ?? null;
+  memberCache.set(hash, { userId, at: Date.now() });
+  return userId;
 }
 
 /** Every recording folder in R2, with its meta.json if it has one. Used once to fill D1. */
@@ -112,6 +149,8 @@ const SCHEMA = [
      primary key (user_id, kind, space, video_id))`,
   `create index if not exists personal_recent on personal (user_id, kind, at desc)`,
   // Version 3: this Worker's own count of its requests and storage operations, per UTC day.
+  // Version 7: team members' upload keys (hashed) and who recorded each video.
+  `create table if not exists members (user_id text primary key, key_hash text not null unique, created_at integer not null)`,
   `create table if not exists usage_daily (
      day text primary key, requests integer not null default 0, class_a integer not null default 0,
      class_b integer not null default 0)`,
@@ -127,6 +166,10 @@ function ensureSchema(env) {
     // Databases made by an early build of version 3 have no folder column yet.
     .then(() => env.DB.prepare("alter table videos add column folder_id text").run().catch(() => {}))
     .then(() => env.DB.prepare("alter table videos add column bytes integer").run().catch(() => {}))
+    // Version 7: who recorded it (empty = the account owner) and who can find it in the dashboard.
+    .then(() => env.DB.prepare("alter table videos add column recorded_by text").run().catch(() => {}))
+    .then(() => env.DB.prepare("alter table videos add column visibility text").run().catch(() => {}))
+    .then(() => env.DB.prepare("alter table videos add column shared_with text").run().catch(() => {}))
     .then(() => env.DB.prepare("create index if not exists videos_folder on videos (folder_id)").run())
     .then(() =>
       env.DB.prepare(FTS_SCHEMA)
@@ -252,7 +295,19 @@ function videoRow(row) {
     thumbnail: row.thumbnail,
     ready: row.status === "ready",
     folderId: row.folder_id ?? null,
+    recordedBy: row.recorded_by ?? null,
+    visibility: row.visibility === "chosen" ? "chosen" : "team",
+    sharedWith: sharedList(row.shared_with),
   };
+}
+
+function sharedList(text) {
+  try {
+    const list = JSON.parse(text || "[]");
+    return Array.isArray(list) ? list.filter((id) => typeof id === "string" && USER_ID.test(id)).slice(0, 200) : [];
+  } catch {
+    return [];
+  }
 }
 
 /** Statements that save a recording's details (from its meta.json) and its search entry. */
@@ -392,9 +447,18 @@ async function forgetRecording(env, id) {
 }
 
 /** Keeps D1 in step with what the extension uploads and deletes. */
-async function afterUpload(env, key, method, body) {
+async function afterUpload(env, key, method, body, recorder = null) {
   if (!env.DB) return;
   const [, id, file] = key.split("/");
+  if (recorder && method === "PUT") {
+    // A team member's recording: remember who made it, from its very first file.
+    await ensureSchema(env);
+    await env.DB.prepare(
+      "insert into videos (id, status, created_at, updated_at, recorded_by) values (?, 'uploading', ?, ?, ?) on conflict (id) do update set recorded_by = coalesce(videos.recorded_by, excluded.recorded_by)",
+    )
+      .bind(id, Date.now(), Date.now(), recorder)
+      .run();
+  }
   if (method === "PUT" && file === "meta.json") {
     await ensureSchema(env);
     await env.DB.batch(saveVideoStatements(env, id, JSON.parse(new TextDecoder().decode(body))));
@@ -414,8 +478,24 @@ async function afterUpload(env, key, method, body) {
 
 async function handleVideo(request, env, id) {
   if (!VIDEO_ID.test(id)) return json({ error: "bad_id" }, 400);
+  if (request.method === "GET") {
+    await ensureIndexed(env);
+    const row = await env.DB.prepare("select * from videos where id = ?").bind(id).first();
+    return row ? json({ video: videoRow(row) }) : json({ error: "not_found" }, 404);
+  }
   if (request.method === "PATCH") {
     const input = await request.json().catch(() => ({}));
+    // Who can find it in the dashboard: the whole team, or only chosen members.
+    if ("visibility" in input) {
+      await ensureIndexed(env);
+      const visibility = input.visibility === "chosen" ? "chosen" : "team";
+      const shared = Array.isArray(input.sharedWith) ? input.sharedWith.filter((u) => typeof u === "string" && USER_ID.test(u)).slice(0, 200) : [];
+      const changed = await env.DB.prepare("update videos set visibility = ?, shared_with = ? where id = ?")
+        .bind(visibility, JSON.stringify(visibility === "chosen" ? shared : []), id)
+        .run();
+      if (changed.meta && changed.meta.changes === 0) return json({ error: "not_found" }, 404);
+      return json({ visibility, sharedWith: visibility === "chosen" ? shared : [] });
+    }
     // Move to a folder (or back to the library with null).
     if ("folderId" in input) {
       await ensureIndexed(env);
@@ -731,6 +811,66 @@ async function handleSocial(request, env, path) {
   return json({ error: "not_found" }, 404);
 }
 
+// ---- Team members (version 7) -------------------------------------------------------------
+
+async function handleMembers(request, env, path) {
+  if (!env.DB) return json({ error: "no_database" }, 501);
+  await ensureSchema(env);
+  const userId = path.slice("/api/members".length).replace(/^\//, "");
+  if (!userId && request.method === "POST") {
+    const input = await request.json().catch(() => ({}));
+    const hash = String(input.keyHash || "");
+    if (!USER_ID.test(String(input.userId || "")) || !/^[a-f0-9]{64}$/.test(hash)) return json({ error: "bad_request" }, 400);
+    // One key per member: a new key replaces the old one.
+    await env.DB.prepare(
+      "insert into members (user_id, key_hash, created_at) values (?, ?, ?) on conflict (user_id) do update set key_hash = excluded.key_hash, created_at = excluded.created_at",
+    )
+      .bind(input.userId, hash, Date.now())
+      .run();
+    memberCache.clear();
+    return json({ ok: true });
+  }
+  if (userId && USER_ID.test(userId) && request.method === "DELETE") {
+    await env.DB.prepare("delete from members where user_id = ?").bind(userId).run();
+    memberCache.clear();
+    return json({ ok: true });
+  }
+  return json({ error: "not_found" }, 404);
+}
+
+/** What a member key may do: upload and delete its own recordings' files, read its own photo. */
+async function memberRoute(request, env, path, url, userId) {
+  const method = request.method;
+  if (path === "/api/avatar" && method === "GET") {
+    if (url.searchParams.get("user") !== userId) return json({ error: "forbidden" }, 403);
+    return handleAvatar(request, env, url, path);
+  }
+  if (path.startsWith("/api/upload/") && (method === "PUT" || method === "DELETE")) {
+    const key = path.slice("/api/upload/".length);
+    if (!FILE.test(key)) return json({ error: "bad_key" }, 400);
+    const id = key.split("/")[1];
+    await ensureSchema(env);
+    const row = await env.DB.prepare("select recorded_by from videos where id = ?").bind(id).first();
+    // Someone else's recording (or the owner's, which has no recorder): not theirs to change.
+    if (row && row.recorded_by !== userId) return json({ error: "forbidden" }, 403);
+    if (method === "PUT") {
+      const body = await request.arrayBuffer();
+      await env.VIDEOS.put(key, body, {
+        httpMetadata: {
+          contentType: request.headers.get("content-type") || "application/octet-stream",
+          cacheControl: request.headers.get("cache-control") || undefined,
+        },
+      });
+      await afterUpload(env, key, method, body, userId).catch((err) => console.error("Could not update D1", err));
+      return json({ ok: true, size: body.byteLength });
+    }
+    await env.VIDEOS.delete(key);
+    await afterUpload(env, key, method).catch((err) => console.error("Could not update D1", err));
+    return json({ ok: true });
+  }
+  return json({ error: "forbidden" }, 403);
+}
+
 const worker = {
   async fetch(request, rawEnv, ctx) {
     count("requests");
@@ -751,7 +891,12 @@ async function route(request, env) {
   if (path === "/health") return json({ ok: true, version: VERSION });
 
   if (path.startsWith("/api/")) {
-    if (!authorized(request, env)) return json({ error: "unauthorized" }, 401);
+    if (!authorized(request, env)) {
+      const member = await memberFor(request, env).catch(() => null);
+      if (member) return memberRoute(request, env, path, url, member);
+      return json({ error: "unauthorized" }, 401);
+    }
+    if (path === "/api/members" || path.startsWith("/api/members/")) return handleMembers(request, env, path);
 
     if (path === "/api/videos" && method === "GET") {
       const [videos, stats] = await Promise.all([listRecordings(env), counts(env).catch(() => ({}))]);

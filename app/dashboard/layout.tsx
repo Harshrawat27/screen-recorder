@@ -7,7 +7,9 @@ import { Logo } from '@/components/header';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { UpdateBox } from '@/components/update-box';
 import { getAccess } from '@/lib/billing';
-import { getWorkspace } from '@/lib/db';
+import { WORKER_VERSION } from '@/lib/cloudflare';
+import { TeamSwitcher } from '@/components/team-ui';
+import { firstName, getTeamContext, teamChoices } from '@/lib/team';
 import { requireSession } from '@/lib/session';
 import { availableUpdate } from '@/lib/updates';
 
@@ -19,11 +21,17 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { user } = await requireSession();
-  const [access, workspace] = await Promise.all([
+  const [access, team] = await Promise.all([
     getAccess(user),
-    getWorkspace(user.id),
+    getTeamContext(user),
   ]);
-  const update = availableUpdate(workspace, access);
+  const member = team.role === 'member';
+  const choices = await teamChoices(user, access.paid && !access.viaTeam);
+  const switcher = <TeamSwitcher choices={choices} current={team.ownerId} />;
+  // Only the admin can update the video backend (it needs their Cloudflare); members see a note.
+  const update = member ? null : availableUpdate(team.workspace, access);
+  const adminBehind =
+    member && team.workspace && team.workspace.worker_version < WORKER_VERSION;
 
   return (
     <div className='lg:flex'>
@@ -32,10 +40,19 @@ export default async function DashboardLayout({
         <div className='px-5 pb-6 pt-5'>
           <Logo />
         </div>
+        {choices.length > 1 && <div className='px-3 pb-4'>{switcher}</div>}
         <div className='min-h-0 flex-1 overflow-y-auto px-3'>
-          <SidebarNav />
+          <SidebarNav member={member} />
         </div>
         {update && <UpdateBox {...update} />}
+        {adminBehind && (
+          <p className='mx-3 mb-3 rounded-[14px] border border-line bg-canvas p-3.5 text-[13px] leading-snug text-muted'>
+            <span className='block font-semibold text-text'>
+              A new version is available
+            </span>
+            Ask your admin ({firstName(team.owner)}) to update.
+          </p>
+        )}
         <div className='flex items-center gap-1 border-t border-line p-3'>
           <div className='min-w-0 flex-1'>
             <AccountMenu
@@ -63,7 +80,8 @@ export default async function DashboardLayout({
             />
           </div>
         </div>
-        <MobileNav />
+        {choices.length > 1 && <div className='pb-3'>{switcher}</div>}
+        <MobileNav member={member} />
       </header>
 
       <div className='min-w-0 flex-1'>
