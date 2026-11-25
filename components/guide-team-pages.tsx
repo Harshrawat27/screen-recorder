@@ -145,7 +145,7 @@ export const teamGuideContent: Record<string, React.ReactNode> = {
       </Do>
       <Shot
         src="team/team-people"
-        width={1600} height={451}
+        width={1600} height={855}
         alt="The People list on Manage team, with a videos button and Remove next to a teammate"
         marks={[{ circle: [68.4, 46, 9.5, 7.7] }, { circle: [78.8, 46, 9.3, 7.7] }, { cursor: [75.2, 50.8] }]}
       />
@@ -266,6 +266,9 @@ export const teamGuideContent: Record<string, React.ReactNode> = {
       </Do>
       <Shot src="team/share-dialog" width={1056} height={984} alt="Who can see this: Everyone on the team, or Only people I choose" />
       <Note title="Good to know">
+        <p>
+          You can also change it on the video&rsquo;s own page: click <b>Who can see this</b> under the video.
+        </p>
         <p>Your admin can always see every video in their Cloudflare.</p>
         <p>This only changes who finds it in the dashboard. Anyone you send the link to can still watch it.</p>
         <p>You can change this for videos you recorded. Your admin can change it for any video.</p>

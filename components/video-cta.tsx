@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { buttonClass } from "@/components/ui";
+import { VideoVisibility } from "@/components/video-visibility";
 import { VideoDownloads, useVideoDownload } from "@/components/video-download";
 import { type Cta, CTA_LABEL_MAX, CTA_MAX, cleanButtons, ctaHost } from "@/lib/cta";
 
@@ -117,6 +118,7 @@ export function VideoCta({ space, id, src }: { space: string; id: string; src?: 
       )}
 
       {isOwner && src && <DownloadButton src={src} />}
+      {isOwner && <VideoVisibility space={space} id={id} />}
 
       <Dialog open={open} onOpenChange={(next) => !next && !busy && setOpen(false)}>
         <DialogContent className="max-w-lg">
