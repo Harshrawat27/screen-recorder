@@ -21,8 +21,10 @@ export function ThemeToggle() {
     try {
       localStorage.setItem("theme", next);
     } catch {
-      // Private mode: the theme still switches for this visit.
+      // Storage blocked: the cookie below still remembers it.
     }
+    // Also a cookie, read by the script in app/layout.tsx if localStorage isn't available.
+    document.cookie = `theme=${next}; path=/; max-age=31536000; samesite=lax`;
   }
 
   return (

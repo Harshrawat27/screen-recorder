@@ -62,8 +62,10 @@ export const viewport: Viewport = {
   ],
 };
 
-// Runs before paint so the saved or system theme never flashes the wrong colors.
-const themeScript = `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='light'}})()`;
+// Runs before paint so the saved or system theme never flashes the wrong colors. The choice is
+// saved in localStorage and a cookie, so it sticks even where one of them is blocked; with
+// neither, the system setting decides.
+const themeScript = `(function(){var t=null;try{t=localStorage.getItem('theme')}catch(e){}if(t!=='light'&&t!=='dark'){var m=document.cookie.match(/(?:^|; )theme=(light|dark)/);t=m?m[1]:null}if(t!=='light'&&t!=='dark'){try{t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}catch(e){t='light'}}document.documentElement.dataset.theme=t})()`;
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
