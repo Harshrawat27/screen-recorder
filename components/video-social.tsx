@@ -37,6 +37,8 @@ type Comment = {
   canDelete: boolean;
 };
 type Reaction = { emoji: string; count: number; mine: boolean };
+/** A reaction with the moment it was tapped, shown among the comments. */
+type Moment = { key: string; name: string; image: string | null; emoji: string; atSec: number | null; mine: boolean };
 type Me = { id: string; name: string; image: string | null };
 type Social =
   | {
@@ -46,6 +48,7 @@ type Social =
       views: number;
       comments: Comment[];
       reactions: Reaction[];
+      moments?: Moment[];
     }
   | { enabled: false; reason: string; isOwner?: boolean; me?: Me | null };
 type Pending =
@@ -210,6 +213,16 @@ export function VideoSocial({
     null,
   );
   const counted = useRef(false);
+  // The comment list scrolls on its own; after posting, bring the new comment into view.
+  const listRef = useRef<HTMLOListElement | null>(null);
+  const scrollToComment = useRef<string | null>(null);
+  useEffect(() => {
+    const id = scrollToComment.current;
+    if (!id || !listRef.current) return;
+    scrollToComment.current = null;
+    const el = listRef.current.querySelector<HTMLElement>(`[data-comment="${CSS.escape(id)}"]`);
+    el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  });
   const resumed = useRef(false);
 
   const load = useCallback(async () => {
@@ -305,6 +318,7 @@ export function VideoSocial({
       setSocial((s) =>
         s && s.enabled ? { ...s, comments: [...s.comments, comment] } : s,
       );
+      scrollToComment.current = comment.id;
     }
     return true;
   }
@@ -318,6 +332,13 @@ export function VideoSocial({
             reactions: s.reactions.map((r) =>
               r.emoji === emoji ? { ...r, count: r.count + 1, mine: true } : r,
             ),
+            // Show it in the panel right away; the next refresh brings the saved list.
+            moments: s.me
+              ? [
+                  ...(s.moments ?? []),
+                  { key: `local-${Date.now()}`, name: s.me.name, image: s.me.image, emoji, atSec, mine: true },
+                ]
+              : s.moments,
           }
         : s,
     );
@@ -425,6 +446,14 @@ export function VideoSocial({
           a.createdAt - b.createdAt,
       )
     : [];
+  // Comments and timed reactions together, in video order. Reactions without a time (tapped
+  // before the video loaded) only count in the bar.
+  const feed: ({ kind: "comment"; at: number; item: Comment } | { kind: "moment"; at: number; item: Moment })[] = [
+    ...comments.map((c) => ({ kind: "comment" as const, at: c.atSec ?? Infinity, item: c })),
+    ...(enabled?.moments ?? [])
+      .filter((m) => m.atSec !== null)
+      .map((m) => ({ kind: "moment" as const, at: m.atSec as number, item: m })),
+  ].sort((a, b) => a.at - b.at);
   const statsLine = (
     <p className="flex min-h-5 flex-wrap items-center gap-x-2 text-sm text-muted">
       {meta.createdAt && <span>Recorded {recordedAgo(meta.createdAt)}</span>}
@@ -542,7 +571,7 @@ export function VideoSocial({
   );
 
   const skeletonRows = (
-    <ol aria-hidden className="flex-1 space-y-6 px-5 py-5">
+    <ol aria-hidden className="min-h-0 flex-1 space-y-6 overflow-hidden px-5 py-5">
       {[0.9, 0.65, 0.8].map((w, i) => (
         <li key={i} className="flex gap-3">
           <span className="animate-pulse bg-sunken size-8 shrink-0 rounded-full" />
@@ -556,7 +585,9 @@ export function VideoSocial({
   );
 
   const panel = (
-    <aside className="flex min-h-[420px] flex-col overflow-hidden rounded-panel border border-line bg-surface lg:sticky lg:top-6 lg:max-h-[calc(100dvh-3rem)]">
+    // A fixed height, so a long conversation scrolls inside the panel instead of growing the
+    // page. On wide screens it stays in view (sticky) while the page scrolls.
+    <aside className="flex h-[min(70dvh,640px)] flex-col overflow-hidden rounded-panel border border-line bg-surface lg:sticky lg:top-6 lg:h-[max(420px,calc(100dvh-9.5rem))]">
       <div className="flex items-center justify-between border-b border-line px-5 py-4">
         <h2 className="text-lg">Comments</h2>
         {enabled ? (
@@ -588,14 +619,36 @@ export function VideoSocial({
         </div>
       ) : (
           <>
-          <ol className="flex-1 space-y-5 overflow-y-auto px-5 py-5">
-            {comments.length === 0 && (
+          <ol ref={listRef} className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain px-5 py-5">
+            {feed.length === 0 && (
               <li className="py-10 text-center text-sm text-muted">
                 No comments yet. Pause on a moment and say something about it.
               </li>
             )}
-            {comments.map((c) => (
-              <li key={c.id} className="group flex gap-3">
+            {feed.map((entry) => {
+              if (entry.kind === "moment") {
+                const m = entry.item;
+                return (
+                  <li key={m.key} className="flex items-center gap-3">
+                    <Face name={m.name} image={m.image} />
+                    <p className="min-w-0 flex-1 text-sm">
+                      <span className="font-semibold">{m.mine ? "You" : m.name}</span>{" "}
+                      <span className="text-muted">reacted</span> <span className="text-base leading-none">{m.emoji}</span>
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => seek(m.atSec as number)}
+                      className="tabular rounded-md bg-sunken px-1.5 py-0.5 text-[13px] font-semibold text-text hover:bg-line"
+                      title="Jump to this moment"
+                    >
+                      {clock(m.atSec as number)}
+                    </button>
+                  </li>
+                );
+              }
+              const c = entry.item;
+              return (
+              <li key={c.id} data-comment={c.id} className="group flex gap-3">
                 <Face name={c.name} image={c.image} />
                 <div className="min-w-0 flex-1">
                   <p className="flex flex-wrap items-baseline gap-x-2 text-sm">
@@ -628,7 +681,8 @@ export function VideoSocial({
                   )}
                 </div>
               </li>
-            ))}
+              );
+            })}
           </ol>
 
           <form

@@ -59,7 +59,8 @@ export const teamsEnabled = (ws: Workspace | null): ws is Workspace => Boolean(w
 
 export type Person = { id: string; name: string; email: string; image: string | null };
 
-async function people(ids: string[]): Promise<Map<string, Person>> {
+/** Names and photos for a set of account ids (missing ids are left out). */
+export async function people(ids: string[]): Promise<Map<string, Person>> {
   if (!ids.length) return new Map();
   const { rows } = await pool.query<Person>('select id, name, email, image from "user" where id = any($1)', [ids]);
   return new Map(rows.map((p) => [p.id, p]));

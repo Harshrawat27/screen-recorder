@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse, after } from "next/server";
 import { type Workspace, getWorkspaceBySpace } from "@/lib/db";
-import { getTeamContext } from "@/lib/team";
+import { getTeamContext, people } from "@/lib/team";
 import { managesVideo } from "@/lib/video-files";
 import { addPersonal, personalEnabled } from "@/lib/personal";
 import { getSession } from "@/lib/session";
@@ -47,6 +47,33 @@ async function resolve(params: Params["params"]) {
 
 const viewer = (user: { id: string; name: string; image?: string | null }) => ({ id: user.id, name: user.name, image: user.image ?? null });
 
+/**
+ * Reactions with the moment they were tapped, for the comments panel ("Priya 🔥 at 0:42").
+ * Repeated taps of the same emoji by the same person within a second show once.
+ */
+async function moments(data: WorkerSocial, meId: string | null) {
+  const seen = new Set<string>();
+  const list = data.reactions.filter((r) => {
+    const key = `${r.userId}|${r.emoji}|${r.atSec === null ? "-" : Math.floor(r.atSec)}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  const recent = list.slice(-300);
+  const names = await people([...new Set(recent.map((r) => r.userId))]).catch(() => new Map());
+  return recent.map((r, i) => {
+    const person = names.get(r.userId);
+    return {
+      key: `r${i}`,
+      name: person?.name ?? "Someone",
+      image: person?.image ?? null,
+      emoji: r.emoji,
+      atSec: r.atSec,
+      mine: Boolean(meId && r.userId === meId),
+    };
+  });
+}
+
 /** What a viewer sees. Other people's account ids are never sent to the browser. */
 function shape(data: WorkerSocial, meId: string | null, isOwner: boolean) {
   const counts: Record<string, number> = Object.fromEntries(EMOJIS.map((e) => [e, 0]));
@@ -83,7 +110,13 @@ export async function GET(_request: Request, { params }: Params) {
   if (ws.worker_version < 2) return NextResponse.json({ enabled: false, reason: "update", isOwner, me });
   const res = await workerCall<WorkerSocial>(ws, id);
   if (!res.ok || !res.data) return NextResponse.json({ enabled: false, reason: "unreachable", isOwner, me });
-  return NextResponse.json({ enabled: true, isOwner, me, ...shape(res.data, me?.id ?? null, isOwner) });
+  return NextResponse.json({
+    enabled: true,
+    isOwner,
+    me,
+    ...shape(res.data, me?.id ?? null, isOwner),
+    moments: await moments(res.data, me?.id ?? null),
+  });
 }
 
 export async function POST(request: Request, { params }: Params) {
