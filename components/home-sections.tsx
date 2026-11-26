@@ -182,6 +182,50 @@ function SafeVisual() {
   );
 }
 
+function TeamVisual() {
+  const people = [
+    { name: "You", note: "Admin" },
+    { name: "Priya", note: "priya@studio.com" },
+    { name: "Marco", note: "marco@studio.com" },
+  ];
+  return (
+    <div className="flex h-full min-h-[200px] flex-col justify-center gap-3">
+      <div className="flex items-center gap-2">
+        <span className="min-w-0 flex-1 truncate rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-faint">teammate@company.com</span>
+        <span className="btn-primary shrink-0 rounded-xl bg-text px-3.5 py-2.5 text-sm font-semibold text-canvas">Invite</span>
+      </div>
+      <div className="rounded-xl border border-line bg-surface px-3.5 shadow-pop">
+        {people.map((p, i) => (
+          <div key={p.name} className={`flex items-center gap-3 py-2.5 text-sm ${i ? "border-t border-line" : ""}`}>
+            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-text text-xs font-semibold text-canvas">{p.name[0]}</span>
+            <span className="font-semibold">{p.name}</span>
+            <span className="ml-auto truncate text-xs text-muted">{p.note}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DownloadVisual() {
+  return (
+    <div className="flex h-full min-h-[200px] items-center justify-center">
+      <div className="flex w-full max-w-[300px] items-center gap-3 rounded-2xl border border-line bg-surface p-3.5 shadow-pop">
+        <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-sunken text-[11px] font-bold tracking-wide text-muted">MP4</span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold">client-walkthrough.mp4</p>
+          <p className="text-xs text-muted">Saved to Downloads</p>
+        </div>
+        <span className="grid size-8 shrink-0 place-items-center rounded-full bg-text text-canvas">
+          <svg viewBox="0 0 16 16" className="size-4" fill="none" aria-hidden>
+            <path d="M8 2.5v8M4.5 7.5 8 11l3.5-3.5M3 13.5h10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function TalkVisual() {
   const comments = [
     { who: "Priya", at: "1:12", text: "Can we keep the old button color here?" },
@@ -246,7 +290,7 @@ export function Features({ price }: { price: number }) {
         >
           <CloudVisual />
         </Tile>
-        <Tile title="Pay once" body={`$${price} for your whole team, with team accounts coming soon. No seats, no subscription.`}>
+        <Tile title="Pay once" body={`$${price} for your whole team. Invite everyone, no seats, no subscription.`}>
           <PriceVisual price={price} />
         </Tile>
         <Tile title="Camera bubble" body="Put your face in the corner so it feels like a conversation.">
@@ -261,6 +305,20 @@ export function Features({ price }: { price: number }) {
           body="Every recording is saved on your computer until it has fully uploaded, so a closed tab or a dropped connection doesn't cost you a take."
         >
           <SafeVisual />
+        </Tile>
+        <Tile
+          className="md:col-span-1 lg:col-span-2"
+          title="Bring your whole team"
+          body="Invite people by email into one shared library. Everyone records with their own account, and removing someone locks them out right away."
+        >
+          <TeamVisual />
+        </Tile>
+        <Tile
+          className="md:col-span-1 lg:col-span-2"
+          title="Download any video"
+          body="Save any of your recordings as a regular MP4 file, to keep, edit or upload anywhere."
+        >
+          <DownloadVisual />
         </Tile>
         <Tile
           className="md:col-span-2 lg:col-span-4"
@@ -280,7 +338,8 @@ const included: { key: string; text: React.ReactNode }[] = [
   { key: "unlimited", text: "Unlimited recordings and share links" },
   { key: "capture", text: "Screen, camera bubble, mic and tab audio" },
   { key: "social", text: "Comments and reactions on every video" },
-  { key: "team", text: "Every team member, no per-seat pricing" },
+  { key: "team", text: "Invite your whole team, no per-seat pricing" },
+  { key: "download", text: "Download any recording as an MP4" },
   { key: "storage", text: "Videos stored in your own Cloudflare, connected in one click" },
   {
     key: "updates",
@@ -489,7 +548,7 @@ const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
   },
   {
     q: "Is it a subscription?",
-    a: "No. You pay once, and the same purchase will cover your whole team when team accounts arrive (coming soon, included). The only other cost is Cloudflare storage if you go past their free 10 GB, billed to your own Cloudflare account.",
+    a: "No. You pay once, and the same purchase covers your whole team: invite as many people as you like. The only other cost is Cloudflare storage if you go past their free 10 GB, billed to your own Cloudflare account.",
   },
   {
     q: "Can I get a refund?",

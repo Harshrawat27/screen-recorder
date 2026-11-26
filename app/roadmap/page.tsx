@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { FinalCta, SiteFooter } from "@/components/home-sections";
 import { currentOffer } from "@/lib/billing";
 import { SiteNav } from "@/components/site-nav";
@@ -10,27 +11,10 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Roadmap",
   alternates: { canonical: "/roadmap" },
-  description: `What's coming to ${site.name}: team members, AI titles and chapters, and a video editor.`,
+  description: `What ${site.name} has shipped since launch and what's coming next: AI titles and chapters, a video editor and more.`,
 };
 
 const big: { title: string; body: string; points: string[]; icon: React.ReactNode }[] = [
-  {
-    title: "Team members",
-    body: "Invite your team into one shared library. Everyone records with their own account, and every video lands in your company's Cloudflare.",
-    points: [
-      "Invite people by email, remove them anytime",
-      "One shared library, with who recorded what",
-      "Each member gets their own upload key, so removing someone locks them out right away",
-      "Still one price for the whole team, no per-seat fees",
-    ],
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="size-5" aria-hidden>
-        <circle cx="9" cy="8" r="3.2" stroke="currentColor" strokeWidth="1.7" />
-        <circle cx="17" cy="9.5" r="2.4" stroke="currentColor" strokeWidth="1.7" />
-        <path d="M3.5 19c.8-3.2 3-5 5.5-5s4.7 1.8 5.5 5M15.5 14.6c2.4-.3 4.4 1.1 5 3.9" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      </svg>
-    ),
-  },
   {
     title: "AI titles, summaries and chapters",
     body: "Every recording gets transcribed, then titled, summarized and split into chapters automatically. It all runs on Cloudflare's AI inside your own account, so your audio never goes to us or anyone else.",
@@ -66,6 +50,19 @@ const big: { title: string; body: string; points: string[]; icon: React.ReactNod
   },
 ];
 
+// Done since launch. Shown faded at the top so the page reads as a timeline without
+// pulling attention from what's next.
+const shipped: { title: string; body: string; href?: string; link?: string }[] = [
+  {
+    title: "Team members",
+    body: "Invite people by email into one shared library, each with their own key. Be on several teams and pick where each video goes.",
+    href: "/guide/team",
+    link: "Team guide",
+  },
+  { title: "Download as MP4", body: "Save any of your recordings as a regular video file." },
+  { title: "Who can watch", body: "Choose who can see each video, right from the video page." },
+];
+
 const more: { title: string; body: string }[] = [
   { title: "Private links", body: "Password-protected videos, encrypted so only people with the link or password can watch." },
   { title: "Import from Loom", body: "Bring your whole Loom library over in one click." },
@@ -73,7 +70,6 @@ const more: { title: string; body: string }[] = [
   { title: "Slack previews", body: "Videos play right inside Slack." },
   { title: "Hover previews", body: "Scrub through a video by hovering, like YouTube." },
   { title: "Viewer insights", body: "See who watched and how far they got." },
-  { title: "Download as MP4", body: "Save any recording as a regular video file." },
   { title: "Mac app", body: "Record without opening Chrome, with your camera and controls floating over every app." },
 ];
 
@@ -88,9 +84,49 @@ export default async function RoadmapPage() {
             What&rsquo;s coming next
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted">
-            {site.name} records and shares today. Here&rsquo;s what we&rsquo;re building next. Everyone who buys by Black Friday (27 November) gets
+            We ship every week. Here&rsquo;s what&rsquo;s already done and what we&rsquo;re building next. Everyone who buys by Black Friday (27 November) gets
             every one of these updates free, forever.
           </p>
+        </section>
+
+        <section aria-labelledby="shipped" className="mx-auto max-w-3xl px-5 sm:px-8">
+          <div className="opacity-60 transition-opacity duration-300 hover:opacity-100 focus-within:opacity-100">
+            <div className="flex items-center gap-3 text-sm">
+              <span className="grid size-6 place-items-center rounded-full bg-text text-canvas">
+                <CheckIcon className="size-3.5" />
+              </span>
+              <h2 id="shipped" className="font-sans text-sm font-semibold">
+                Shipped in the first 7 days
+              </h2>
+              <span className="h-px flex-1 bg-line" />
+              <span className="text-muted">Week 1</span>
+            </div>
+            <ol className="relative mt-2 ml-3 border-l border-line-strong">
+              {shipped.map((item) => (
+                <li key={item.title} className="relative py-3 pl-7">
+                  <span className="absolute -left-[5px] top-[19px] size-[9px] rounded-full bg-text" aria-hidden />
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+                    <h3 className="font-sans text-[15px] font-semibold">{item.title}</h3>
+                    <span className="rounded-full border border-line px-2 py-px text-[11px] font-semibold text-muted">Shipped</span>
+                    {item.href && (
+                      <Link href={item.href} className="text-[13px] text-muted underline underline-offset-2 hover:text-text">
+                        {item.link}
+                      </Link>
+                    )}
+                  </div>
+                  <p className="mt-1 text-[14px] leading-relaxed text-muted">{item.body}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div className="mt-10 mb-8 flex items-center gap-3 text-sm">
+            <span className="relative grid size-6 place-items-center">
+              <span className="absolute inset-0 animate-ping rounded-full bg-text/20 motion-reduce:hidden" />
+              <span className="size-2.5 rounded-full bg-text" />
+            </span>
+            <span className="font-semibold">Building next</span>
+            <span className="h-px flex-1 border-t border-dashed border-line-strong" />
+          </div>
         </section>
 
         <section className="mx-auto grid max-w-6xl gap-4 px-5 sm:px-8 md:grid-cols-2">

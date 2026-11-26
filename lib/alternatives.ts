@@ -75,7 +75,7 @@ export const alternatives: Alternative[] = [
       { label: "Editing", them: "Trim and edit in Loom", us: "Coming soon" },
       { label: "Comments and reactions", them: "Yes", us: "Yes, pinned to the moment in the video" },
       { label: "Password-protected links", them: "Yes", us: "Coming soon" },
-      { label: "Team library and invites", them: "Yes", us: "Coming soon, at no extra cost" },
+      { label: "Team library and invites", them: "Yes", us: "Yes, at no extra cost" },
     ],
     theyWin: [
       "Loom AI writes titles, summaries and chapters and removes filler words. Showthrough has no AI yet.",

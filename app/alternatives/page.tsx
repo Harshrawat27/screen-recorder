@@ -62,7 +62,6 @@ function tools(price: number): Tool[] {
       watch: [
         "No free plan, though you can get a refund within 7 days",
         "No AI summaries, video editor or mobile app yet; they’re on the roadmap",
-        "Team accounts are coming soon; today it’s best for one person or a shared login",
       ],
     },
     {

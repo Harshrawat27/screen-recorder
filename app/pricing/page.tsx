@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Pricing: one payment, whole team, no monthly fee",
-  description: "Showthrough is a one-time purchase for your whole team, with team accounts coming soon. No per-seat fee, no subscription, and videos in your own Cloudflare.",
+  description: "Showthrough is a one-time purchase for your whole team, with team invites included. No per-seat fee, no subscription, and videos in your own Cloudflare.",
   alternates: { canonical: "/pricing" },
 };
 
