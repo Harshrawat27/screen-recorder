@@ -1,3 +1,4 @@
+import { createHmac } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getTeamContext } from "@/lib/team";
 import { getSession } from "@/lib/session";
@@ -5,11 +6,20 @@ import { getSession } from "@/lib/session";
 // The dashboard bell. Notifications are stored in the team's own Cloudflare (D1, through its
 // Worker, from version 8); this route only passes the question along with the key we hold, for
 // whoever is signed in. The dashboard asks when it opens and when you come back to the tab,
-// never on a timer, so it costs next to nothing.
+// never on a timer, so it costs next to nothing. Each answer also carries a short-lived ticket
+// for a live connection straight to the team's Worker, which pushes new ones as they happen.
 
 export const dynamic = "force-dynamic";
 
 const NOTIFICATIONS_VERSION = 8;
+const TICKET_MS = 5 * 60 * 1000; // only needed to open the connection
+
+/** wss://…/live?ticket=… for this person, signed with the Worker's key (which stays here). */
+function liveUrl(workerUrl: string, uploadKey: string, userId: string) {
+  const expires = Date.now() + TICKET_MS;
+  const sig = createHmac("sha256", uploadKey).update(`live.${userId}.${expires}`).digest("base64url");
+  return `${workerUrl.replace(/^http/, "ws")}/live?ticket=${encodeURIComponent(`${userId}.${expires}.${sig}`)}`;
+}
 
 type Item = {
   id: string;
@@ -50,6 +60,8 @@ export async function GET() {
     const data = (await res.json()) as { items: Item[]; unread: number };
     return NextResponse.json({
       enabled: true,
+      space: ws.space,
+      live: liveUrl(ws.worker_url, ws.upload_key, user.id),
       unread: data.unread ?? 0,
       items: (data.items ?? []).map((n) => ({
         ...n,

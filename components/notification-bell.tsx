@@ -2,12 +2,14 @@
 
 import { Popover } from '@base-ui/react/popover';
 import Link from 'next/link';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { Avatar } from '@/components/dashboard-ui';
 
 // The bell in the dashboard's top bar: new comments and reactions on your videos. They're kept
-// in your own Cloudflare; we ask for them when the dashboard opens and when you come back to
-// the tab (at most once every 20 seconds), never on a timer. Opening the bell marks them read.
+// in your own Cloudflare. The list loads when the dashboard opens; after that a live connection
+// to your own Worker (a Durable Object in your Cloudflare) pushes new ones the moment they
+// happen. If that connection drops, it reconnects and reloads the list, so nothing is missed;
+// coming back to the tab reloads it too. Opening the bell marks everything read.
 
 type Item = {
   id: string;
@@ -22,9 +24,14 @@ type Item = {
   href: string;
 };
 
-type Data = { enabled: boolean; reason?: string; unread: number; items: Item[] };
+type Data = { enabled: boolean; reason?: string; unread: number; items: Item[]; space?: string; live?: string };
 
 const MIN_GAP_MS = 20_000;
+const KEEPALIVE_MS = 50_000;
+const MAX_ITEMS = 30;
+
+const hrefFor = (space: string, n: { videoId: string; commentId: string | null }) =>
+  `/v/${space}/${n.videoId}${n.commentId ? `?c=${n.commentId}` : ''}`;
 
 function ago(ms: number) {
   const s = Math.max(1, Math.round((Date.now() - ms) / 1000));
@@ -61,49 +68,160 @@ function emptyText(data: Data | null) {
   return 'Connect Cloudflare to get notifications about your videos.';
 }
 
-export function NotificationBell() {
-  const [data, setData] = useState<Data | null>(null);
-  const [open, setOpen] = useState(false);
-  const last = useRef(0);
+// One list and one live connection for the whole page, shared by every bell on it (the dashboard
+// has one in the phone header and one in the desktop bar). It starts with the first bell on the
+// page and stops when the last one goes.
+const store = (() => {
+  let data: Data | null = null;
+  let lastLoad = 0;
+  let openBells = 0;
+  let users = 0;
+  let stop: (() => void) | null = null;
+  const listeners = new Set<() => void>();
 
-  const load = useCallback(async (force = false) => {
-    if (!force && Date.now() - last.current < MIN_GAP_MS) return;
-    last.current = Date.now();
+  const set = (next: Data | null) => {
+    data = next;
+    listeners.forEach((listener) => listener());
+  };
+
+  async function load(force = false): Promise<Data | null> {
+    if (!force && Date.now() - lastLoad < MIN_GAP_MS) return null;
+    lastLoad = Date.now();
     try {
       const res = await fetch('/api/notifications', { cache: 'no-store' });
-      if (res.ok) setData((await res.json()) as Data);
+      if (!res.ok) return null;
+      const next = (await res.json()) as Data;
+      set(next);
+      return next;
     } catch {
       // Keep what's shown; the next visit to the tab tries again.
+      return null;
     }
-  }, []);
+  }
 
-  // When the dashboard opens, and whenever you come back to this tab.
-  useEffect(() => {
-    const first = window.setTimeout(() => void load(true), 0);
+  const markRead = () => void fetch('/api/notifications', { method: 'POST' }).catch(() => {});
+
+  /** A notification pushed by the Worker: add it to the top, and count it unless a bell is open. */
+  function receive(item: Omit<Item, 'href'> & { videoId: string; commentId: string | null }) {
+    if (!data || data.items.some((i) => i.id === item.id)) return;
+    const seen = openBells > 0;
+    const shown = { ...item, read: seen, href: hrefFor(data.space ?? '', item) };
+    set({ ...data, unread: seen ? data.unread : data.unread + 1, items: [shown, ...data.items].slice(0, MAX_ITEMS) });
+    if (seen) markRead();
+  }
+
+  // The list when the page opens, then the live connection. Coming back to the tab reloads the
+  // list, and reconnects if the connection had dropped.
+  function start() {
+    let alive = true;
+    let socket: WebSocket | null = null;
+    let attempts = 0;
+    let retryTimer = 0;
+
+    /** Opens the live connection with a fresh ticket (each list load carries one). */
+    const connect = (url?: string) => {
+      if (!url || !alive || socket) return;
+      let ws: WebSocket;
+      try {
+        ws = new WebSocket(url);
+      } catch {
+        return;
+      }
+      socket = ws;
+      let ping = 0;
+      ws.onopen = () => {
+        attempts = 0;
+        // Keeps the connection from being closed as idle; answered without waking anything up.
+        ping = window.setInterval(() => ws.readyState === WebSocket.OPEN && ws.send('ping'), KEEPALIVE_MS);
+      };
+      ws.onmessage = (event) => {
+        if (event.data === 'pong') return;
+        try {
+          const message = JSON.parse(String(event.data));
+          if (message?.type === 'notification' && message.item) receive(message.item);
+        } catch {
+          // not for us
+        }
+      };
+      ws.onclose = () => {
+        window.clearInterval(ping);
+        if (socket === ws) socket = null;
+        if (!alive || attempts >= 8) return; // after 8 tries, wait until you come back to the tab
+        // Reconnect after a growing pause (2s, 4s, 8s … up to a minute). Reloading the list first
+        // catches anything that arrived while disconnected, and brings a new ticket.
+        const wait = Math.min(60_000, 2000 * 2 ** attempts++);
+        retryTimer = window.setTimeout(() => {
+          if (document.visibilityState === 'visible') void reload();
+        }, wait);
+      };
+    };
+
+    const reload = async () => {
+      const next = await load(true);
+      connect(next?.live);
+    };
+
+    const first = window.setTimeout(() => void reload(), 0);
     const onVisible = () => {
-      if (document.visibilityState === 'visible') void load();
+      if (document.visibilityState !== 'visible') return;
+      if (socket) {
+        void load();
+        return;
+      }
+      attempts = 0;
+      void reload();
     };
     document.addEventListener('visibilitychange', onVisible);
     window.addEventListener('focus', onVisible);
     return () => {
+      alive = false;
       window.clearTimeout(first);
+      window.clearTimeout(retryTimer);
+      socket?.close();
       document.removeEventListener('visibilitychange', onVisible);
       window.removeEventListener('focus', onVisible);
     };
-  }, [load]);
+  }
+
+  return {
+    get: () => data,
+    subscribe(listener: () => void) {
+      listeners.add(listener);
+      if (users++ === 0) stop = start();
+      return () => {
+        listeners.delete(listener);
+        if (--users === 0) {
+          stop?.();
+          stop = null;
+        }
+      };
+    },
+    /** A bell opened: everything is seen. */
+    opened() {
+      openBells++;
+      void load();
+      if (data?.unread) {
+        set({ ...data, unread: 0 });
+        markRead();
+      }
+    },
+    /** A bell closed: the "new" dots go. */
+    closed() {
+      openBells = Math.max(0, openBells - 1);
+      if (data) set({ ...data, items: data.items.map((i) => ({ ...i, read: true })) });
+    },
+  };
+})();
+
+export function NotificationBell() {
+  const data = useSyncExternalStore(store.subscribe, store.get, () => null);
+  const [open, setOpen] = useState(false);
 
   const onOpenChange = (next: boolean) => {
+    if (next === open) return;
     setOpen(next);
-    if (next) {
-      void load();
-      // Seen: clear the count now; the dots on each row stay until the bell closes.
-      if (data?.unread) {
-        setData((d) => (d ? { ...d, unread: 0 } : d));
-        void fetch('/api/notifications', { method: 'POST' }).catch(() => {});
-      }
-    } else {
-      setData((d) => (d ? { ...d, items: d.items.map((i) => ({ ...i, read: true })) } : d));
-    }
+    if (next) store.opened();
+    else store.closed();
   };
 
   const unread = data?.unread ?? 0;

@@ -16,6 +16,8 @@ export const DATABASE_NAME = "showthrough";
 // The version of worker/video-worker.mjs. Raise it whenever the Worker changes: users on an
 // older version then see "New version available" in the dashboard (see lib/updates.ts).
 export const WORKER_VERSION = 8;
+// The Durable Object migration that creates the Inbox (version 8). Never change it.
+const INBOX_MIGRATION = "inbox-v1";
 
 export class SetupError extends Error {
   constructor(
@@ -137,26 +139,47 @@ export async function provision(token: string, current?: { accountId: string; up
   // 4. Video backend Worker with the bucket and database bound. Same account: keep the
   //    upload key, so the extension keeps working after an update.
   const uploadKey = current && current.accountId === account.id ? current.uploadKey : randomBytes(32).toString("base64url");
-  const form = new FormData();
-  form.append(
-    "metadata",
-    new Blob(
-      [
-        JSON.stringify({
-          main_module: "worker.mjs",
-          compatibility_date: "2025-09-01",
-          bindings: [
-            { type: "r2_bucket", name: "VIDEOS", bucket_name: BUCKET_NAME },
-            { type: "d1", name: "DB", id: databaseId },
-            { type: "secret_text", name: "UPLOAD_KEY", text: uploadKey },
-          ],
-        }),
-      ],
-      { type: "application/json" },
-    ),
-  );
-  form.append("worker.mjs", new Blob([workerSource()], { type: "application/javascript+module" }), "worker.mjs");
-  await cf(token, "worker", "PUT", `${base}/workers/scripts/${SCRIPT_NAME}`, form);
+  // Version 8: the Inbox Durable Object that pushes notifications to open dashboards. It's created
+  // by the first upload that carries its migration; later uploads leave the migration out
+  // (Cloudflare refuses to apply the same one twice), so on an update we try with it, then without.
+  const upload = (inbox: "create" | "keep" | "none") => {
+    const form = new FormData();
+    form.append(
+      "metadata",
+      new Blob(
+        [
+          JSON.stringify({
+            main_module: "worker.mjs",
+            compatibility_date: "2025-09-01",
+            bindings: [
+              { type: "r2_bucket", name: "VIDEOS", bucket_name: BUCKET_NAME },
+              { type: "d1", name: "DB", id: databaseId },
+              { type: "secret_text", name: "UPLOAD_KEY", text: uploadKey },
+              ...(inbox === "none" ? [] : [{ type: "durable_object_namespace", name: "INBOX", class_name: "Inbox" }]),
+            ],
+            ...(inbox === "create" ? { migrations: { new_tag: INBOX_MIGRATION, new_sqlite_classes: ["Inbox"] } } : {}),
+          }),
+        ],
+        { type: "application/json" },
+      ),
+    );
+    form.append("worker.mjs", new Blob([workerSource()], { type: "application/javascript+module" }), "worker.mjs");
+    return cf(token, "worker", "PUT", `${base}/workers/scripts/${SCRIPT_NAME}`, form);
+  };
+  try {
+    await upload("create");
+  } catch (err) {
+    // Already has the Inbox (the migration was applied by an earlier update): upload without it.
+    // If Cloudflare refuses the Durable Object for any other reason, set up everything else:
+    // notifications still work, the bell just updates when the dashboard opens instead of live.
+    const already = /migration|tag|already/i.test((err as SetupError).detail ?? "");
+    try {
+      await upload(already ? "keep" : "none");
+    } catch {
+      if (already) await upload("none").catch(() => Promise.reject(err));
+      else throw err;
+    }
+  }
 
   // 5. The account's workers.dev subdomain (new accounts don't have one yet)
   let space: string | undefined;

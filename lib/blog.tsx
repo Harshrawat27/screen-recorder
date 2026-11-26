@@ -356,6 +356,29 @@ const loomVsVidyardFaqs = [
   },
 ];
 
+const bestRecorderFaqs = [
+  {
+    q: "What is the best screen recorder in 2026?",
+    a: "It depends on what you record. For sending updates to clients or a team, a recorder that gives you a link, like Showthrough or Loom. For free, full control, OBS Studio. For edited tutorials, Camtasia. For polished product demos on a Mac, Screen Studio.",
+  },
+  {
+    q: "What is the best free screen recorder?",
+    a: "OBS Studio is the most capable free recorder, on Windows, Mac and Linux, with no watermark or time limit. The tools built into Windows, macOS and ChromeOS are free too and quicker for simple recordings.",
+  },
+  {
+    q: "Which screen recorder has no watermark and no time limit?",
+    a: "OBS Studio, the built-in tools on Windows, Mac and Chromebook, Screenity, and Showthrough all record without a watermark or a time limit. Many free plans, like Screencastify's and ScreenPal's, add a watermark or cap the length.",
+  },
+  {
+    q: "Which screen recorder is best for freelancers and agencies?",
+    a: "One that gives you a share link the moment you stop, so a client can watch without downloading anything. Showthrough does this for a one-time payment; Loom does it on a per-user monthly plan.",
+  },
+  {
+    q: "Is there a good screen recorder without a subscription?",
+    a: "Yes. OBS Studio and the built-in tools are free, and CleanShot X and Showthrough are one-time payments. Loom, Screen Studio, Camtasia, Cap Pro and ScreenPal's paid plans are subscriptions.",
+  },
+];
+
 export const posts: Post[] = [
   {
     slug: "how-to-screen-record-on-chromebook",
@@ -3227,6 +3250,319 @@ export const posts: Post[] = [
 
         <h2>Questions people ask</h2>
         {loomVsVidyardFaqs.map((f) => (
+          <div key={f.q}>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </>
+    ),
+  },
+  {
+    slug: "best-screen-recorders",
+    title: "The 10 best screen recorders in 2026 (free and paid)",
+    metaTitle: "The 10 best screen recorders in 2026, free and paid, compared",
+    description:
+      "The best screen recorders of 2026 compared: Showthrough, Loom, OBS, Camtasia, Screen Studio, CleanShot X, ScreenPal, Screencastify, Cap and the built-in tools. Prices, limits and who each is for.",
+    excerpt:
+      "Ten screen recorders worth using in 2026, what each costs, and which to pick for client updates, tutorials, product demos or recording for free.",
+    published: "2026-11-26",
+    updated: "2026-11-26",
+    readingMinutes: 10,
+    image: {
+      src: "/blog/best-screen-recorders.webp",
+      alt: "A row of ten screen recorder app icons with the link icon highlighted in orange, above a desktop monitor, a laptop and a smaller laptop, each with a record button on screen",
+      width: 1600,
+      height: 900,
+    },
+    faqs: bestRecorderFaqs,
+    Body: () => (
+      <>
+        <p>
+          The best screen recorder depends on what happens after you press stop. If you&rsquo;re sending the video to someone, you want a link. If
+          you&rsquo;re editing a tutorial, you want an editor. If you&rsquo;re making a launch video, you want it to look polished. Here are the ten
+          worth using in 2026, what each costs, and which one fits what you record.
+        </p>
+
+        <figure>
+          <Image
+            src="/blog/best-screen-recorders.webp"
+            alt="A row of ten screen recorder app icons with the link icon highlighted in orange, above a desktop monitor, a laptop and a smaller laptop, each with a record button on screen"
+            width={1600}
+            height={900}
+            sizes="(min-width: 768px) 720px, 100vw"
+            priority
+          />
+        </figure>
+
+        <div className="callout">
+          <p>
+            <strong>Quick answer:</strong> to send updates to clients or a team, use <strong>Showthrough</strong> (pay once) or{" "}
+            <strong>Loom</strong> (monthly). For free with full control, use <strong>OBS Studio</strong>. For edited tutorials, use{" "}
+            <strong>Camtasia</strong>. For polished Mac demos, use <strong>Screen Studio</strong>. For a quick recording you keep, use the tool
+            already built into your computer.
+          </p>
+        </div>
+
+        <p className="text-sm">
+          We make Showthrough, so it&rsquo;s on this list, with its trade-offs stated like everyone else&rsquo;s. Prices checked on 26 November 2026
+          on each tool&rsquo;s own website.
+        </p>
+
+        <h2>The ten at a glance</h2>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Recorder</th>
+                <th scope="col">Works on</th>
+                <th scope="col">Price</th>
+                <th scope="col">Best for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Showthrough</th>
+                <td>Chrome (Windows, Mac, Chromebook)</td>
+                <td>Pay once</td>
+                <td>Client and team updates</td>
+              </tr>
+              <tr>
+                <th scope="row">Loom</th>
+                <td>Chrome, Windows, Mac, mobile</td>
+                <td>Free plan; $18 per user per month</td>
+                <td>Teams already on Loom</td>
+              </tr>
+              <tr>
+                <th scope="row">OBS Studio</th>
+                <td>Windows, Mac, Linux</td>
+                <td>Free</td>
+                <td>Free recording with full control</td>
+              </tr>
+              <tr>
+                <th scope="row">Camtasia</th>
+                <td>Windows, Mac</td>
+                <td>From $179.88 a year to edit without a watermark</td>
+                <td>Edited tutorials and training</td>
+              </tr>
+              <tr>
+                <th scope="row">Screen Studio</th>
+                <td>Mac</td>
+                <td>$9 a month yearly, or $29 monthly</td>
+                <td>Polished product demos</td>
+              </tr>
+              <tr>
+                <th scope="row">CleanShot X</th>
+                <td>Mac</td>
+                <td>$35 once, 1 year of updates</td>
+                <td>Screenshots and short clips</td>
+              </tr>
+              <tr>
+                <th scope="row">ScreenPal</th>
+                <td>Windows, Mac, Chrome</td>
+                <td>Free plan; paid from a few dollars a month</td>
+                <td>Simple edits on a budget</td>
+              </tr>
+              <tr>
+                <th scope="row">Screencastify</th>
+                <td>Chrome</td>
+                <td>Free plan; paid from $7 a month</td>
+                <td>Teachers and students</td>
+              </tr>
+              <tr>
+                <th scope="row">Cap</th>
+                <td>Windows, Mac</td>
+                <td>Free for personal use; Pro from $8.16 a month</td>
+                <td>Open-source, Loom-style recording</td>
+              </tr>
+              <tr>
+                <th scope="row">Built-in tools</th>
+                <td>Windows, Mac, Chromebook</td>
+                <td>Free</td>
+                <td>Quick recordings you keep</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>1. Showthrough: a link the moment you stop</h2>
+        <p>
+          <Link href="/">Showthrough</Link> is a Chrome extension, so it works on Windows, Mac and Chromebook. It records your screen, a tab or a
+          window with your camera, voice and tab audio, uploads while you talk, and copies a share link the moment you stop. There&rsquo;s no limit
+          on videos or length, viewers watch in any browser without an account, and videos are stored in your own Cloudflare account, set up in one
+          click.
+        </p>
+        <p>
+          <strong>The catch:</strong> there&rsquo;s no free plan. You pay once instead of every month (see <Link href="/pricing">pricing</Link>
+          ). There&rsquo;s no editor or AI summaries yet, so it&rsquo;s built for updates, not polished videos. We make it.
+        </p>
+
+        <h2>2. Loom: the best-known video messaging tool</h2>
+        <p>
+          Loom records from a Chrome extension, desktop apps or your phone, gives you a link, and lets viewers comment and react. It integrates
+          with tools like Slack, which makes it easy for teams to reply to each other. See{" "}
+          <Link href="/blog/loom-chrome-extension">the Loom Chrome extension</Link> for how it works in the browser.
+        </p>
+        <p>
+          <strong>The catch:</strong> the free plan stops at 25 videos and 5 minutes per recording, and paid plans are $18 per user per month (see{" "}
+          <Link href="/blog/loom-pricing">Loom pricing explained</Link>). For sales teams, compare{" "}
+          <Link href="/blog/loom-vs-vidyard">Loom vs Vidyard</Link>.
+        </p>
+
+        <h2>3. OBS Studio: the best free recorder</h2>
+        <p>
+          <a href="https://obsproject.com" target="_blank" rel="noopener noreferrer nofollow">
+            OBS Studio
+          </a>{" "}
+          is free and open source on Windows, Mac and Linux. You build scenes from your screen, camera, images and several audio sources, record at
+          high quality with no watermark or time limit, and stream live.
+        </p>
+        <p>
+          <strong>The catch:</strong> it takes real setup to get right, and it saves a file, so sharing is up to you.
+        </p>
+
+        <h2>4. Camtasia: record and edit in one app</h2>
+        <p>
+          <a href="https://www.techsmith.com/camtasia-pricing.html" target="_blank" rel="noopener noreferrer nofollow">
+            Camtasia
+          </a>{" "}
+          is a recorder and a full video editor, popular for tutorials, courses and training videos. You can cut, add callouts, zoom, captions and
+          music in the same app you record with.
+        </p>
+        <p>
+          <strong>The catch:</strong> it&rsquo;s a yearly subscription. The $39 Starter plan watermarks videos made in the editor, so clean edited
+          exports start with Essentials at $179.88 a year.
+        </p>
+
+        <h2>5. Screen Studio: the prettiest demos (Mac)</h2>
+        <p>
+          <a href="https://screen.studio" target="_blank" rel="noopener noreferrer nofollow">
+            Screen Studio
+          </a>{" "}
+          zooms in on your clicks automatically, smooths your cursor and adds backgrounds, so a plain recording looks edited. It&rsquo;s behind many
+          product launch videos.
+        </p>
+        <p>
+          <strong>The catch:</strong> it&rsquo;s Mac-only and a subscription, $9 a month billed yearly or $29 monthly, and more than you need for a
+          quick update.
+        </p>
+
+        <h2>6. CleanShot X: screenshots and short clips (Mac)</h2>
+        <p>
+          <a href="https://cleanshot.com/pricing" target="_blank" rel="noopener noreferrer nofollow">
+            CleanShot X
+          </a>{" "}
+          replaces the Mac&rsquo;s screenshot tool with scrolling capture, annotations, text recognition, and screen recording as video or GIF. It
+          costs $35 once with a year of updates.
+        </p>
+        <p>
+          <strong>The catch:</strong> it&rsquo;s built for screenshots first. For long recordings with your camera, a dedicated video recorder suits
+          better.
+        </p>
+
+        <h2>7. ScreenPal: simple editing on a budget</h2>
+        <p>
+          ScreenPal, formerly Screencast-O-Matic, gives you a recorder, a simple editor and video hosting on Windows, Mac and Chrome. Paid plans
+          cost only a few dollars a month. See <Link href="/alternatives/screenpal">Showthrough vs ScreenPal</Link>.
+        </p>
+        <p>
+          <strong>The catch:</strong> the free plan limits recordings to 15 minutes and adds a watermark.
+        </p>
+
+        <h2>8. Screencastify: built for classrooms</h2>
+        <p>
+          Screencastify is the recorder many schools use, with quizzes, assignments and grade sync on paid plans. The free plan gives you 10 videos
+          of up to 30 minutes each. See <Link href="/alternatives/screencastify">Showthrough vs Screencastify</Link>.
+        </p>
+        <p>
+          <strong>The catch:</strong> free videos carry a watermark, and it&rsquo;s Chrome-only.
+        </p>
+
+        <h2>9. Cap: open source, Loom-style</h2>
+        <p>
+          <a href="https://cap.so/pricing" target="_blank" rel="noopener noreferrer nofollow">
+            Cap
+          </a>{" "}
+          is an open-source recorder for Mac and Windows with an editor and share links. The free plan is for personal use, with local recording
+          and no time limit.
+        </p>
+        <p>
+          <strong>The catch:</strong> free share links stop at 5 minutes, and commercial use needs Cap Pro, at $12 per user per month or $8.16
+          billed yearly. See <Link href="/alternatives/cap">Showthrough vs Cap</Link>.
+        </p>
+
+        <h2>10. The tools built into your computer</h2>
+        <p>Every computer can already record its screen for free, with no watermark:</p>
+        <ul>
+          <li>
+            <strong>Windows:</strong> Snipping Tool and Xbox Game Bar. See{" "}
+            <Link href="/blog/how-to-screen-record-on-windows">how to screen record on Windows</Link>.
+          </li>
+          <li>
+            <strong>Mac:</strong> Shift + Command + 5 and QuickTime Player. See{" "}
+            <Link href="/blog/how-to-screen-record-on-mac">how to screen record on Mac</Link>.
+          </li>
+          <li>
+            <strong>Chromebook:</strong> Screen capture, with Shift + Ctrl + Show windows. See{" "}
+            <Link href="/blog/how-to-screen-record-on-chromebook">how to screen record on a Chromebook</Link>.
+          </li>
+        </ul>
+        <p>
+          <strong>The catch:</strong> they save a file, with no link and little or no editing.
+        </p>
+
+        <h2>Best for&hellip;</h2>
+        <ul>
+          <li>
+            <strong>Freelancers and agencies sending client updates:</strong> Showthrough or Loom. Clients get a link and watch without installing
+            anything.
+          </li>
+          <li>
+            <strong>Remote teams:</strong> Loom, if the whole team will reply in videos and comments. Showthrough, if you&rsquo;d rather not pay per
+            person every month.
+          </li>
+          <li>
+            <strong>Tutorials, courses and YouTube:</strong> Camtasia for record-and-edit in one app, or OBS for free.
+          </li>
+          <li>
+            <strong>Product demos and launch videos:</strong> Screen Studio on a Mac.
+          </li>
+          <li>
+            <strong>Sales outreach:</strong> Vidyard. See <Link href="/blog/loom-vs-vidyard">Loom vs Vidyard</Link>.
+          </li>
+          <li>
+            <strong>Schools:</strong> Screencastify.
+          </li>
+          <li>
+            <strong>Recording for free:</strong> OBS or your computer&rsquo;s built-in tool.
+          </li>
+        </ul>
+        <p>
+          By platform, see <Link href="/blog/best-screen-recorders-for-mac">the best screen recorders for Mac</Link> and{" "}
+          <Link href="/blog/best-screen-recorders-for-chromebook">for Chromebook</Link>.
+        </p>
+
+        <h2>How to choose</h2>
+        <ol>
+          <li>
+            <strong>What happens after you stop?</strong> Sending it to someone means you want a link. Keeping or editing it means a file is fine.
+          </li>
+          <li>
+            <strong>How polished does it need to be?</strong> A quick update needs no editor. A course or a launch video does.
+          </li>
+          <li>
+            <strong>How often will you record?</strong> Free plans with video or length limits run out fast if you record every day.
+          </li>
+          <li>
+            <strong>Monthly or once?</strong> Per-user monthly plans add up for teams. Some tools are one-time payments.
+          </li>
+        </ol>
+        <p>
+          If you&rsquo;re leaving Loom specifically, see <Link href="/alternatives">the best Loom alternatives</Link>.
+        </p>
+
+        <h2>Questions people ask</h2>
+        {bestRecorderFaqs.map((f) => (
           <div key={f.q}>
             <h3>{f.q}</h3>
             <p>{f.a}</p>

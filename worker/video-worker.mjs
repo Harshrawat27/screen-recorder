@@ -32,6 +32,7 @@
 //   DELETE /api/members/<userId>            revoke it (needs UPLOAD_KEY)
 //   GET    /api/notifications?user=…        someone's latest notifications and unread count (needs UPLOAD_KEY)
 //   POST   /api/notifications/read          mark someone's notifications read (needs UPLOAD_KEY)
+//   GET    /live?ticket=…                   WebSocket: new notifications as they happen (signed ticket)
 //   GET    /health                          version check
 //
 // From version 7, team members record with their own key (a member key). A member key can
@@ -43,6 +44,11 @@
 // From version 8 a new comment or reaction also leaves a notification for whoever recorded the
 // video (the account owner, or the team member who made it). They live in this account's D1
 // and are read by the Showthrough website when its dashboard opens: nothing is kept anywhere else.
+// While a dashboard is open it also holds a WebSocket to /live, kept by a Durable Object (Inbox,
+// one per person) in this same account. New notifications are pushed down it the moment they're
+// saved. Idle connections hibernate, so they cost nothing; the dashboard gets a short-lived ticket
+// for its connection from the Showthrough website, signed with UPLOAD_KEY, so the key itself
+// never reaches a browser.
 //
 // From version 3 each recording also has a row in D1 (title, date, length, thumbnail), kept
 // in step with its meta.json: the row is written when the extension uploads meta.json. The
@@ -295,7 +301,7 @@ const REACTION_QUIET_MS = 10 * 60 * 1000; // the same person's same emoji on a v
  * comments and reactions.
  */
 async function notify(env, videoId, ownerId, note) {
-  const video = await env.DB.prepare("select recorded_by from videos where id = ?").bind(videoId).first();
+  const video = await env.DB.prepare("select recorded_by, title from videos where id = ?").bind(videoId).first();
   const recipient = video?.recorded_by || (USER_ID.test(String(ownerId || "")) ? ownerId : "");
   if (!recipient || recipient === note.actor.id) return;
   const now = Date.now();
@@ -307,11 +313,12 @@ async function notify(env, videoId, ownerId, note) {
       .first();
     if (recent) return;
   }
+  const id = crypto.randomUUID();
   const statements = [
     env.DB.prepare(
       "insert into notifications (id, recipient, kind, video_id, ref_id, actor_id, actor_name, actor_image, body, emoji, at_sec, created_at) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     ).bind(
-      crypto.randomUUID(),
+      id,
       recipient,
       note.kind,
       videoId,
@@ -328,6 +335,118 @@ async function notify(env, videoId, ownerId, note) {
   // Now and then, clear out old notifications so the table stays small.
   if (Math.random() < 0.02) statements.push(env.DB.prepare("delete from notifications where created_at < ?").bind(now - NOTIFY_KEEP_MS));
   await env.DB.batch(statements);
+  // Anyone with the dashboard open sees it straight away.
+  await push(env, recipient, {
+    type: "notification",
+    item: {
+      id,
+      kind: note.kind,
+      videoId,
+      videoTitle: video?.title ?? null,
+      commentId: note.refId ?? null,
+      actor: { name: note.actor.name, image: note.actor.image ?? null },
+      body: note.body ?? null,
+      emoji: note.emoji ?? null,
+      atSec: note.atSec ?? null,
+      createdAt: now,
+      read: false,
+    },
+  }).catch((err) => console.error("Could not push notification", err));
+}
+
+// ---- Live notifications (version 8) --------------------------------------------------------
+
+const enc = new TextEncoder();
+
+async function hmac(key, text) {
+  const k = await crypto.subtle.importKey("raw", enc.encode(key), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const sig = new Uint8Array(await crypto.subtle.sign("HMAC", k, enc.encode(text)));
+  return btoa(String.fromCharCode(...sig)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function sameText(a, b) {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+/** Who a /live ticket is for: "<userId>.<expiresAt>.<signature>", made by the website with UPLOAD_KEY. */
+async function liveUser(env, ticket) {
+  const [user, expires, sig] = String(ticket || "").split(".");
+  if (!env.UPLOAD_KEY || !USER_ID.test(user || "") || !/^\d{10,16}$/.test(expires || "") || !sig) return null;
+  if (Number(expires) < Date.now()) return null;
+  return sameText(sig, await hmac(env.UPLOAD_KEY, `live.${user}.${expires}`)) ? user : null;
+}
+
+/** Sends a message to everyone signed in as this person with a dashboard open. */
+async function push(env, userId, message) {
+  if (!env.INBOX) return;
+  const inbox = env.INBOX.get(env.INBOX.idFromName(userId));
+  await inbox.fetch("https://inbox/push", { method: "POST", body: JSON.stringify(message) });
+}
+
+const MAX_SOCKETS = 20; // per person: tabs and devices
+
+/**
+ * One per person: holds their open dashboards' WebSockets. Uses hibernation, so while nothing is
+ * happening the connections stay open without running (or costing) anything. It keeps no data.
+ */
+export class Inbox {
+  constructor(state) {
+    this.state = state;
+    // The dashboard's keep-alive "ping" is answered without waking this object up.
+    try {
+      if (typeof WebSocketRequestResponsePair === "function") state.setWebSocketAutoResponse(new WebSocketRequestResponsePair("ping", "pong"));
+    } catch {
+      // Older runtimes: webSocketMessage answers instead.
+    }
+  }
+
+  async fetch(request) {
+    const url = new URL(request.url);
+    if (request.method === "POST" && url.pathname === "/push") {
+      const text = await request.text();
+      for (const ws of this.state.getWebSockets()) {
+        try {
+          ws.send(text);
+        } catch {
+          // A connection that's going away; it closes on its own.
+        }
+      }
+      return new Response("ok");
+    }
+    if ((request.headers.get("upgrade") || "").toLowerCase() === "websocket") {
+      const open = this.state.getWebSockets();
+      if (open.length >= MAX_SOCKETS) open[0].close(1008, "Too many connections");
+      const [client, server] = Object.values(new WebSocketPair());
+      this.state.acceptWebSocket(server);
+      return new Response(null, { status: 101, webSocket: client });
+    }
+    return new Response("Not found", { status: 404 });
+  }
+
+  webSocketMessage(ws, message) {
+    if (message === "ping") ws.send("pong");
+  }
+
+  webSocketClose(ws, code) {
+    try {
+      ws.close(code === 1005 || code === 1006 ? 1000 : code, "Closed");
+    } catch {
+      // already closed
+    }
+  }
+
+  webSocketError() {}
+}
+
+async function handleLive(request, env, url) {
+  if (!env.INBOX) return json({ error: "not_available" }, 501);
+  if ((request.headers.get("upgrade") || "").toLowerCase() !== "websocket") return json({ error: "websocket_only" }, 426);
+  const user = await liveUser(env, url.searchParams.get("ticket"));
+  if (!user) return json({ error: "unauthorized" }, 401);
+  return env.INBOX.get(env.INBOX.idFromName(user)).fetch(request);
 }
 
 async function handleNotifications(request, env, path, url) {
@@ -1003,7 +1122,8 @@ async function route(request, env) {
   const method = request.method;
 
   if (method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
-  if (path === "/health") return json({ ok: true, version: VERSION });
+  if (path === "/health") return json({ ok: true, version: VERSION, live: Boolean(env.INBOX) });
+  if (path === "/live" && method === "GET") return handleLive(request, env, url);
 
   if (path.startsWith("/api/")) {
     if (!authorized(request, env)) {
