@@ -28,7 +28,23 @@ type Data = { enabled: boolean; reason?: string; unread: number; items: Item[]; 
 
 const MIN_GAP_MS = 20_000;
 const KEEPALIVE_MS = 50_000;
-const MAX_ITEMS = 30;
+const MAX_ITEMS = 50;
+
+// The tabs in the bell. Views covers both "Rahul watched" and "got its first view".
+const TABS = [
+  { key: 'all', label: 'All', kinds: null },
+  { key: 'comments', label: 'Comments', kinds: ['comment'] },
+  { key: 'reactions', label: 'Reactions', kinds: ['reaction'] },
+  { key: 'views', label: 'Views', kinds: ['watched', 'first_view'] },
+] as const;
+type Tab = (typeof TABS)[number]['key'];
+
+const EMPTY: Record<Tab, string> = {
+  all: '',
+  comments: 'No comments yet.',
+  reactions: 'No reactions yet.',
+  views: 'No views yet. You’ll see when a teammate watches, and when a new video gets its first view.',
+};
 
 const hrefFor = (space: string, n: { videoId: string; commentId: string | null }) =>
   `/v/${space}/${n.videoId}${n.commentId ? `?c=${n.commentId}` : ''}`;
@@ -223,6 +239,7 @@ const store = (() => {
 export function NotificationBell() {
   const data = useSyncExternalStore(store.subscribe, store.get, () => null);
   const [open, setOpen] = useState(false);
+  const [tab, setTab] = useState<Tab>('all');
 
   const onOpenChange = (next: boolean) => {
     if (next === open) return;
@@ -232,7 +249,13 @@ export function NotificationBell() {
   };
 
   const unread = data?.unread ?? 0;
-  const items = data?.items ?? [];
+  const all = data?.items ?? [];
+  const kinds = TABS.find((t) => t.key === tab)?.kinds;
+  const items = kinds ? all.filter((i) => (kinds as readonly string[]).includes(i.kind)) : all;
+  const unseen = (key: Tab) => {
+    const k = TABS.find((t) => t.key === key)?.kinds;
+    return all.some((i) => !i.read && (!k || (k as readonly string[]).includes(i.kind)));
+  };
 
   return (
     <Popover.Root open={open} onOpenChange={onOpenChange}>
@@ -248,16 +271,36 @@ export function NotificationBell() {
         )}
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Positioner side='bottom' align='end' sideOffset={8} className='z-[200]'>
+        {/* The bell sits in a bar that stays at the top while the page scrolls, so the panel is placed
+            relative to the window ("fixed"): it doesn't have to be moved on every scroll, which made it shake. */}
+        <Popover.Positioner side='bottom' align='end' sideOffset={8} positionMethod='fixed' className='z-[200]'>
           <Popover.Popup className='w-[min(380px,calc(100vw-24px))] origin-[var(--transform-origin)] overflow-hidden rounded-[20px] border border-line bg-surface shadow-[0_24px_60px_-20px_rgb(0_0_0/0.35)] outline-none transition duration-150 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0'>
-            <div className='flex items-center justify-between border-b border-line px-4 py-3'>
+            <div className='border-b border-line px-4 pt-3'>
               <Popover.Title className='text-[15px] font-semibold'>Notifications</Popover.Title>
-              <span className='text-xs text-muted'>Your videos</span>
+              <div role='tablist' aria-label='Show' className='-mb-px mt-2 grid grid-cols-4'>
+                {TABS.map((t) => (
+                  <button
+                    key={t.key}
+                    type='button'
+                    role='tab'
+                    aria-selected={tab === t.key}
+                    onClick={() => setTab(t.key)}
+                    className={`relative flex cursor-pointer items-center justify-center gap-1.5 border-b-2 px-1 pb-2.5 pt-1.5 text-[13px] font-semibold transition-colors ${
+                      tab === t.key ? 'border-text text-text' : 'border-transparent text-muted hover:text-text'
+                    }`}
+                  >
+                    {t.label}
+                    {tab !== t.key && unseen(t.key) && t.key !== 'all' && <span aria-label='new' className='size-1.5 rounded-full bg-[#f35733]' />}
+                  </button>
+                ))}
+              </div>
             </div>
             {items.length === 0 ? (
-              <p className='px-5 py-10 text-center text-sm leading-relaxed text-muted'>{emptyText(data)}</p>
+              <p className='px-5 py-10 text-center text-sm leading-relaxed text-muted'>
+                {all.length === 0 || tab === 'all' ? emptyText(data) : EMPTY[tab]}
+              </p>
             ) : (
-              <ul className='max-h-[min(460px,70dvh)] overflow-y-auto py-1.5'>
+              <ul className='max-h-[min(460px,70dvh)] overflow-y-auto overscroll-contain py-1.5'>
                 {items.map((n) => (
                   <li key={n.id}>
                     <Link

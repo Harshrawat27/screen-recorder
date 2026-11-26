@@ -51,7 +51,7 @@ export async function GET() {
     return NextResponse.json({ enabled: false, reason: team.role === "member" ? "admin_update" : "update", items: [], unread: 0 });
   }
   try {
-    const res = await fetch(`${ws.worker_url}/api/notifications?user=${encodeURIComponent(user.id)}&limit=30`, {
+    const res = await fetch(`${ws.worker_url}/api/notifications?user=${encodeURIComponent(user.id)}&limit=50`, {
       headers: { authorization: `Bearer ${ws.upload_key}` },
       cache: "no-store",
       signal: AbortSignal.timeout(6000),
