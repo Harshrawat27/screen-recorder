@@ -24,6 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...alternatives.map((alt) => ({ url: `${site.url}/alternatives/${alt.slug}`, lastModified: alt.updated })),
     ...guidePages.map((page) => ({ url: `${site.url}${guidePath(page.slug)}`, lastModified: "2026-11-21" })),
     ...teamGuidePages.map((page) => ({ url: `${site.url}${guidePath(page.slug, "/guide/team")}`, lastModified: "2026-11-25" })),
+    { url: `${site.url}/guide/update`, lastModified: "2026-11-26" },
     ...posts.map((post) => ({ url: `${site.url}/blog/${post.slug}`, lastModified: post.updated })),
   ];
 }

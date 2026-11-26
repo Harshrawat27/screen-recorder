@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { startCloudflareConnect } from "@/components/connect-cloudflare";
 
@@ -43,7 +44,14 @@ export function UpdateBox({ version, notes, included }: { version: number; notes
       ) : (
         <p className="mt-3 text-[13px] text-muted">This update isn&rsquo;t included in your purchase.</p>
       )}
-      {included && !error && <p className="mt-2 text-[11.5px] leading-snug text-faint">Takes about 10 seconds. Your videos and links aren&rsquo;t touched.</p>}
+      {included && !error && (
+        <p className="mt-2 text-[11.5px] leading-snug text-faint">
+          Takes about 10 seconds. Your videos and links aren&rsquo;t touched.{" "}
+          <Link href="/guide/update" className="font-medium text-muted underline underline-offset-2 hover:text-text">
+            How it works
+          </Link>
+        </p>
+      )}
       {error && (
         <p role="alert" className="mt-2 text-[12px] text-danger">
           {error}
