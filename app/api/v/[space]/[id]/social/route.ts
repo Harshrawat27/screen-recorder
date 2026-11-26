@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse, after } from "next/server";
 import { type Workspace, getWorkspaceBySpace } from "@/lib/db";
-import { getTeamContext, people } from "@/lib/team";
+import { getMembership, getTeamContext, people } from "@/lib/team";
 import { managesVideo } from "@/lib/video-files";
 import { addPersonal, personalEnabled } from "@/lib/personal";
 import { getSession } from "@/lib/session";
@@ -144,11 +144,22 @@ export async function POST(request: Request, { params }: Params) {
         if (personalEnabled(mine)) await addPersonal(mine, viewerId, "recent", ws.space, id).catch(() => {});
       });
     }
-    if (await managesVideo(ws, id, session?.user.id)) return NextResponse.json({ counted: false });
+    // Someone on this team (the admin or a member) watching: whoever recorded it gets "Rahul
+    // watched" (version 8). Outsiders stay anonymous; their first view is announced without a name.
+    const teammate =
+      session && (session.user.id === ws.owner_id || (await getMembership(session.user.id, ws.owner_id).catch(() => null)))
+        ? viewer(session.user)
+        : null;
+    const about = { ownerId: ws.owner_id, viewer: teammate };
+    if (await managesVideo(ws, id, session?.user.id)) {
+      // Their plays don't count as views, but the admin watching a member's video still tells them.
+      if (teammate && ws.worker_version >= 8) after(() => workerCall(ws, `${id}/views`, { method: "POST", body: { ...about, count: false } }).then(() => {}));
+      return NextResponse.json({ counted: false });
+    }
     const jar = await cookies();
     const cookie = `stv_${id}`;
     if (jar.get(cookie)) return NextResponse.json({ counted: false });
-    const res = await workerCall<{ views: number }>(ws, `${id}/views`, { method: "POST", body: {} });
+    const res = await workerCall<{ views: number }>(ws, `${id}/views`, { method: "POST", body: about });
     if (!res.ok) return NextResponse.json({ counted: false }, { status: 502 });
     jar.set(cookie, "1", { maxAge: VIEW_WINDOW_SECONDS, httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/" });
     return NextResponse.json({ counted: true, views: res.data?.views ?? null });

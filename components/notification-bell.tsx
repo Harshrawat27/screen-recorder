@@ -13,7 +13,7 @@ import { Avatar } from '@/components/dashboard-ui';
 
 type Item = {
   id: string;
-  kind: 'comment' | 'reaction';
+  kind: 'comment' | 'reaction' | 'watched' | 'first_view';
   videoTitle: string | null;
   actor: { name: string; image: string | null };
   body: string | null;
@@ -59,9 +59,16 @@ const BellIcon = ({ className = '' }: { className?: string }) => (
   </svg>
 );
 
+const EyeIcon = ({ className = '' }: { className?: string }) => (
+  <svg viewBox='0 0 24 24' fill='none' aria-hidden className={className}>
+    <path d='M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z' stroke='currentColor' strokeWidth='1.8' strokeLinejoin='round' />
+    <circle cx='12' cy='12' r='3' stroke='currentColor' strokeWidth='1.8' />
+  </svg>
+);
+
 function emptyText(data: Data | null) {
   if (!data) return 'Loading…';
-  if (data.enabled) return 'Nothing yet. When someone comments on or reacts to your videos, you’ll see it here.';
+  if (data.enabled) return 'Nothing yet. When someone watches, comments on or reacts to your videos, you’ll see it here.';
   if (data.reason === 'update') return 'Update your video backend (in the sidebar) to turn on notifications.';
   if (data.reason === 'admin_update') return 'Notifications turn on once your admin updates the video backend.';
   if (data.reason === 'unreachable') return 'Couldn’t reach your Cloudflare just now. Try again in a moment.';
@@ -245,7 +252,7 @@ export function NotificationBell() {
           <Popover.Popup className='w-[min(380px,calc(100vw-24px))] origin-[var(--transform-origin)] overflow-hidden rounded-[20px] border border-line bg-surface shadow-[0_24px_60px_-20px_rgb(0_0_0/0.35)] outline-none transition duration-150 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0'>
             <div className='flex items-center justify-between border-b border-line px-4 py-3'>
               <Popover.Title className='text-[15px] font-semibold'>Notifications</Popover.Title>
-              <span className='text-xs text-muted'>Comments and reactions</span>
+              <span className='text-xs text-muted'>Your videos</span>
             </div>
             {items.length === 0 ? (
               <p className='px-5 py-10 text-center text-sm leading-relaxed text-muted'>{emptyText(data)}</p>
@@ -258,13 +265,25 @@ export function NotificationBell() {
                       onClick={() => setOpen(false)}
                       className='flex gap-3 px-4 py-3 transition-colors hover:bg-sunken'
                     >
-                      <Avatar name={n.actor.name} image={n.actor.image} size='sm' />
+                      {n.kind === 'first_view' ? (
+                        <span aria-hidden className='grid size-8 shrink-0 place-items-center rounded-full bg-sunken text-text'>
+                          <EyeIcon className='size-4' />
+                        </span>
+                      ) : (
+                        <Avatar name={n.actor.name} image={n.actor.image} size='sm' />
+                      )}
                       <div className='min-w-0 flex-1 text-sm leading-snug'>
-                        <p>
-                          <span className='font-semibold'>{n.actor.name}</span>{' '}
-                          {n.kind === 'comment' ? 'commented on' : <>reacted {n.emoji} to</>}{' '}
-                          <span className='font-semibold'>{n.videoTitle || 'your video'}</span>
-                        </p>
+                        {n.kind === 'first_view' ? (
+                          <p>
+                            <span className='font-semibold'>{n.videoTitle || 'Your video'}</span> got its first view
+                          </p>
+                        ) : (
+                          <p>
+                            <span className='font-semibold'>{n.actor.name}</span>{' '}
+                            {n.kind === 'comment' ? 'commented on' : n.kind === 'watched' ? 'watched' : <>reacted {n.emoji} to</>}{' '}
+                            <span className='font-semibold'>{n.videoTitle || 'your video'}</span>
+                          </p>
+                        )}
                         {n.kind === 'comment' && n.body && (
                           <p className='mt-1 line-clamp-2 text-muted'>“{n.body}”</p>
                         )}

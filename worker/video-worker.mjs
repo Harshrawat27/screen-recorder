@@ -42,7 +42,9 @@
 // dashboard is decided by the Showthrough website, which holds the main key.
 //
 // From version 8 a new comment or reaction also leaves a notification for whoever recorded the
-// video (the account owner, or the team member who made it). They live in this account's D1
+// video (the account owner, or the team member who made it), and so do views: a teammate
+// watching it ("Rahul watched", once per person per video), and the first view from outside the
+// team (only for videos recorded after the update, so old videos don't suddenly ping). They live in this account's D1
 // and are read by the Showthrough website when its dashboard opens: nothing is kept anywhere else.
 // While a dashboard is open it also holds a WebSocket to /live, kept by a Durable Object (Inbox,
 // one per person) in this same account. New notifications are pushed down it the moment they're
@@ -190,6 +192,8 @@ function ensureSchema(env) {
     .then(() => env.DB.prepare("alter table videos add column visibility text").run().catch(() => {}))
     .then(() => env.DB.prepare("alter table videos add column shared_with text").run().catch(() => {}))
     .then(() => env.DB.prepare("create index if not exists videos_folder on videos (folder_id)").run())
+    // Version 8: "first view" notifications are only for videos recorded from now on.
+    .then(() => env.DB.prepare("insert or ignore into settings (key, value) values ('notify_since', ?)").bind(String(Date.now())).run())
     .then(() =>
       env.DB.prepare(FTS_SCHEMA)
         .run()
@@ -305,6 +309,15 @@ async function notify(env, videoId, ownerId, note) {
   const recipient = video?.recorded_by || (USER_ID.test(String(ownerId || "")) ? ownerId : "");
   if (!recipient || recipient === note.actor.id) return;
   const now = Date.now();
+  // A teammate's "watched" is sent once per video, and "first view" once ever.
+  if (note.kind === "watched" || note.kind === "first_view") {
+    const seen = await env.DB.prepare(
+      `select id from notifications where recipient = ? and video_id = ? and kind = ? ${note.kind === "watched" ? "and actor_id = ?" : ""} limit 1`,
+    )
+      .bind(...[recipient, videoId, note.kind, ...(note.kind === "watched" ? [note.actor.id] : [])])
+      .first();
+    if (seen) return;
+  }
   if (note.kind === "reaction") {
     const recent = await env.DB.prepare(
       "select id from notifications where recipient = ? and video_id = ? and actor_id = ? and kind = 'reaction' and emoji = ? and created_at > ? limit 1",
@@ -489,14 +502,41 @@ async function handleNotifications(request, env, path, url) {
   return json({ error: "not_found" }, 404);
 }
 
-async function addView(env, videoId) {
+/**
+ * Counts a view (unless input.count is false: the website only wants the notification) and
+ * tells whoever recorded the video: which teammate watched (input.viewer, sent by the website
+ * only for people on this team), or, for anyone else, that the video got its first view.
+ */
+async function addView(env, videoId, input = {}) {
   await ensureSchema(env);
-  const row = await env.DB.prepare(
-    "insert into views (video_id, count) values (?, 1) on conflict (video_id) do update set count = count + 1 returning count",
-  )
-    .bind(videoId)
-    .first();
-  return row?.count ?? 1;
+  let count = null;
+  if (input.count !== false) {
+    const row = await env.DB.prepare(
+      "insert into views (video_id, count) values (?, 1) on conflict (video_id) do update set count = count + 1 returning count",
+    )
+      .bind(videoId)
+      .first();
+    count = row?.count ?? 1;
+  }
+  const who = input.viewer;
+  if (who?.id && USER_ID.test(String(who.id))) {
+    await notify(env, videoId, input.ownerId, {
+      kind: "watched",
+      actor: { id: clean(who.id, 100), name: clean(who.name, 100) || "Someone", image: who.image ? clean(who.image, 500) : null },
+    }).catch((err) => console.error("Could not save notification", err));
+  } else if (count !== null) {
+    const row = await env.DB.prepare(
+      "select v.created_at as at, s.value as since from videos v join settings s on s.key = 'notify_since' where v.id = ?",
+    )
+      .bind(videoId)
+      .first();
+    if (row && Number(row.at) >= Number(row.since)) {
+      await notify(env, videoId, input.ownerId, { kind: "first_view", actor: { id: "anyone", name: "Someone", image: null } }).catch((err) =>
+        console.error("Could not save notification", err),
+      );
+    }
+  }
+  return count ?? 0;
 }
 
 /** View and comment counts for the library, keyed by video id. */
@@ -1040,7 +1080,7 @@ async function handleSocial(request, env, path) {
     return (await addReaction(env, videoId, input)) ? json({ ok: true }) : json({ error: "bad_reaction" }, 400);
   }
   if (parts[1] === "views" && parts.length === 2 && method === "POST") {
-    return json({ views: await addView(env, videoId) });
+    return json({ views: await addView(env, videoId, input) });
   }
   return json({ error: "not_found" }, 404);
 }
