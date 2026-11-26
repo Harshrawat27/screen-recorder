@@ -4,14 +4,14 @@ import { getTeamContext } from "@/lib/team";
 import { getSession } from "@/lib/session";
 
 // The dashboard bell. Notifications are stored in the team's own Cloudflare (D1, through its
-// Worker, from version 8); this route only passes the question along with the key we hold, for
+// Worker, from version 7); this route only passes the question along with the key we hold, for
 // whoever is signed in. The dashboard asks when it opens and when you come back to the tab,
 // never on a timer, so it costs next to nothing. Each answer also carries a short-lived ticket
 // for a live connection straight to the team's Worker, which pushes new ones as they happen.
 
 export const dynamic = "force-dynamic";
 
-const NOTIFICATIONS_VERSION = 8;
+const NOTIFICATIONS_VERSION = 7;
 const TICKET_MS = 5 * 60 * 1000; // only needed to open the connection
 
 /** wss://…/live?ticket=… for this person, signed with the Worker's key (which stays here). */

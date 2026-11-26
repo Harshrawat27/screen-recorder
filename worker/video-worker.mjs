@@ -41,7 +41,7 @@
 // made it (videos.recorded_by; empty means the account owner). Who may see what in the
 // dashboard is decided by the Showthrough website, which holds the main key.
 //
-// From version 8 a new comment or reaction also leaves a notification for whoever recorded the
+// From version 7 a new comment or reaction also leaves a notification for whoever recorded the
 // video (the account owner, or the team member who made it), and so do views: a teammate
 // watching it ("Rahul watched", once per person per video), and the first view from outside the
 // team (only for videos recorded after the update, so old videos don't suddenly ping). They live in this account's D1
@@ -61,7 +61,7 @@
 // endpoints are only called by the Showthrough website, which checks who is signed in and
 // passes their name along. Viewers never talk to these endpoints directly.
 
-const VERSION = 8;
+const VERSION = 7;
 const VIDEO_ID = /^[a-z0-9]{8,64}$/;
 const EMOJIS = ["👍", "❤️", "😂", "🎉", "😮", "🔥"];
 const FILE = /^videos\/[a-z0-9]{8,64}\/[A-Za-z0-9._-]{1,100}$/;
@@ -165,7 +165,7 @@ const SCHEMA = [
   // Version 3: this Worker's own count of its requests and storage operations, per UTC day.
   // Version 7: team members' upload keys (hashed) and who recorded each video.
   `create table if not exists members (user_id text primary key, key_hash text not null unique, created_at integer not null)`,
-  // Version 8: notifications for whoever recorded a video. ref_id is the comment, so deleting
+  // Version 7: notifications for whoever recorded a video. ref_id is the comment, so deleting
   // a comment removes its notification too.
   `create table if not exists notifications (
      id text primary key, recipient text not null, kind text not null, video_id text not null, ref_id text,
@@ -192,7 +192,7 @@ function ensureSchema(env) {
     .then(() => env.DB.prepare("alter table videos add column visibility text").run().catch(() => {}))
     .then(() => env.DB.prepare("alter table videos add column shared_with text").run().catch(() => {}))
     .then(() => env.DB.prepare("create index if not exists videos_folder on videos (folder_id)").run())
-    // Version 8: "first view" notifications are only for videos recorded from now on.
+    // Version 7: "first view" notifications are only for videos recorded from now on.
     .then(() => env.DB.prepare("insert or ignore into settings (key, value) values ('notify_since', ?)").bind(String(Date.now())).run())
     .then(() =>
       env.DB.prepare(FTS_SCHEMA)
@@ -294,7 +294,7 @@ async function addReaction(env, videoId, input) {
   return true;
 }
 
-// ---- Notifications (version 8) ------------------------------------------------------------
+// ---- Notifications (version 7) ------------------------------------------------------------
 
 const NOTIFY_KEEP_MS = 90 * 24 * 60 * 60 * 1000; // older ones are cleared away
 const REACTION_QUIET_MS = 10 * 60 * 1000; // the same person's same emoji on a video counts once per 10 minutes
@@ -367,7 +367,7 @@ async function notify(env, videoId, ownerId, note) {
   }).catch((err) => console.error("Could not push notification", err));
 }
 
-// ---- Live notifications (version 8) --------------------------------------------------------
+// ---- Live notifications (version 7) --------------------------------------------------------
 
 const enc = new TextEncoder();
 

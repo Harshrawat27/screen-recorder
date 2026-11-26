@@ -9,8 +9,7 @@ export const WORKER_RELEASES: Record<number, string> = {
   4: "Folders, and a Usage page that shows how much of Cloudflare's free plan you use.",
   5: "Recent and Watch later: find videos you watched or saved for later.",
   6: "Use your photo instead of your camera when recording.",
-  7: "Team members: invite your team to record into your library, each with their own account.",
-  8: "Live notifications: see who watched, commented on or reacted to your videos, the moment it happens.",
+  7: "Team members: invite your team to record into your library, each with their own account. Live notifications: see who watched, commented on or reacted to your videos, the moment it happens.",
 };
 
 /** Whether this account's purchase includes a given Worker version. */

@@ -145,7 +145,7 @@ export async function POST(request: Request, { params }: Params) {
       });
     }
     // Someone on this team (the admin or a member) watching: whoever recorded it gets "Rahul
-    // watched" (version 8). Outsiders stay anonymous; their first view is announced without a name.
+    // watched" (version 7). Outsiders stay anonymous; their first view is announced without a name.
     const teammate =
       session && (session.user.id === ws.owner_id || (await getMembership(session.user.id, ws.owner_id).catch(() => null)))
         ? viewer(session.user)
@@ -153,7 +153,7 @@ export async function POST(request: Request, { params }: Params) {
     const about = { ownerId: ws.owner_id, viewer: teammate };
     if (await managesVideo(ws, id, session?.user.id)) {
       // Their plays don't count as views, but the admin watching a member's video still tells them.
-      if (teammate && ws.worker_version >= 8) after(() => workerCall(ws, `${id}/views`, { method: "POST", body: { ...about, count: false } }).then(() => {}));
+      if (teammate && ws.worker_version >= 7) after(() => workerCall(ws, `${id}/views`, { method: "POST", body: { ...about, count: false } }).then(() => {}));
       return NextResponse.json({ counted: false });
     }
     const jar = await cookies();

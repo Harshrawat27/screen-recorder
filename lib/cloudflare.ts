@@ -15,8 +15,8 @@ export const BUCKET_NAME = "showthrough-videos";
 export const DATABASE_NAME = "showthrough";
 // The version of worker/video-worker.mjs. Raise it whenever the Worker changes: users on an
 // older version then see "New version available" in the dashboard (see lib/updates.ts).
-export const WORKER_VERSION = 8;
-// The Durable Object migration that creates the Inbox (version 8). Never change it.
+export const WORKER_VERSION = 7;
+// The Durable Object migration that creates the Inbox (version 7). Never change it.
 const INBOX_MIGRATION = "inbox-v1";
 
 export class SetupError extends Error {
@@ -139,7 +139,7 @@ export async function provision(token: string, current?: { accountId: string; up
   // 4. Video backend Worker with the bucket and database bound. Same account: keep the
   //    upload key, so the extension keeps working after an update.
   const uploadKey = current && current.accountId === account.id ? current.uploadKey : randomBytes(32).toString("base64url");
-  // Version 8: the Inbox Durable Object that pushes notifications to open dashboards. It's created
+  // Version 7: the Inbox Durable Object that pushes notifications to open dashboards. It's created
   // by the first upload that carries its migration; later uploads leave the migration out
   // (Cloudflare refuses to apply the same one twice), so on an update we try with it, then without.
   const upload = (inbox: "create" | "keep" | "none") => {
