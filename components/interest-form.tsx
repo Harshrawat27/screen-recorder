@@ -3,10 +3,12 @@
 import { useRef, useState } from 'react';
 import { buttonClass } from '@/components/ui';
 
-// The sign-up form on /service-as-a-software. "What do you want to replace" is a list: type a
-// product, press Enter (or comma, or Add) and it becomes a chip; add as many as you like.
+// The sign-up form on /service-as-a-software. "What do you want to replace": tap popular tools to
+// pick them, or type any other and press Add (or Enter); everything picked shows as a dark pill.
 
 const TEAM_SIZES = ['Just me', '2–5', '6–15', '16–50', '51+'];
+// One-click picks: the tools freelancers, agencies and small teams pay for most.
+const POPULAR = ['Loom', 'Jira', 'Calendly', 'Slack', 'Notion', 'Trello', 'Asana', 'Zoom', 'Google Workspace', 'HubSpot', 'Typeform', 'Dropbox'];
 const input =
   'mt-2 h-11 w-full rounded-xl border border-line bg-canvas px-3.5 text-[15px] text-text outline-none transition-colors placeholder:text-faint focus:border-text';
 const label = 'block text-sm font-semibold';
@@ -21,7 +23,9 @@ export function InterestForm() {
   const toolInput = useRef<HTMLInputElement>(null);
 
   const addTool = () => {
-    const name = draft.trim().replace(/,$/, '').trim().slice(0, 60);
+    const typed = draft.trim().replace(/,$/, '').trim().slice(0, 60);
+    // "calendly" picks the listed "Calendly".
+    const name = POPULAR.find((p) => p.toLowerCase() === typed.toLowerCase()) ?? typed;
     if (name && !tools.some((t) => t.toLowerCase() === name.toLowerCase()) && tools.length < 20) setTools([...tools, name]);
     setDraft('');
   };
@@ -101,7 +105,7 @@ export function InterestForm() {
                 role='radio'
                 aria-checked={teamSize === size}
                 onClick={() => setTeamSize(teamSize === size ? '' : size)}
-                className={`h-11 flex-1 cursor-pointer whitespace-nowrap rounded-xl border px-3 text-sm font-medium transition-colors ${
+                className={`h-11 cursor-pointer whitespace-nowrap rounded-xl border px-4 text-sm font-medium transition-colors ${
                   teamSize === size ? 'border-text bg-text text-canvas' : 'border-line bg-canvas text-text hover:border-line-strong'
                 }`}
               >
@@ -112,30 +116,37 @@ export function InterestForm() {
         </div>
       </div>
 
-      <div className='mt-5'>
+      <div className='mt-6'>
         <label htmlFor='tool' className={label}>
           What software do you want to replace?
         </label>
-        <p className='mt-1 text-sm text-muted'>Type a product and press Enter. Add as many as you like.</p>
-        <div
-          onClick={() => toolInput.current?.focus()}
-          className='mt-2 flex min-h-11 flex-wrap items-center gap-1.5 rounded-xl border border-line bg-canvas p-1.5 transition-colors focus-within:border-text'
-        >
-          {tools.map((tool) => (
-            <span key={tool} className='flex items-center gap-1 rounded-lg bg-sunken py-1 pl-2.5 pr-1 text-sm font-medium'>
-              {tool}
+        <p className='mt-1 text-sm text-muted'>Pick from the list, or type your own and press Add.</p>
+        <div className='mt-3 flex flex-wrap gap-2'>
+          {[...POPULAR, ...tools.filter((t) => !POPULAR.some((p) => p.toLowerCase() === t.toLowerCase()))].map((tool) => {
+            const on = tools.some((t) => t.toLowerCase() === tool.toLowerCase());
+            return (
               <button
+                key={tool}
                 type='button'
-                aria-label={`Remove ${tool}`}
-                onClick={() => setTools(tools.filter((t) => t !== tool))}
-                className='grid size-5 cursor-pointer place-items-center rounded-md text-muted hover:bg-line hover:text-text'
+                aria-pressed={on}
+                onClick={() => (on ? setTools(tools.filter((t) => t.toLowerCase() !== tool.toLowerCase())) : setTools([...tools, tool]))}
+                className={`inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-full border px-3.5 text-sm font-medium transition-colors ${
+                  on ? 'border-text bg-text text-canvas' : 'border-dashed border-line-strong bg-canvas text-muted hover:border-text hover:text-text'
+                }`}
               >
-                <svg viewBox='0 0 16 16' className='size-3' aria-hidden>
-                  <path d='M4 4l8 8M12 4l-8 8' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' />
+                <svg viewBox='0 0 16 16' className='size-3.5' aria-hidden>
+                  {on ? (
+                    <path d='M3.5 8.5l3 3 6-7' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' />
+                  ) : (
+                    <path d='M8 3.5v9M3.5 8h9' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' />
+                  )}
                 </svg>
+                {tool}
               </button>
-            </span>
-          ))}
+            );
+          })}
+        </div>
+        <div className='mt-3 flex gap-2'>
           <input
             ref={toolInput}
             id='tool'
@@ -146,20 +157,28 @@ export function InterestForm() {
               if (e.key === 'Enter' || e.key === ',') {
                 e.preventDefault();
                 addTool();
-              } else if (e.key === 'Backspace' && !draft && tools.length) {
-                setTools(tools.slice(0, -1));
               }
             }}
-            onBlur={addTool}
-            placeholder={tools.length ? 'Add another…' : 'e.g. Loom, Jira, Calendly'}
-            className='h-8 min-w-[10rem] flex-1 bg-transparent px-2 text-[15px] outline-none placeholder:text-faint'
+            placeholder='Something else? e.g. Basecamp'
+            className={input.replace('mt-2 ', '')}
           />
-          {draft.trim() && (
-            <button type='button' onClick={addTool} className='h-8 cursor-pointer rounded-lg bg-text px-3 text-sm font-semibold text-canvas'>
-              Add
-            </button>
-          )}
+          <button
+            type='button'
+            onClick={() => {
+              addTool();
+              toolInput.current?.focus();
+            }}
+            disabled={!draft.trim()}
+            className='h-11 shrink-0 cursor-pointer rounded-xl bg-text px-5 text-sm font-semibold text-canvas transition-opacity disabled:cursor-default disabled:opacity-30'
+          >
+            Add
+          </button>
         </div>
+        {tools.length > 0 && (
+          <p className='mt-2 text-xs text-muted'>
+            {tools.length} selected{tools.length > 0 && ' · tap one again to remove it'}
+          </p>
+        )}
       </div>
 
       <label className={`${label} mt-5`}>
