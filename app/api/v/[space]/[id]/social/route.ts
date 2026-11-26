@@ -164,7 +164,7 @@ export async function POST(request: Request, { params }: Params) {
     if (body.length > 2000) return NextResponse.json({ error: "too_long" }, { status: 400 });
     const res = await workerCall<{ comment: WorkerComment }>(ws, `${id}/comments`, {
       method: "POST",
-      body: { body, atSec: typeof input.atSec === "number" ? input.atSec : null, user: me },
+      body: { body, atSec: typeof input.atSec === "number" ? input.atSec : null, user: me, ownerId: ws.owner_id },
     });
     if (!res.ok || !res.data) return NextResponse.json({ error: "failed" }, { status: 502 });
     const c = res.data.comment;
@@ -177,7 +177,7 @@ export async function POST(request: Request, { params }: Params) {
     if (!input.emoji || !EMOJIS.includes(input.emoji)) return NextResponse.json({ error: "bad_reaction" }, { status: 400 });
     const res = await workerCall(ws, `${id}/reactions`, {
       method: "POST",
-      body: { emoji: input.emoji, atSec: typeof input.atSec === "number" ? input.atSec : null, user: me },
+      body: { emoji: input.emoji, atSec: typeof input.atSec === "number" ? input.atSec : null, user: me, ownerId: ws.owner_id },
     });
     return res.ok ? NextResponse.json({ ok: true }) : NextResponse.json({ error: "failed" }, { status: 502 });
   }

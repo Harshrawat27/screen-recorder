@@ -2,6 +2,7 @@ import { AccountMenu } from '@/components/account-menu';
 import { AnalyticsIdentify } from '@/components/analytics';
 import { MobileNav, SidebarNav } from '@/components/dashboard-nav';
 import { DashboardSearch } from '@/components/dashboard-search';
+import { NotificationBell } from '@/components/notification-bell';
 import { Avatar } from '@/components/dashboard-ui';
 import { Logo } from '@/components/header';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -71,6 +72,7 @@ export default async function DashboardLayout({
           <Logo />
           <div className='flex items-center gap-1'>
             <DashboardSearch compact />
+            <NotificationBell />
             <ThemeToggle />
             <AccountMenu
               compact
@@ -88,6 +90,9 @@ export default async function DashboardLayout({
         {/* Top bar on large screens: search in the middle */}
         <div className='sticky top-0 z-100 hidden h-16 items-center justify-center border-b border-line bg-canvas/85 px-8 backdrop-blur lg:flex'>
           <DashboardSearch />
+          <div className='absolute right-6 top-1/2 -translate-y-1/2'>
+            <NotificationBell />
+          </div>
         </div>
         {children}
       </div>

@@ -364,3 +364,17 @@ html {
   --plyr-video-background: #000;
   --plyr-badge-border-radius: 6px;
 }
+
+/* A comment opened from a notification flashes once. */
+@keyframes comment-flash {
+  0%, 60% { background: color-mix(in srgb, #f35733 14%, transparent); }
+  100% { background: transparent; }
+}
+.comment-flash {
+  border-radius: 14px;
+  animation: comment-flash 2.6s ease-out;
+  box-shadow: 0 0 0 8px color-mix(in srgb, #f35733 0%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .comment-flash { animation: none; background: color-mix(in srgb, #f35733 10%, transparent); }
+}

@@ -249,6 +249,19 @@ export function VideoSocial({
     };
   }, [load]);
 
+  // Opened from a notification (?c=<comment id>): bring that comment into view and flash it once.
+  const linked = useRef(false);
+  useEffect(() => {
+    if (linked.current || !social?.enabled || !listRef.current) return;
+    linked.current = true;
+    const id = new URLSearchParams(window.location.search).get("c");
+    const el = id ? listRef.current.querySelector<HTMLElement>(`[data-comment="${CSS.escape(id)}"]`) : null;
+    if (!el) return;
+    el.scrollIntoView({ block: "center", behavior: "smooth" });
+    el.classList.add("comment-flash");
+    window.setTimeout(() => el.classList.remove("comment-flash"), 2600);
+  }, [social]);
+
   const now = () => {
     const t = videoRef.current?.currentTime;
     return typeof t === "number" && Number.isFinite(t)

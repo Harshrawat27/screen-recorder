@@ -30,6 +30,8 @@
 //   PATCH  /api/videos/<id>                 also { visibility, sharedWith } (needs UPLOAD_KEY)
 //   POST   /api/members                     register a team member's upload key (needs UPLOAD_KEY)
 //   DELETE /api/members/<userId>            revoke it (needs UPLOAD_KEY)
+//   GET    /api/notifications?user=…        someone's latest notifications and unread count (needs UPLOAD_KEY)
+//   POST   /api/notifications/read          mark someone's notifications read (needs UPLOAD_KEY)
 //   GET    /health                          version check
 //
 // From version 7, team members record with their own key (a member key). A member key can
@@ -37,6 +39,10 @@
 // photo; it can't list, read or change anyone else's recordings. Every recording remembers who
 // made it (videos.recorded_by; empty means the account owner). Who may see what in the
 // dashboard is decided by the Showthrough website, which holds the main key.
+//
+// From version 8 a new comment or reaction also leaves a notification for whoever recorded the
+// video (the account owner, or the team member who made it). They live in this account's D1
+// and are read by the Showthrough website when its dashboard opens: nothing is kept anywhere else.
 //
 // From version 3 each recording also has a row in D1 (title, date, length, thumbnail), kept
 // in step with its meta.json: the row is written when the extension uploads meta.json. The
@@ -47,7 +53,7 @@
 // endpoints are only called by the Showthrough website, which checks who is signed in and
 // passes their name along. Viewers never talk to these endpoints directly.
 
-const VERSION = 7;
+const VERSION = 8;
 const VIDEO_ID = /^[a-z0-9]{8,64}$/;
 const EMOJIS = ["👍", "❤️", "😂", "🎉", "😮", "🔥"];
 const FILE = /^videos\/[a-z0-9]{8,64}\/[A-Za-z0-9._-]{1,100}$/;
@@ -151,6 +157,13 @@ const SCHEMA = [
   // Version 3: this Worker's own count of its requests and storage operations, per UTC day.
   // Version 7: team members' upload keys (hashed) and who recorded each video.
   `create table if not exists members (user_id text primary key, key_hash text not null unique, created_at integer not null)`,
+  // Version 8: notifications for whoever recorded a video. ref_id is the comment, so deleting
+  // a comment removes its notification too.
+  `create table if not exists notifications (
+     id text primary key, recipient text not null, kind text not null, video_id text not null, ref_id text,
+     actor_id text not null, actor_name text not null, actor_image text, body text, emoji text, at_sec real,
+     created_at integer not null, read_at integer)`,
+  `create index if not exists notifications_recipient on notifications (recipient, created_at desc)`,
   `create table if not exists usage_daily (
      day text primary key, requests integer not null default 0, class_a integer not null default 0,
      class_b integer not null default 0)`,
@@ -233,6 +246,13 @@ async function addComment(env, videoId, input) {
   )
     .bind(row.id, row.video_id, row.user_id, row.user_name, row.user_image, row.body, row.at_sec, row.created_at)
     .run();
+  await notify(env, videoId, input.ownerId, {
+    kind: "comment",
+    refId: row.id,
+    actor: { id: row.user_id, name: row.user_name, image: row.user_image },
+    body: row.body.slice(0, 280),
+    atSec: row.at_sec,
+  }).catch((err) => console.error("Could not save notification", err));
   return commentRow(row);
 }
 
@@ -242,7 +262,10 @@ async function deleteComment(env, videoId, commentId, input) {
   if (!row) return "not_found";
   // The video owner can delete any comment; anyone else only their own.
   if (!input.isOwner && row.user_id !== input.userId) return "forbidden";
-  await env.DB.prepare("delete from comments where id = ?").bind(commentId).run();
+  await env.DB.batch([
+    env.DB.prepare("delete from comments where id = ?").bind(commentId),
+    env.DB.prepare("delete from notifications where ref_id = ?").bind(commentId),
+  ]);
   return "ok";
 }
 
@@ -252,7 +275,99 @@ async function addReaction(env, videoId, input) {
   await env.DB.prepare("insert into reactions (id, video_id, user_id, emoji, at_sec, created_at) values (?, ?, ?, ?, ?, ?)")
     .bind(crypto.randomUUID(), videoId, clean(input.user.id, 100), input.emoji, seconds(input.atSec), Date.now())
     .run();
+  await notify(env, videoId, input.ownerId, {
+    kind: "reaction",
+    actor: { id: clean(input.user.id, 100), name: clean(input.user.name, 100) || "Someone", image: input.user.image ? clean(input.user.image, 500) : null },
+    emoji: input.emoji,
+    atSec: seconds(input.atSec),
+  }).catch((err) => console.error("Could not save notification", err));
   return true;
+}
+
+// ---- Notifications (version 8) ------------------------------------------------------------
+
+const NOTIFY_KEEP_MS = 90 * 24 * 60 * 60 * 1000; // older ones are cleared away
+const REACTION_QUIET_MS = 10 * 60 * 1000; // the same person's same emoji on a video counts once per 10 minutes
+
+/**
+ * Leaves a notification for whoever recorded the video: the team member who made it, or the
+ * account owner (whose id the website passes as ownerId). Nobody is notified about their own
+ * comments and reactions.
+ */
+async function notify(env, videoId, ownerId, note) {
+  const video = await env.DB.prepare("select recorded_by from videos where id = ?").bind(videoId).first();
+  const recipient = video?.recorded_by || (USER_ID.test(String(ownerId || "")) ? ownerId : "");
+  if (!recipient || recipient === note.actor.id) return;
+  const now = Date.now();
+  if (note.kind === "reaction") {
+    const recent = await env.DB.prepare(
+      "select id from notifications where recipient = ? and video_id = ? and actor_id = ? and kind = 'reaction' and emoji = ? and created_at > ? limit 1",
+    )
+      .bind(recipient, videoId, note.actor.id, note.emoji, now - REACTION_QUIET_MS)
+      .first();
+    if (recent) return;
+  }
+  const statements = [
+    env.DB.prepare(
+      "insert into notifications (id, recipient, kind, video_id, ref_id, actor_id, actor_name, actor_image, body, emoji, at_sec, created_at) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    ).bind(
+      crypto.randomUUID(),
+      recipient,
+      note.kind,
+      videoId,
+      note.refId ?? null,
+      note.actor.id,
+      note.actor.name,
+      note.actor.image ?? null,
+      note.body ?? null,
+      note.emoji ?? null,
+      note.atSec ?? null,
+      now,
+    ),
+  ];
+  // Now and then, clear out old notifications so the table stays small.
+  if (Math.random() < 0.02) statements.push(env.DB.prepare("delete from notifications where created_at < ?").bind(now - NOTIFY_KEEP_MS));
+  await env.DB.batch(statements);
+}
+
+async function handleNotifications(request, env, path, url) {
+  if (!env.DB) return json({ error: "no_database" }, 501);
+  await ensureSchema(env);
+  if (path === "/api/notifications" && request.method === "GET") {
+    const user = url.searchParams.get("user") || "";
+    if (!USER_ID.test(user)) return json({ error: "bad_request" }, 400);
+    const limit = Math.min(Math.max(Number(url.searchParams.get("limit")) || 30, 1), 100);
+    const [items, unread] = await env.DB.batch([
+      env.DB.prepare(
+        `select n.*, v.title from notifications n left join videos v on v.id = n.video_id
+         where n.recipient = ? order by n.created_at desc limit ?`,
+      ).bind(user, limit),
+      env.DB.prepare("select count(*) as n from notifications where recipient = ? and read_at is null").bind(user),
+    ]);
+    return json({
+      unread: unread.results[0]?.n ?? 0,
+      items: items.results.map((n) => ({
+        id: n.id,
+        kind: n.kind,
+        videoId: n.video_id,
+        videoTitle: n.title ?? null,
+        commentId: n.ref_id ?? null,
+        actor: { name: n.actor_name, image: n.actor_image },
+        body: n.body,
+        emoji: n.emoji,
+        atSec: n.at_sec,
+        createdAt: n.created_at,
+        read: n.read_at !== null,
+      })),
+    });
+  }
+  if (path === "/api/notifications/read" && request.method === "POST") {
+    const input = await request.json().catch(() => ({}));
+    if (!USER_ID.test(String(input.user || ""))) return json({ error: "bad_request" }, 400);
+    await env.DB.prepare("update notifications set read_at = ? where recipient = ? and read_at is null").bind(Date.now(), input.user).run();
+    return json({ ok: true });
+  }
+  return json({ error: "not_found" }, 404);
 }
 
 async function addView(env, videoId) {
@@ -438,7 +553,7 @@ async function deleteRecording(env, id) {
 
 async function forgetRecording(env, id) {
   await ensureSchema(env);
-  const statements = ["videos", "comments", "reactions"].map((table) =>
+  const statements = ["videos", "comments", "reactions", "notifications"].map((table) =>
     env.DB.prepare(`delete from ${table} where ${table === "videos" ? "id" : "video_id"} = ?`).bind(id),
   );
   statements.push(env.DB.prepare("delete from views where video_id = ?").bind(id));
@@ -923,6 +1038,7 @@ async function route(request, env) {
     }
     if (path.startsWith("/api/videos/")) return handleVideo(request, env, path.slice("/api/videos/".length));
     if (path.startsWith("/api/social/")) return handleSocial(request, env, path);
+    if (path === "/api/notifications" || path === "/api/notifications/read") return handleNotifications(request, env, path, url);
 
     if (path.startsWith("/api/upload/")) {
       const key = path.slice("/api/upload/".length);

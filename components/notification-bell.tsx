@@ -1,0 +1,169 @@
+'use client';
+
+import { Popover } from '@base-ui/react/popover';
+import Link from 'next/link';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Avatar } from '@/components/dashboard-ui';
+
+// The bell in the dashboard's top bar: new comments and reactions on your videos. They're kept
+// in your own Cloudflare; we ask for them when the dashboard opens and when you come back to
+// the tab (at most once every 20 seconds), never on a timer. Opening the bell marks them read.
+
+type Item = {
+  id: string;
+  kind: 'comment' | 'reaction';
+  videoTitle: string | null;
+  actor: { name: string; image: string | null };
+  body: string | null;
+  emoji: string | null;
+  atSec: number | null;
+  createdAt: number;
+  read: boolean;
+  href: string;
+};
+
+type Data = { enabled: boolean; reason?: string; unread: number; items: Item[] };
+
+const MIN_GAP_MS = 20_000;
+
+function ago(ms: number) {
+  const s = Math.max(1, Math.round((Date.now() - ms) / 1000));
+  if (s < 60) return 'just now';
+  const m = Math.round(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.round(h / 24);
+  if (d < 7) return `${d}d ago`;
+  return new Date(ms).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+}
+
+const clock = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;
+
+const BellIcon = ({ className = '' }: { className?: string }) => (
+  <svg viewBox='0 0 24 24' fill='none' aria-hidden className={className}>
+    <path
+      d='M6 9.5a6 6 0 0 1 12 0c0 4.2 1.4 5.9 2.2 6.6.3.3.1.9-.4.9H4.2c-.5 0-.7-.6-.4-.9C4.6 15.4 6 13.7 6 9.5z'
+      stroke='currentColor'
+      strokeWidth='1.7'
+      strokeLinejoin='round'
+    />
+    <path d='M10 20.2a2.2 2.2 0 0 0 4 0' stroke='currentColor' strokeWidth='1.7' strokeLinecap='round' />
+  </svg>
+);
+
+function emptyText(data: Data | null) {
+  if (!data) return 'Loading…';
+  if (data.enabled) return 'Nothing yet. When someone comments on or reacts to your videos, you’ll see it here.';
+  if (data.reason === 'update') return 'Update your video backend (in the sidebar) to turn on notifications.';
+  if (data.reason === 'admin_update') return 'Notifications turn on once your admin updates the video backend.';
+  if (data.reason === 'unreachable') return 'Couldn’t reach your Cloudflare just now. Try again in a moment.';
+  return 'Connect Cloudflare to get notifications about your videos.';
+}
+
+export function NotificationBell() {
+  const [data, setData] = useState<Data | null>(null);
+  const [open, setOpen] = useState(false);
+  const last = useRef(0);
+
+  const load = useCallback(async (force = false) => {
+    if (!force && Date.now() - last.current < MIN_GAP_MS) return;
+    last.current = Date.now();
+    try {
+      const res = await fetch('/api/notifications', { cache: 'no-store' });
+      if (res.ok) setData((await res.json()) as Data);
+    } catch {
+      // Keep what's shown; the next visit to the tab tries again.
+    }
+  }, []);
+
+  // When the dashboard opens, and whenever you come back to this tab.
+  useEffect(() => {
+    const first = window.setTimeout(() => void load(true), 0);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void load();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', onVisible);
+    return () => {
+      window.clearTimeout(first);
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', onVisible);
+    };
+  }, [load]);
+
+  const onOpenChange = (next: boolean) => {
+    setOpen(next);
+    if (next) {
+      void load();
+      // Seen: clear the count now; the dots on each row stay until the bell closes.
+      if (data?.unread) {
+        setData((d) => (d ? { ...d, unread: 0 } : d));
+        void fetch('/api/notifications', { method: 'POST' }).catch(() => {});
+      }
+    } else {
+      setData((d) => (d ? { ...d, items: d.items.map((i) => ({ ...i, read: true })) } : d));
+    }
+  };
+
+  const unread = data?.unread ?? 0;
+  const items = data?.items ?? [];
+
+  return (
+    <Popover.Root open={open} onOpenChange={onOpenChange}>
+      <Popover.Trigger
+        aria-label={unread ? `Notifications, ${unread} new` : 'Notifications'}
+        className='relative grid size-10 cursor-pointer place-items-center rounded-full text-text outline-none transition-colors hover:bg-sunken focus-visible:ring-2 focus-visible:ring-text data-[popup-open]:bg-sunken'
+      >
+        <BellIcon className='size-5' />
+        {unread > 0 && (
+          <span className='absolute right-1 top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-[#f35733] px-1 text-[11px] font-bold leading-none text-white ring-2 ring-canvas'>
+            {unread > 9 ? '9+' : unread}
+          </span>
+        )}
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner side='bottom' align='end' sideOffset={8} className='z-[200]'>
+          <Popover.Popup className='w-[min(380px,calc(100vw-24px))] origin-[var(--transform-origin)] overflow-hidden rounded-[20px] border border-line bg-surface shadow-[0_24px_60px_-20px_rgb(0_0_0/0.35)] outline-none transition duration-150 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0'>
+            <div className='flex items-center justify-between border-b border-line px-4 py-3'>
+              <Popover.Title className='text-[15px] font-semibold'>Notifications</Popover.Title>
+              <span className='text-xs text-muted'>Comments and reactions</span>
+            </div>
+            {items.length === 0 ? (
+              <p className='px-5 py-10 text-center text-sm leading-relaxed text-muted'>{emptyText(data)}</p>
+            ) : (
+              <ul className='max-h-[min(460px,70dvh)] overflow-y-auto py-1.5'>
+                {items.map((n) => (
+                  <li key={n.id}>
+                    <Link
+                      href={n.href}
+                      onClick={() => setOpen(false)}
+                      className='flex gap-3 px-4 py-3 transition-colors hover:bg-sunken'
+                    >
+                      <Avatar name={n.actor.name} image={n.actor.image} size='sm' />
+                      <div className='min-w-0 flex-1 text-sm leading-snug'>
+                        <p>
+                          <span className='font-semibold'>{n.actor.name}</span>{' '}
+                          {n.kind === 'comment' ? 'commented on' : <>reacted {n.emoji} to</>}{' '}
+                          <span className='font-semibold'>{n.videoTitle || 'your video'}</span>
+                        </p>
+                        {n.kind === 'comment' && n.body && (
+                          <p className='mt-1 line-clamp-2 text-muted'>“{n.body}”</p>
+                        )}
+                        <p className='mt-1 text-xs text-faint'>
+                          {ago(n.createdAt)}
+                          {n.atSec !== null && <> · at {clock(n.atSec)}</>}
+                        </p>
+                      </div>
+                      {!n.read && <span aria-label='New' className='mt-1.5 size-2 shrink-0 rounded-full bg-[#f35733]' />}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}

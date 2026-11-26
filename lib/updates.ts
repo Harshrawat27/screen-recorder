@@ -10,6 +10,7 @@ export const WORKER_RELEASES: Record<number, string> = {
   5: "Recent and Watch later: find videos you watched or saved for later.",
   6: "Use your photo instead of your camera when recording.",
   7: "Team members: invite your team to record into your library, each with their own account.",
+  8: "Notifications: see new comments and reactions on your videos from the bell at the top.",
 };
 
 /** Whether this account's purchase includes a given Worker version. */
