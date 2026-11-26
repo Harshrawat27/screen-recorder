@@ -11,10 +11,30 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Roadmap",
   alternates: { canonical: "/roadmap" },
-  description: `What ${site.name} has shipped since launch and what's coming next: AI titles and chapters, a video editor and more.`,
+  description: `What ${site.name} has shipped since launch and what's coming next: a Mac app for 4K product demos, AI titles and chapters, a video editor and more.`,
 };
 
-const big: { title: string; body: string; points: string[]; icon: React.ReactNode }[] = [
+const big: { title: string; body: string; points: string[]; icon: React.ReactNode; featured?: boolean }[] = [
+  {
+    featured: true,
+    title: "Mac app for product demos",
+    body: "A native Mac app for recordings that need to look polished: product demos, launch videos and walkthroughs. Record in up to 4K, zoom in on what matters, and keep your camera on screen the whole time. When you stop, you get the same share link as always.",
+    points: [
+      "Record in up to 4K",
+      "Zoom in on a click or an area, then zoom back out",
+      "Camera bubble that stays on screen throughout the video",
+      "Record any app, no need to open Chrome",
+      "Controls floating over every app",
+      "Same share link, stored in your own Cloudflare",
+    ],
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" className="size-5" aria-hidden>
+        <rect x="3" y="4.5" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M8.5 20h7M12 16.5V20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        <circle cx="16.5" cy="12.5" r="2" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+    ),
+  },
   {
     title: "AI titles, summaries and chapters",
     body: "Every recording gets transcribed, then titled, summarized and split into chapters automatically. It all runs on Cloudflare's AI inside your own account, so your audio never goes to us or anyone else.",
@@ -70,7 +90,6 @@ const more: { title: string; body: string }[] = [
   { title: "Slack previews", body: "Videos play right inside Slack." },
   { title: "Hover previews", body: "Scrub through a video by hovering, like YouTube." },
   { title: "Viewer insights", body: "See who watched and how far they got." },
-  { title: "Mac app", body: "Record without opening Chrome, with your camera and controls floating over every app." },
 ];
 
 export default async function RoadmapPage() {
@@ -131,14 +150,27 @@ export default async function RoadmapPage() {
 
         <section className="mx-auto grid max-w-6xl gap-4 px-5 sm:px-8 md:grid-cols-2">
           {big.map((item) => (
-            <article key={item.title} className="flex flex-col rounded-[24px] border border-line bg-surface p-7 sm:p-9">
-              <div className="flex items-center justify-between gap-4">
-                <span className="grid size-11 place-items-center rounded-full border border-line bg-sunken">{item.icon}</span>
-                <span className="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold text-muted">Planned</span>
+            <article
+              key={item.title}
+              className={`flex flex-col rounded-[24px] border bg-surface p-7 sm:p-9 ${
+                item.featured ? "border-line-strong md:col-span-2 md:grid md:grid-cols-2 md:gap-x-12 lg:p-12" : "border-line"
+              }`}
+            >
+              <div>
+                <div className="flex items-center justify-between gap-4">
+                  <span className="grid size-11 place-items-center rounded-full border border-line bg-sunken">{item.icon}</span>
+                  <span className="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold text-muted">
+                    {item.featured ? "Coming soon" : "Planned"}
+                  </span>
+                </div>
+                <h2 className={`mt-6 leading-tight ${item.featured ? "text-[34px] sm:text-[44px]" : "text-[30px]"}`}>{item.title}</h2>
+                <p className="mt-3 leading-relaxed text-muted">{item.body}</p>
               </div>
-              <h2 className="mt-6 text-[30px] leading-tight">{item.title}</h2>
-              <p className="mt-3 leading-relaxed text-muted">{item.body}</p>
-              <ul className="mt-6 space-y-3 border-t border-line pt-6 text-[15px]">
+              <ul
+                className={`mt-6 space-y-3 border-t border-line pt-6 text-[15px] ${
+                  item.featured ? "md:mt-0 md:self-center md:border-t-0 md:border-l md:pt-0 md:pl-12" : ""
+                }`}
+              >
                 {item.points.map((point) => (
                   <li key={point} className="flex items-start gap-3">
                     <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-text text-canvas">
