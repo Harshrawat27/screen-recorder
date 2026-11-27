@@ -31,6 +31,7 @@ import { VideoThumb } from '@/components/video-thumb';
 import { type TeamPerson, VisibilityDialog } from '@/components/visibility-dialog';
 import { site } from '@/lib/site';
 import { openUpgrade } from '@/components/upgrade';
+import { EmbedDialog } from '@/components/embed-dialog';
 
 // The library: tabs, view toggle, folders and video cards.
 // Rename and delete are real (see app/api/videos). Folders, starring and archive are
@@ -379,8 +380,10 @@ function VideoMenu({
   trigger: string;
 }) {
   const [dialog, setDialog] = useState<
-    'rename' | 'delete' | 'move' | 'share' | null
+    'rename' | 'delete' | 'move' | 'share' | 'embed' | null
   >(null);
+  // /v/<space>/<id>, for the embed code.
+  const [, , embedSpace, embedId] = video.href.split('/');
   const { folders, foldersEnabled, foldersLocked, moved, later, toggleLater, team } =
     useContext(Actions);
   // Teammates' videos can be watched, saved and downloaded, but only changed by whoever made them.
@@ -398,6 +401,7 @@ function VideoMenu({
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-48'>
           <DropdownMenuItem onClick={copy}>Copy link</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setDialog('embed')}>Embed</DropdownMenuItem>
           <DropdownMenuItem onClick={() => window.open(video.href, '_blank')}>
             Open in new tab
           </DropdownMenuItem>
@@ -461,6 +465,15 @@ function VideoMenu({
         open={dialog === 'delete'}
         onClose={() => setDialog(null)}
       />
+      {embedSpace && embedId && (
+        <EmbedDialog
+          space={embedSpace}
+          id={embedId}
+          title={video.title}
+          open={dialog === 'embed'}
+          onOpenChange={(next) => !next && setDialog(null)}
+        />
+      )}
       {foldersEnabled && (
         <MoveDialog
           open={dialog === 'move'}

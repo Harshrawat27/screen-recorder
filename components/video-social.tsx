@@ -537,7 +537,7 @@ export function VideoSocial({
         <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-3 sm:mt-3">
           {statsLine}
           <div className="flex flex-wrap items-center gap-2">
-            <CtaOwnerTools cta={cta} space={space} id={id} src={src} />
+            <CtaOwnerTools cta={cta} space={space} id={id} src={src} title={meta.title} />
             {watchLater}
           </div>
         </div>

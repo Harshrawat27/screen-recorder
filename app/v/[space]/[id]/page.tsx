@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { VideoSocial } from "@/components/video-social";
 import { MEDIA_URL } from "@/lib/config";
+import { site } from "@/lib/site";
 import { getWorkspaceBySpace } from "@/lib/db";
 import { ownerFeatures, showsBadge } from "@/lib/plan";
 import { getSession } from "@/lib/session";
@@ -31,10 +32,13 @@ export async function generateMetadata({ params }: PageProps<"/v/[space]/[id]">)
   const title = meta?.title || "Screen recording";
   const image = meta?.thumbnail ? `${base}/${meta.thumbnail}` : undefined;
   const description = "A screen recording shared with Showthrough. Opens in your browser, no account needed.";
+  // Pasting the link into Notion, Medium and the like embeds the player (app/api/oembed).
+  const oembed = `${site.url}/api/oembed?url=${encodeURIComponent(`${site.url}/v/${space}/${id}`)}`;
   return {
     title,
     description,
     robots,
+    alternates: { types: { "application/json+oembed": oembed } },
     openGraph: { title, description, type: "video.other", siteName: "Showthrough", images: image ? [{ url: image, width: 1280, height: 720 }] : undefined },
     twitter: { card: image ? "summary_large_image" : "summary", title, description, images: image ? [image] : undefined },
   };

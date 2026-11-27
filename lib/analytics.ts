@@ -8,7 +8,8 @@ export const POSTHOG_ASSETS = "https://us-assets.i.posthog.com";
 export const POSTHOG_UI = "https://us.posthog.com";
 
 /** Pages PostHog never runs on: shared videos belong to our customers' viewers, not our visitors. */
-export const untracked = (path: string) => path.startsWith("/v/");
+// Share pages and embeds (which run on other people's websites) aren't tracked and show no cookie banner.
+export const untracked = (path: string) => path.startsWith("/v/") || path.startsWith("/embed/");
 
 /**
  * Records something that happened on the server (a purchase, a connection) against a signed-in

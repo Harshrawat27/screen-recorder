@@ -15,7 +15,7 @@ import { getRegion } from "@/lib/region";
 const ENABLED = false;
 
 const SEEN = "st_india_offer"; // "seen" once the dialog has been shown
-const HIDDEN_ON = ["/dashboard", "/v/", "/record", "/extension", "/appsumo", "/login", "/auth"];
+const HIDDEN_ON = ["/dashboard", "/v/", "/embed/", "/record", "/extension", "/appsumo", "/login", "/auth"];
 
 export function IndiaOffer() {
   const pathname = usePathname();

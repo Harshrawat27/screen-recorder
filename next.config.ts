@@ -26,6 +26,14 @@ const nextConfig: NextConfig = {
           { key: "Permissions-Policy", value: "geolocation=(), usb=()" },
         ],
       },
+      // Embeds: any website may show these in an <iframe>, and they may play full screen.
+      {
+        source: "/embed/:path*",
+        headers: [
+          { key: "Content-Security-Policy", value: "frame-ancestors *" },
+          { key: "Permissions-Policy", value: "geolocation=(), usb=(), fullscreen=*, autoplay=*, picture-in-picture=*" },
+        ],
+      },
     ];
   },
   async redirects() {

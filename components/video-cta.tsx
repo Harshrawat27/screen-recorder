@@ -7,6 +7,7 @@ import { VideoVisibility } from "@/components/video-visibility";
 import { useVideoDownload } from "@/components/video-download";
 import { type Cta, CTA_LABEL_MAX, CTA_MAX, cleanButtons, ctaHost } from "@/lib/cta";
 import { openUpgrade } from "@/components/upgrade";
+import { EmbedDialog } from "@/components/embed-dialog";
 
 // The call-to-action buttons under a shared video, and the owner's tools for the video (shown
 // in the share page's top bar). Each button shows, in small type, the site it opens. The owner
@@ -89,8 +90,9 @@ export function CtaButtons({ cta }: { cta: CtaHandle }) {
  * The owner's tools for this video, shown in the page's top bar: the buttons under it,
  * Download MP4 and (on a team) who can see it. Needs a <VideoDownloads> around it.
  */
-export function CtaOwnerTools({ cta, space, id, src }: { cta: CtaHandle; space: string; id: string; src?: string }) {
+export function CtaOwnerTools({ cta, space, id, src, title }: { cta: CtaHandle; space: string; id: string; src?: string; title?: string | null }) {
   const [open, setOpen] = useState(false);
+  const [embed, setEmbed] = useState(false);
   const [rows, setRows] = useState<Row[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -139,6 +141,13 @@ export function CtaOwnerTools({ cta, space, id, src }: { cta: CtaHandle; space: 
         )}
       </button>
       {src && <DownloadButton src={src} />}
+      <button type="button" onClick={() => setEmbed(true)} className={buttonClass("secondary", "sm")}>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden className="size-4">
+          <path d="M8.5 7 3.5 12l5 5M15.5 7l5 5-5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        Embed
+      </button>
+      <EmbedDialog space={space} id={id} title={title} open={embed} onOpenChange={setEmbed} />
       <VideoVisibility space={space} id={id} />
 
       <Dialog open={open} onOpenChange={(next) => !next && !busy && setOpen(false)}>

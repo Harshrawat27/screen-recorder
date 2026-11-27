@@ -4,7 +4,7 @@ import { UpgradeHost } from "@/components/upgrade";
 import localFont from 'next/font/local';
 import { site } from '@/lib/site';
 import './globals.css';
-import { Analytics } from '@vercel/analytics/next';
+import { VercelAnalytics } from '@/components/vercel-analytics';
 import { Analytics as ProductAnalytics } from '@/components/analytics';
 import { IndiaOffer } from '@/components/india-offer';
 // Self-hosted (SIL Open Font License) so builds work offline.
@@ -88,7 +88,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         <ThemeKeeper />
         <UpgradeHost />
         {children}
-        <Analytics />
+        <VercelAnalytics />
         <ProductAnalytics />
         <IndiaOffer />
       </body>

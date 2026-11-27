@@ -68,6 +68,7 @@ export function Player({
   stats,
   belowVideo,
   bare = false,
+  fill = false,
 }: {
   src?: string;
   metaUrl?: string;
@@ -81,6 +82,8 @@ export function Player({
   belowVideo?: React.ReactNode;
   /** Just the video: the page around it shows the title, stats and Copy link (share pages). */
   bare?: boolean;
+  /** Fill the whole window edge to edge, with no rounded corners (embeds). */
+  fill?: boolean;
 } = {}) {
   const hash = useSyncExternalStore(subscribeHash, () => window.location.hash, () => null);
   const src = srcProp ?? readSource(hash);
@@ -197,7 +200,7 @@ export function Player({
           </p>
         </div>
       )}
-      <div className="relative aspect-video overflow-hidden rounded-panel bg-stage">
+      <div className={fill ? "relative h-dvh w-full overflow-hidden bg-black" : "relative aspect-video overflow-hidden rounded-panel bg-stage"}>
         {problem ? (
           <div role="alert" className="absolute inset-0 grid place-items-center p-8 text-center text-white">
             <div className="max-w-md">
