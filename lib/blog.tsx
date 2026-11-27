@@ -379,6 +379,52 @@ const bestRecorderFaqs = [
   },
 ];
 
+const remoteBestPracticesFaqs = [
+  {
+    q: "What are the most important remote work best practices?",
+    a: "Write things down and default to async, agree on a few hours of overlap and on how fast people should reply, keep one place where decisions and documents live, and replace status meetings with short written or video updates.",
+  },
+  {
+    q: "How do remote teams communicate well?",
+    a: "By choosing the right channel for each message: chat for quick questions, a short screen recording for anything you'd otherwise explain on a call, a doc for decisions, and a live meeting only for discussion that really needs it.",
+  },
+  {
+    q: "How do you reduce meetings on a remote team?",
+    a: "Turn status updates into a written or recorded update people check on their own time, give every meeting an agenda and a decision to make, and record walkthroughs once instead of repeating them on calls.",
+  },
+  {
+    q: "How do you work across time zones?",
+    a: "Agree on two to four hours of overlap for live work, default to async for everything else, write dates and times with the time zone, and hand off work at the end of your day with a short update so the next person can carry on.",
+  },
+  {
+    q: "What tools do remote teams need?",
+    a: "Usually chat, video calls, an async video recorder, a shared docs or wiki tool, and a project management tool. Most have free plans. See our guide to remote collaboration tools.",
+  },
+];
+
+const remoteCollabFaqs = [
+  {
+    q: "What are remote collaboration tools?",
+    a: "Software that lets people work together without being in the same place: chat, video calls, async video, shared docs, whiteboards, project management and scheduling tools.",
+  },
+  {
+    q: "What are the best free remote collaboration tools?",
+    a: "Slack's free plan for chat (90 days of history), Google Meet for calls, Showthrough for async screen recordings with no video or time limit, Notion or Google Docs for docs, Miro for whiteboards (3 editable boards), and Trello for tasks (up to 10 collaborators per workspace).",
+  },
+  {
+    q: "What tools does a small remote team need?",
+    a: "Five is usually enough: chat, video calls, an async video recorder, a docs tool and a task tool. Add a whiteboard or design tool only if your work needs one.",
+  },
+  {
+    q: "How do you collaborate remotely without more meetings?",
+    a: "Use async tools for most work: post updates in chat or a doc, record a short screen video instead of explaining on a call, and keep live meetings for discussions that need a decision.",
+  },
+  {
+    q: "Is Slack or Microsoft Teams better for remote teams?",
+    a: "Teams is the natural choice if you already pay for Microsoft 365. Slack is popular with startups and agencies for its integrations and shared channels with clients. Both have free versions.",
+  },
+];
+
 export const posts: Post[] = [
   {
     slug: "how-to-screen-record-on-chromebook",
@@ -3593,6 +3639,417 @@ export const posts: Post[] = [
 
         <h2>Questions people ask</h2>
         {bestRecorderFaqs.map((f) => (
+          <div key={f.q}>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </>
+    ),
+  },
+  {
+    slug: "remote-work-best-practices",
+    title: "Remote work best practices: 12 habits that make remote teams work",
+    metaTitle: "Remote work best practices: 12 habits for remote teams (2026)",
+    description:
+      "Twelve remote work best practices for teams and individuals: async by default, overlap hours, fewer meetings, video updates, clear documentation and healthy working hours.",
+    excerpt:
+      "The habits that make remote teams fast and calm: write it down, default to async, meet less, show instead of tell, and protect your working hours.",
+    published: "2026-11-27",
+    updated: "2026-11-27",
+    readingMinutes: 8,
+    image: {
+      src: "/blog/remote-work-best-practices.webp",
+      alt: "Three home-office desks with clocks showing different times, connected by a dashed line carrying a chat message, a document and a video",
+      width: 1600,
+      height: 900,
+    },
+    faqs: remoteBestPracticesFaqs,
+    Body: () => (
+      <>
+        <p>
+          Remote work doesn&rsquo;t fail because people work from home. It fails when a team copies office habits onto a screen: back-to-back
+          calls, decisions made in a meeting nobody wrote down, and questions that wait until someone is online. The teams that do it well work
+          differently. Here are the twelve habits that make the difference, for teams and for each person on them.
+        </p>
+
+        <figure>
+          <Image
+            src="/blog/remote-work-best-practices.webp"
+            alt="Three home-office desks with clocks showing different times, connected by a dashed line carrying a chat message, a document and a video"
+            width={1600}
+            height={900}
+            sizes="(min-width: 768px) 720px, 100vw"
+            priority
+          />
+        </figure>
+
+        <div className="callout">
+          <p>
+            <strong>Quick answer:</strong> write things down, default to async, agree on a few overlap hours and reply times, keep one place for
+            decisions, meet only to discuss and decide, and replace status meetings with short written or video updates. As a person: set clear
+            working hours, share progress before you&rsquo;re asked, and end each day with a short handoff.
+          </p>
+        </div>
+
+        <h2>For the team</h2>
+
+        <h3>1. Default to async</h3>
+        <p>
+          Most work doesn&rsquo;t need everyone online at once. Make written messages, docs and recorded videos the default, and save live calls
+          for the few things that need them. People get long blocks of focus time, and nobody waits for a meeting to get an answer. We explain the
+          idea in <Link href="/blog/async-communication">what async communication is</Link>.
+        </p>
+
+        <h3>2. Write it down</h3>
+        <p>
+          If a decision lives only in someone&rsquo;s memory or a call, it doesn&rsquo;t exist for anyone who wasn&rsquo;t there. Write down what
+          was decided, why, and who owns it, in the place your team already looks.
+        </p>
+
+        <h3>3. Keep one source of truth</h3>
+        <p>
+          Pick one home for docs and decisions and one for tasks, and link everything there. &ldquo;Which version is right?&rdquo; is one of the
+          biggest time sinks on a remote team.
+        </p>
+
+        <h3>4. Agree on overlap hours</h3>
+        <p>
+          Across time zones, agree on two to four hours when everyone is reachable for quick questions and the few live calls you need. Outside
+          those hours, people work on their own schedule.
+        </p>
+
+        <h3>5. Set reply-time expectations</h3>
+        <p>
+          Async only works if people know how fast to reply. A simple rule helps: chat within a few hours, email or comments within a day, and
+          &ldquo;call me&rdquo; only for real emergencies. Then nobody feels they must watch chat all day.
+        </p>
+
+        <h3>6. Meet less, and meet better</h3>
+        <p>
+          Before booking a meeting, ask whether a message, a doc or a short video would do. When you do meet, share an agenda, end with a written
+          decision, and send a summary to the people who weren&rsquo;t there.
+        </p>
+
+        <h3>7. Replace status meetings with updates</h3>
+        <p>
+          The daily stand-up is often the first meeting to go. Ask everyone to post a short update instead: what they did, what&rsquo;s next, and
+          what&rsquo;s blocking them. People read it when it suits them, and everyone gets that meeting time back.
+        </p>
+
+        <h3>8. Show, don&rsquo;t write a wall of text</h3>
+        <p>
+          Some things are slow to explain in writing: a bug, a design change, a walkthrough of how something works. A two-minute screen recording
+          with your voice explains them faster than a long message or a call, and teammates can watch it whenever they&rsquo;re online.
+        </p>
+        <p>
+          I used Loom for this as a freelancer, until its per-person pricing got expensive once a couple of people worked with me. That&rsquo;s why I
+          built <Link href="/">Showthrough</Link>, a free Loom alternative. It&rsquo;s a Chrome extension that copies a share link the moment you stop
+          recording, with no limit on videos or length, and anyone can watch without an account. A paid plan, a{" "}
+          <Link href="/pricing">one-time payment</Link>, adds comments, notifications and your whole team.
+        </p>
+
+        <h3>9. Onboard with docs and videos, not calls</h3>
+        <p>
+          New teammates ask the same questions every time. Record the walkthroughs once (how to set up, how the product works, how the team
+          works) and keep them next to your docs. Each new hire watches them at their own pace, and the team stops repeating the same calls.
+        </p>
+
+        <h2>For each person</h2>
+
+        <h3>10. Set clear working hours</h3>
+        <p>
+          Put your hours and time zone in your chat profile and calendar, and stick to them. When work and home share a room, the end of the day
+          has to be a decision, not something that happens when you run out of messages.
+        </p>
+
+        <h3>11. Share progress before you&rsquo;re asked</h3>
+        <p>
+          Nobody can see you working. A short update when something moves forward, or gets stuck, builds more trust than being online all day.
+          Remote managers mostly worry when they hear nothing.
+        </p>
+
+        <h3>12. End each day with a handoff</h3>
+        <p>
+          When I was freelancing for clients in other time zones, this was the habit that mattered most. I sent every client an update at the end
+          of my day, so it was waiting for them when they woke up, and they never had to chase me for progress.
+        </p>
+        <p>Before you log off, post three lines, so the next person in another time zone can carry on without waiting for you:</p>
+        <ul>
+          <li>
+            <strong>Done today:</strong> what moved forward.
+          </li>
+          <li>
+            <strong>Next:</strong> what you&rsquo;ll pick up tomorrow.
+          </li>
+          <li>
+            <strong>Blocked by:</strong> anything you need from someone else.
+          </li>
+        </ul>
+
+        <h2>The tools that make these habits easy</h2>
+        <p>
+          You don&rsquo;t need many tools, and most have free plans: chat for quick questions, video calls for the few meetings you keep, an async
+          video recorder for walkthroughs and updates, a docs tool for decisions, and a project tool for tasks. See{" "}
+          <Link href="/blog/remote-collaboration-tools">the best remote collaboration tools</Link> for options in each category.
+        </p>
+
+        <h2>Questions people ask</h2>
+        {remoteBestPracticesFaqs.map((f) => (
+          <div key={f.q}>
+            <h3>{f.q}</h3>
+            <p>{f.a}</p>
+          </div>
+        ))}
+      </>
+    ),
+  },
+  {
+    slug: "remote-collaboration-tools",
+    title: "The best remote collaboration tools in 2026, by job",
+    metaTitle: "Best remote collaboration tools (2026): free and paid, by job",
+    description:
+      "The best remote collaboration tools for 2026, sorted by job: chat, video calls, async video, docs, whiteboards, project management and scheduling, with what each free plan includes.",
+    excerpt:
+      "The tools remote teams actually need, one job at a time, with what each free plan really includes and a simple stack you can start with today.",
+    published: "2026-11-27",
+    updated: "2026-11-27",
+    readingMinutes: 9,
+    image: {
+      src: "/blog/remote-collaboration-tools.webp",
+      alt: "A laptop connected by dashed lines to seven tool icons: chat, video call, video playback in orange, calendar, document, checklist and sticky notes",
+      width: 1600,
+      height: 900,
+    },
+    faqs: remoteCollabFaqs,
+    Body: () => (
+      <>
+        <p>
+          A remote team doesn&rsquo;t need dozens of apps. It needs one good tool for each job: talking quickly, meeting when it matters,
+          explaining without a meeting, writing things down, planning work, and booking time. Here are the best remote collaboration tools for
+          each job in 2026, with what their free plans really include.
+        </p>
+
+        <figure>
+          <Image
+            src="/blog/remote-collaboration-tools.webp"
+            alt="A laptop connected by dashed lines to seven tool icons: chat, video call, video playback in orange, calendar, document, checklist and sticky notes"
+            width={1600}
+            height={900}
+            sizes="(min-width: 768px) 720px, 100vw"
+            priority
+          />
+        </figure>
+
+        <div className="callout">
+          <p>
+            <strong>Quick answer:</strong> a simple, mostly free stack for a small remote team is <strong>Slack</strong> for chat,{" "}
+            <strong>Google Meet</strong> for calls, <strong>Showthrough</strong> for async video updates, <strong>Notion</strong> or{" "}
+            <strong>Google Docs</strong> for docs, <strong>Trello</strong> for tasks and <strong>Calendly</strong> for booking calls. Add{" "}
+            <strong>Miro</strong> or <strong>Figma</strong> if you brainstorm or design together.
+          </p>
+        </div>
+
+        <p className="text-sm">
+          We make Showthrough, so it&rsquo;s on this list, with its limits stated like everyone else&rsquo;s. Free plans checked on 27 November 2026.
+        </p>
+
+        <h2>The tools at a glance</h2>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Job</th>
+                <th scope="col">Tool</th>
+                <th scope="col">Free plan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Chat</th>
+                <td>Slack</td>
+                <td>90 days of message history, 1:1 huddles only</td>
+              </tr>
+              <tr>
+                <th scope="row">Video calls</th>
+                <td>Google Meet</td>
+                <td>Group calls up to 60 minutes</td>
+              </tr>
+              <tr>
+                <th scope="row">Video calls</th>
+                <td>Zoom</td>
+                <td>Meetings up to 40 minutes</td>
+              </tr>
+              <tr>
+                <th scope="row">Async video</th>
+                <td>Showthrough</td>
+                <td>No video or time limit</td>
+              </tr>
+              <tr>
+                <th scope="row">Async video</th>
+                <td>Loom</td>
+                <td>25 videos, 5 minutes each</td>
+              </tr>
+              <tr>
+                <th scope="row">Docs and wiki</th>
+                <td>Notion</td>
+                <td>Generous for one person; limited once a team joins</td>
+              </tr>
+              <tr>
+                <th scope="row">Whiteboard</th>
+                <td>Miro</td>
+                <td>3 editable boards</td>
+              </tr>
+              <tr>
+                <th scope="row">Tasks</th>
+                <td>Trello</td>
+                <td>Up to 10 collaborators per workspace</td>
+              </tr>
+              <tr>
+                <th scope="row">Tasks</th>
+                <td>Asana</td>
+                <td>Up to 2 users</td>
+              </tr>
+              <tr>
+                <th scope="row">Design</th>
+                <td>Figma</td>
+                <td>3 shared team files</td>
+              </tr>
+              <tr>
+                <th scope="row">Scheduling</th>
+                <td>Calendly</td>
+                <td>One event type</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Chat: Slack or Microsoft Teams</h2>
+        <p>
+          Chat is where quick questions and day-to-day talk happen. <strong>Slack</strong> is the favourite of startups and agencies, with
+          thousands of integrations and shared channels you can open with clients. Its free plan keeps{" "}
+          <a href="https://slack.com/help/articles/27204752526611" target="_blank" rel="noopener noreferrer nofollow">
+            the most recent 90 days of messages and files
+          </a>
+          , and group huddles need a paid plan. <strong>Microsoft Teams</strong> is the natural pick if your company already pays for Microsoft 365.
+        </p>
+
+        <h2>Video calls: Google Meet or Zoom</h2>
+        <p>
+          For the meetings you keep, <strong>Google Meet</strong> runs in the browser with no download. On a free account, group calls end at 60
+          minutes and one-to-one calls can run much longer. <strong>Zoom</strong> is the standard for client calls and webinars, but its free plan
+          stops meetings at 40 minutes.
+        </p>
+
+        <h2>Async video: Showthrough (a free Loom alternative) or Loom</h2>
+        <p>
+          This is the category that replaces the most meetings. Instead of booking a call to walk someone through a bug, a design or a progress
+          update, you record your screen and voice for two minutes and send a link. They watch it when they&rsquo;re online, at their own speed.
+        </p>
+        <p>
+          <strong>
+            <Link href="/">Showthrough</Link>
+          </strong>{" "}
+          is a free Chrome extension that copies a share link the moment you stop recording, with no limit on how many videos you make or how
+          long they are. Anyone can watch in a browser without an account, and the videos are stored in your own Cloudflare account. A paid plan,
+          a <Link href="/pricing">one-time payment</Link> instead of a monthly fee, adds comments and reactions, notifications, folders and your
+          whole team. It doesn&rsquo;t have AI summaries yet.
+        </p>
+        <p>
+          <strong>Loom</strong> is the best-known option, with comments, AI summaries and lots of integrations. Its free plan stops at 25 videos
+          and 5 minutes per recording, and paid plans are $18 per person per month (see{" "}
+          <Link href="/blog/loom-pricing">Loom pricing explained</Link>). For more options, see{" "}
+          <Link href="/alternatives">the best Loom alternatives</Link>.
+        </p>
+
+        <h2>Docs and wiki: Notion or Google Docs</h2>
+        <p>
+          Every remote team needs one place where decisions, processes and project notes live. <strong>Notion</strong> combines docs, wikis and
+          simple databases, and is generous for one person; once a team joins, the free plan limits how much you can add.{" "}
+          <strong>Google Docs</strong> is free with a Google account and fine for teams that mostly write and comment.
+        </p>
+
+        <h2>Whiteboard: Miro</h2>
+        <p>
+          For brainstorming, workshops and diagrams, <strong>Miro</strong> gives you a shared canvas. Its free plan lets{" "}
+          <a href="https://miro.com/pricing" target="_blank" rel="noopener noreferrer nofollow">
+            unlimited team members work on 3 editable boards
+          </a>{" "}
+          at a time; older boards stay viewable.
+        </p>
+
+        <h2>Project management: Trello, Asana or Linear</h2>
+        <p>
+          <strong>Trello</strong> is the simplest: boards of cards you drag from &ldquo;To do&rdquo; to &ldquo;Done&rdquo;, free for up to 10
+          collaborators per workspace. <strong>Asana</strong> suits larger projects with timelines, but new accounts get only 2 users for free.{" "}
+          <strong>Linear</strong> is popular with software teams for tracking issues.
+        </p>
+
+        <h2>Design: Figma</h2>
+        <p>
+          For anything visual, <strong>Figma</strong> lets designers, developers and clients work in the same file and leave comments right on the
+          design. The free Starter plan covers 3 shared team files plus unlimited personal drafts.
+        </p>
+
+        <h2>Scheduling: Calendly</h2>
+        <p>
+          Across time zones, &ldquo;when are you free?&rdquo; can take a day of messages. <strong>Calendly</strong> gives you one link where people
+          pick a time that shows in their own time zone. The free plan covers one type of meeting.
+        </p>
+
+        <h2>A simple starter stack</h2>
+        <ol>
+          <li>
+            <strong>Chat:</strong> Slack, free
+          </li>
+          <li>
+            <strong>Calls:</strong> Google Meet, free
+          </li>
+          <li>
+            <strong>Async video:</strong> Showthrough, free
+          </li>
+          <li>
+            <strong>Docs:</strong> Notion or Google Docs, free
+          </li>
+          <li>
+            <strong>Tasks:</strong> Trello, free for up to 10 people
+          </li>
+          <li>
+            <strong>Booking calls:</strong> Calendly, free for one meeting type
+          </li>
+        </ol>
+        <p>
+          That covers most small teams for $0. Upgrade one tool at a time, when a limit actually gets in your way, not before.
+        </p>
+        <p>
+          When I ran client projects with two or three people, our stack was close to this: Notion for tasks, Google Meet for calls, and WhatsApp or
+          Slack for chat, with an update to every client at the end of each day. For video updates we used Loom, until paying for every person each
+          month got expensive. That&rsquo;s the gap I built Showthrough to fill.
+        </p>
+
+        <h2>How to choose</h2>
+        <ul>
+          <li>
+            <strong>Fewer tools beats more tools.</strong> Every extra app is another place to check. Pick one per job.
+          </li>
+          <li>
+            <strong>Pick for async first.</strong> Tools that let people work at different times matter more than better meeting software.
+          </li>
+          <li>
+            <strong>Watch per-person pricing.</strong> Most tools charge per user per month. For a growing team, free plans and one-time payments
+            add up to a lot less.
+          </li>
+          <li>
+            <strong>Check how clients join.</strong> If you work with clients, choose tools they can use without an account or a download.
+          </li>
+        </ul>
+        <p>
+          Tools only help if the habits are right. See{" "}
+          <Link href="/blog/remote-work-best-practices">remote work best practices</Link> for how remote teams use them well.
+        </p>
+
+        <h2>Questions people ask</h2>
+        {remoteCollabFaqs.map((f) => (
           <div key={f.q}>
             <h3>{f.q}</h3>
             <p>{f.a}</p>
