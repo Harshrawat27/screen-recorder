@@ -4,7 +4,7 @@ import { Savings } from "@/components/savings";
 import { CheckIcon, LogoMark, buttonClass } from "@/components/ui";
 import { site } from "@/lib/site";
 import { Countdown } from "@/components/countdown";
-import { EARLY_ENDS, EARLY_ENDS_LABEL, LAUNCH_LABEL, LAUNCH_PRICE, SALE_PRICE, type TierState, earlyOpen, tierStates } from "@/lib/pricing";
+import { EARLY_ENDS, EARLY_ENDS_LABEL, LAUNCH_PRICE, SALE_PRICE, type TierState, earlyOpen, tierStates } from "@/lib/pricing";
 
 // Home page sections below the hero. Black and white for now; every color comes from theme tokens.
 
@@ -272,7 +272,7 @@ export function Features({ price }: { price: number }) {
     <section id="how" className="mx-auto max-w-6xl scroll-mt-6 px-5 py-24 sm:px-8 sm:py-32">
       <SectionIntro
         title="Everything Loom does for async video. None of the monthly bill."
-        body="Record from Chrome, share a link, get back to work. Your recordings sit in your own Cloudflare account, connected in one click while we handle the rest, so the price doesn't grow with your team."
+        body="Record from Chrome, share a link, get back to work. Free forever, with no limit on videos or length: your recordings sit in your own Cloudflare account, connected in one click while we handle the rest."
       />
 
       <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -290,7 +290,7 @@ export function Features({ price }: { price: number }) {
         >
           <CloudVisual />
         </Tile>
-        <Tile title="Pay once" body={`$${price} for your whole team. Invite everyone, no seats, no subscription.`}>
+        <Tile title="Free, then pay once" body={`Record and share free, forever. $${price} once adds comments, teams and more for everyone. No seats, no subscription.`}>
           <PriceVisual price={price} />
         </Tile>
         <Tile title="Camera bubble" body="Put your face in the corner so it feels like a conversation.">
@@ -334,13 +334,23 @@ export function Features({ price }: { price: number }) {
 
 /* ---------- Pricing ---------- */
 
+// The free plan, forever (lib/plan.ts has the exact split).
+const freeIncludes = [
+  "Unlimited recordings, no time limit on any video",
+  "Screen, camera bubble (or your photo), mic and tab audio",
+  "A share link the moment you stop, playable by anyone",
+  "Search, Recent and Watch later",
+  "Download any recording as an MP4",
+  "Videos stored in your own Cloudflare, connected in one click",
+];
+
 const included: { key: string; text: React.ReactNode }[] = [
-  { key: "unlimited", text: "Unlimited recordings and share links" },
-  { key: "capture", text: "Screen, camera bubble, mic and tab audio" },
-  { key: "social", text: "Comments and reactions on every video" },
+  { key: "free", text: "Everything in Free" },
+  { key: "social", text: "Comments, reactions and view counts on every video" },
+  { key: "notify", text: "Live notifications when someone watches, comments or reacts" },
   { key: "team", text: "Invite your whole team, no per-seat pricing" },
-  { key: "download", text: "Download any recording as an MP4" },
-  { key: "storage", text: "Videos stored in your own Cloudflare, connected in one click" },
+  { key: "folders", text: "Folders, and buttons under your videos (book a call, open a doc)" },
+  { key: "badge", text: "Share pages without “Recorded with Showthrough”" },
   {
     key: "updates",
     text: (
@@ -438,13 +448,45 @@ export function Pricing({ price, notice }: { sold?: number; price: number; notic
     <section id="pricing" className="scroll-mt-6 border-y border-line bg-surface/60">
       <div className="mx-auto max-w-6xl px-5 py-24 sm:px-8 sm:py-32">
         <SectionIntro
-          title="One price. Your whole team. Forever."
-          body="Loom charges every person, every month. Showthrough is a one-time purchase, and the earlier you buy, the less you pay."
+          title="Free forever. Pay once for more."
+          body="Loom charges every person, every month. Showthrough is free to record and share, with no limits. Pay once to add comments, notifications and your whole team."
         />
 
         {notice && <div className="mx-auto mt-10 max-w-3xl">{notice}</div>}
 
-        <div className="mt-14 grid gap-5 lg:grid-cols-3">
+        {/* The free plan: no limits, because the videos live in your own Cloudflare. */}
+        <div className="mt-14 grid gap-8 rounded-[24px] border-2 border-text bg-surface p-7 shadow-pop sm:p-9 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+          <div>
+            <div className="flex items-center gap-3">
+              <p className="text-lg font-semibold">Free</p>
+              <span className="rounded-full bg-text px-3 py-1 text-xs font-semibold text-canvas">Forever</span>
+            </div>
+            <p className="mt-6 flex items-baseline gap-2">
+              <span className="font-display text-[64px] leading-none" style={{ letterSpacing: "-0.03em" }}>
+                $0
+              </span>
+              <span className="text-muted">no card needed</span>
+            </p>
+            <p className="mt-2 text-muted">No video limit, no time limit. Your Cloudflare keeps the videos, so we never have to cap them.</p>
+            <a href="/start" className={buttonClass("primary", "lg", "mt-8 w-full rounded-full sm:w-auto sm:px-10")}>
+              Start free
+            </a>
+          </div>
+          <ul className="grid gap-3.5 text-[15px] sm:grid-cols-2">
+            {freeIncludes.map((text) => (
+              <li key={text} className="flex items-start gap-3">
+                <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-text text-canvas">
+                  <CheckIcon className="size-3" />
+                </span>
+                {text}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <p className="mt-14 text-center text-lg font-semibold">Paid: pay once, keep it for life</p>
+
+        <div className="mt-6 grid gap-5 lg:grid-cols-3">
           {tierStates().map(({ tier, state }) => (
             <TierCard key={tier.id} name={tier.name} price={tier.price} updates={tier.updates} note={tier.note} state={state} />
           ))}
@@ -452,7 +494,7 @@ export function Pricing({ price, notice }: { sold?: number; price: number; notic
 
         <div className="mt-6 grid items-start gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="rounded-[24px] border border-line bg-surface p-7 sm:p-9">
-            <p className="text-lg font-semibold">Every plan includes</p>
+            <p className="text-lg font-semibold">Paid includes</p>
             <ul className="mt-6 space-y-3.5 text-[15px]">
               {included.map((item) => (
                 <li key={item.key} className="flex items-start gap-3">
@@ -464,8 +506,8 @@ export function Pricing({ price, notice }: { sold?: number; price: number; notic
               ))}
             </ul>
             <p className="mt-7 border-t border-line pt-6 text-sm leading-relaxed text-faint">
-              One-time payment, no subscription. Cloudflare storage is free up to 10 GB; beyond that, Cloudflare bills your
-              account about $0.015 per GB a month.
+              Free forever, or a one-time payment: never a subscription. Cloudflare storage is free up to 10 GB; beyond that,
+              Cloudflare bills your account about $0.015 per GB a month.
             </p>
           </div>
 
@@ -480,6 +522,14 @@ export function Pricing({ price, notice }: { sold?: number; price: number; notic
 
 // `text` is the plain-text answer for search engines (FAQ structured data) when `a` holds links.
 const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
+  {
+    q: "Is Showthrough really free?",
+    a: "Yes, free forever, with no catch. Record as many videos as you like, as long as you like: no video limit, no time limit, no watermark on the video and no card needed. Your recordings live in your own Cloudflare account, not on our servers, so they cost us nothing to keep and we never have to cap them. The paid plan is a one-time payment that adds comments and reactions, live notifications, your whole team, folders and buttons under your videos.",
+  },
+  {
+    q: "What's the difference between Free and paid?",
+    a: "Free gives you everything to record and share: unlimited recordings of any length, screen, camera and mic, share links anyone can watch, search, Recent and Watch later, and MP4 downloads. Paid, a one-time payment, adds comments and reactions with view counts, live notifications, team members with no per-seat pricing, folders, buttons under your videos, and share pages without \"Recorded with Showthrough\".",
+  },
   {
     q: "Do I need a Cloudflare account?",
     a: "Yes, a free one, and connecting it is just one click. Sign in to Cloudflare, press Allow, and we handle the rest: your storage, database and video address are set up for you in about 30 seconds. Nothing to configure, no keys to copy. No Cloudflare account yet? Signing up is free.",
@@ -548,7 +598,7 @@ const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
   },
   {
     q: "Is it a subscription?",
-    a: "No. You pay once, and the same purchase covers your whole team: invite as many people as you like. The only other cost is Cloudflare storage if you go past their free 10 GB, billed to your own Cloudflare account.",
+    a: "No. Showthrough is free forever, and the paid plan is a one-time payment that covers your whole team: invite as many people as you like. The only other cost is Cloudflare storage if you go past their free 10 GB, billed to your own Cloudflare account.",
   },
   {
     q: "Can I get a refund?",
@@ -570,10 +620,10 @@ const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
   },
   {
     q: "When can I start recording?",
-    text: "Right after you buy. Add the Chrome extension, connect your Cloudflare from the dashboard (one click, we handle the rest), and click the Showthrough icon to record.",
+    text: "Right now, for free. Sign in with Google, add the Chrome extension, connect your Cloudflare from the dashboard (one click, we handle the rest), and click the Showthrough icon to record.",
     a: (
       <>
-        Right after you buy. Add the{" "}
+        Right now, for free. Sign in with Google, add the{" "}
         <a href={site.chromeStoreUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-text">
           Chrome extension
         </a>
@@ -623,28 +673,28 @@ export function FinalCta({ price }: { price: number }) {
     <section className="px-2 pb-2 sm:px-3 sm:pb-3">
       <div className="mx-auto flex max-w-[1400px] flex-col items-center rounded-[28px] bg-text px-6 py-20 text-center text-canvas sm:rounded-[32px] sm:py-28">
         <h2 className="max-w-[16ch] text-[44px] leading-[1.02] sm:text-[72px]" style={{ letterSpacing: "-0.03em" }}>
-          {onSale ? `Black Friday: $${SALE_PRICE}, not $${LAUNCH_PRICE}.` : `Back on ${LAUNCH_LABEL}.`}
+          Record free. No limits.
         </h2>
-        <p className="mt-6 max-w-[48ch] text-lg leading-relaxed opacity-75">
+        <p className="mt-6 max-w-[50ch] text-lg leading-relaxed opacity-75">
+          Unlimited videos, no time limit, free forever.{" "}
           {onSale
-            ? `$${SALE_PRICE} once, with every future update, until ${EARLY_ENDS_LABEL}. After that it's $${LAUNCH_PRICE}, without future updates.`
-            : `Early pricing has ended. Showthrough goes on sale again on ${LAUNCH_LABEL}, at $${LAUNCH_PRICE}.`}
+            ? `Want comments, notifications and your team? Black Friday: $${SALE_PRICE} once, not $${LAUNCH_PRICE}, with every future update, until ${EARLY_ENDS_LABEL}.`
+            : `Want comments, notifications and your team? Pay once, from $${LAUNCH_PRICE}.`}
         </p>
-        {onSale ? (
+        <div className="mt-10 flex flex-wrap justify-center gap-3">
           <a
-            href="/buy"
-            className="mt-10 inline-flex h-13 items-center rounded-full bg-canvas px-8 text-base font-semibold text-text shadow-pop transition-opacity hover:opacity-90"
+            href="/start"
+            className="inline-flex h-13 items-center rounded-full bg-canvas px-8 text-base font-semibold text-text shadow-pop transition-opacity hover:opacity-90"
           >
-            Buy for ${price}
+            Start free
           </a>
-        ) : (
           <a
-            href="/pricing"
-            className="mt-10 inline-flex h-13 items-center rounded-full bg-canvas px-8 text-base font-semibold text-text shadow-pop transition-opacity hover:opacity-90"
+            href={onSale ? "/buy" : "/pricing"}
+            className="inline-flex h-13 items-center rounded-full border border-canvas/30 px-8 text-base font-semibold text-canvas transition-colors hover:bg-canvas/10"
           >
-            See pricing
+            {onSale ? `Buy for $${price}` : "See pricing"}
           </a>
-        )}
+        </div>
       </div>
     </section>
   );
@@ -695,7 +745,7 @@ export function SiteFooter() {
             <LogoMark className="size-7" />
             <span className="text-[17px]">{site.name}</span>
           </Link>
-          <p className="mt-3 text-sm leading-relaxed text-muted">Screen recording you own. Videos live in your Cloudflare, and you pay once.</p>
+          <p className="mt-3 text-sm leading-relaxed text-muted">Screen recording you own. Free forever, videos live in your Cloudflare, and paid is a one-time payment.</p>
         </div>
         <nav aria-label="Footer" className="grid grid-cols-2 gap-x-12 gap-y-8 text-sm sm:grid-cols-3">
           {footerColumns.map((column) => (

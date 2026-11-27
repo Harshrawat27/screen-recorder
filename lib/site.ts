@@ -5,7 +5,7 @@ export const site = {
   url: "https://www.showthrough.com",
   tagline: "Screen recording you own.",
   description:
-    "Record your screen and share a link in seconds. Videos live in your own free Cloudflare storage, and you pay once instead of per person, per month.",
+    "Free screen recording with no video limit and no time limit. Record your screen and share a link in seconds; videos live in your own free Cloudflare storage. Free forever, and paid is one payment, never per person, per month.",
   contactEmail: "harshrawat.dev@gmail.com",
   loom: {
     perUserPerMonth: 18,

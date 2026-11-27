@@ -41,18 +41,23 @@ export function SkyHero({ price }: { price: number }) {
         </p>
 
         <div className='mt-9 flex flex-wrap justify-center gap-3'>
-          <a
-            href={onSale ? '/buy' : '/pricing'}
-            className={buttonClass('primary', 'lg', 'rounded-full px-7')}
-          >
-            {onSale ? `Buy for $${price}` : 'See pricing'}
+          {/* /start signs in with Google if needed, then goes to the dashboard to connect Cloudflare. */}
+          <a href='/start' className={buttonClass('primary', 'lg', 'rounded-full px-7')}>
+            Start free
           </a>
           <WatchDemoButton className={buttonClass('secondary', 'lg', 'rounded-full px-7')}>
             See how it works
           </WatchDemoButton>
         </div>
-        <p className='mt-5 text-sm text-muted'>
-          One payment for your whole team. No subscription ·{' '}
+        <p className='mt-5 text-sm font-medium text-text'>
+          Free forever. Unlimited videos, no time limit, no card needed.
+        </p>
+        <p className='mt-1.5 text-sm text-muted'>
+          Comments, teams and more:{' '}
+          <a href={onSale ? '/buy' : '/pricing'} className='underline underline-offset-2 hover:text-text'>
+            {onSale ? `$${price} once` : 'pay once'}
+          </a>
+          , no subscription ·{' '}
           <a
             href='https://appsumo.com/pl/hielhvnokZ/'
             target='_blank'

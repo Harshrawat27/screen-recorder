@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: `${site.name}: Screen recording you own`,
     description:
-      'Say no to video limits, time limits, monthly bills and pointless stand-ups. Record from Chrome, share the link the moment you stop, pay once.',
+      'Free forever, with no video limit and no time limit. Record from Chrome and share the link the moment you stop. Your videos live in your own Cloudflare.',
     url: site.url,
     siteName: site.name,
     type: 'website',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: `${site.name}: Screen recording you own`,
     description:
-      'Say no to video limits, time limits, monthly bills and pointless stand-ups. Record from Chrome, share the link the moment you stop, pay once.',
+      'Free forever, with no video limit and no time limit. Record from Chrome and share the link the moment you stop. Your videos live in your own Cloudflare.',
     creator: '@Harshrwt27',
   },
 };

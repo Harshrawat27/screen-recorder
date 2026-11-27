@@ -43,14 +43,14 @@ export const alternatives: Alternative[] = [
     name: "Loom",
     pricingUrl: "https://www.loom.com/pricing",
     checked: "10 November 2026",
-    updated: "2026-11-10",
-    title: "Loom alternative you pay for once, with no limits",
+    updated: "2026-11-27",
+    title: "Free Loom alternative with no video or time limits",
     description:
-      "Showthrough vs Loom: no 25-video or 5-minute cap, no per-user bill, and videos stored in your own Cloudflare. An honest comparison, including what Loom does better.",
-    h1: "A Loom alternative with no video limits and no monthly bill",
+      "Showthrough vs Loom: free forever with no 25-video or 5-minute cap, no per-user bill, and videos stored in your own Cloudflare. An honest comparison, including what Loom does better.",
+    h1: "A free Loom alternative with no video limits and no monthly bill",
     intro: [
       "Loom made sending a quick screen recording normal. Its free Starter plan now stops at 25 videos per person and 5 minutes per screen recording, and the paid Business plan costs $18 per user every month.",
-      "Showthrough records your screen, camera and voice from Chrome and copies the link the moment you stop, like Loom. The difference is how you pay and where the videos live: one payment instead of a subscription, and every recording stored in your own Cloudflare account, which you connect in one click while we handle the rest.",
+      "Showthrough records your screen, camera and voice from Chrome and copies the link the moment you stop, like Loom. The difference is how you pay and where the videos live: free forever with no limits, one payment instead of a subscription for the extras, and every recording stored in your own Cloudflare account, which you connect in one click while we handle the rest.",
     ],
     summary: "The best-known async video tool. Polished, with AI and apps everywhere, but billed per user every month.",
     freePlan: "25 videos per person, 5 minutes each, 720p",
@@ -65,8 +65,8 @@ export const alternatives: Alternative[] = [
     pricingNote:
       "On Business at monthly billing, a team of 5 pays 5 × $18 × 12 = $1,080 a year, and the bill grows with every person you add.",
     rows: [
-      { label: "How you pay", them: "Per user, every month", us: "One payment ({price})" },
-      { label: "Free plan", them: "25 videos per person, 5 minutes each", us: "No free plan" },
+      { label: "How you pay", them: "Per user, every month", us: "Free forever, or one payment ({price}) for paid features" },
+      { label: "Free plan", them: "25 videos per person, 5 minutes each", us: "Free forever: unlimited videos, no time limit" },
       { label: "Videos and length", them: "Unlimited on Business", us: "Unlimited, no time limit" },
       { label: "Where videos are stored", them: "Loom's servers", us: "Your own Cloudflare account, connected in one click (we handle the rest)" },
       { label: "Link ready when you stop", them: "Yes", us: "Yes, the video uploads while you record" },
@@ -81,10 +81,9 @@ export const alternatives: Alternative[] = [
       "Loom AI writes titles, summaries and chapters and removes filler words. Showthrough has no AI yet.",
       "Loom has desktop and mobile apps. Showthrough records from Chrome only for now.",
       "Loom has editing, viewer insights, password-protected links and deep Slack and Atlassian integrations. These are on Showthrough's roadmap, not built.",
-      "Loom has a free plan you can start on today. Showthrough is paid from day one.",
     ],
     weWin: [
-      "You pay once instead of per user, per month. The price doesn't grow as your team does.",
+      "Free forever, and the paid plan is one payment instead of per user, per month. The price doesn't grow as your team does.",
       "No cap on the number of videos or their length, ever. The only limit is your own Cloudflare storage.",
       "Your recordings live in your own Cloudflare account, connected in one click while we handle the rest. If you stop using Showthrough, the videos are still yours.",
       "Cloudflare's free plan includes 10 GB of storage, and viewing is always free, so most small teams pay Cloudflare nothing.",
@@ -92,8 +91,12 @@ export const alternatives: Alternative[] = [
     pickThem:
       "Pick Loom if you need AI summaries, a mobile app or a video editor today, or if your company already runs on Atlassian.",
     pickUs:
-      "Pick Showthrough if you mostly send quick walkthroughs and updates, want to stop paying per person, and like owning your videos.",
+      "Pick Showthrough if you mostly send quick walkthroughs and updates, want to record for free with no limits, and like owning your videos.",
     faqs: [
+      {
+        q: "Is Showthrough free?",
+        a: "Yes, free forever: unlimited recordings with no time limit and no watermark, and a share link the moment you stop. Your videos live in your own Cloudflare account, which is why there's no cap. The paid plan is one payment and adds comments, live notifications, team members and folders.",
+      },
       {
         q: "Is Loom free?",
         a: "Loom's Starter plan is free, but it limits each person to 25 videos and each screen recording to 5 minutes, at up to 720p. Removing those limits means the Business plan at $18 per user per month.",
@@ -117,14 +120,14 @@ export const alternatives: Alternative[] = [
     name: "Vidyard",
     pricingUrl: "https://www.vidyard.com/pricing/",
     checked: "10 November 2026",
-    updated: "2026-11-10",
+    updated: "2026-11-27",
     title: "Vidyard alternative for freelancers and small teams",
     description:
-      "Showthrough vs Vidyard: Vidyard is built for sales teams and CRM tracking. Showthrough is a simple pay-once recorder for client updates and walkthroughs.",
+      "Showthrough vs Vidyard: Vidyard is built for sales teams and CRM tracking. Showthrough is a free recorder with no limits for client updates and walkthroughs.",
     h1: "A simpler Vidyard alternative for client updates, not sales sequences",
     intro: [
       "Vidyard is a video platform for sales teams. Its strengths are CRM integrations, viewer analytics, calls to action and AI avatars, and most of its paid plans need a conversation with sales.",
-      "If you are a freelancer, an agency or a small team that just needs to record a walkthrough and send a link, most of that goes unused. Showthrough does the recording and sharing part, for one payment.",
+      "If you are a freelancer, an agency or a small team that just needs to record a walkthrough and send a link, most of that goes unused. Showthrough does the recording and sharing part, free and with no limits, and its extras are one payment.",
     ],
     summary: "A video platform for sales teams, with CRM tracking, analytics and AI avatars.",
     freePlan: "5 recordings a month, up to 30 minutes each",
@@ -139,8 +142,8 @@ export const alternatives: Alternative[] = [
     pricingNote: "Vidyard's pricing page shows no dollar amounts. It says annual billing saves 30% and that licences are per seat.",
     rows: [
       { label: "Built for", them: "Sales prospecting and outreach", us: "Async updates, client walkthroughs, bug reports" },
-      { label: "How you pay", them: "Per seat; Teams and up through sales", us: "One payment ({price}), no sales call" },
-      { label: "Free plan", them: "5 recordings a month", us: "No free plan" },
+      { label: "How you pay", them: "Per seat; Teams and up through sales", us: "Free forever, or one payment ({price}). No sales call" },
+      { label: "Free plan", them: "5 recordings a month", us: "Free forever: unlimited videos, no time limit" },
       { label: "Recording limit", them: "30 minutes on Free", us: "No time limit" },
       { label: "CRM integrations", them: "Salesforce, HubSpot, Marketo, Salesloft and more", us: "None" },
       { label: "Viewer analytics", them: "Full analytics on paid plans", us: "View counts. Who watched and how far: coming soon." },
@@ -153,7 +156,7 @@ export const alternatives: Alternative[] = [
       "Vidyard can generate AI videos and avatars. Showthrough records real screens and cameras only.",
     ],
     weWin: [
-      "The price is on the page and you pay it once. No seat count and no sales call.",
+      "Free forever, and the paid plan's price is on the page and paid once. No seat count and no sales call.",
       "No limit on how many videos you record or how long they run.",
       "Videos stay in your own Cloudflare account, which matters when the recordings show client work. Connecting it is one click; we handle the rest.",
       "Fewer moving parts: click the icon, record, and the link is copied when you stop.",
@@ -180,14 +183,14 @@ export const alternatives: Alternative[] = [
     name: "Screencastify",
     pricingUrl: "https://www.screencastify.com/pricing",
     checked: "10 November 2026",
-    updated: "2026-11-10",
+    updated: "2026-11-27",
     title: "Screencastify alternative with no time limit",
     description:
-      "Showthrough vs Screencastify: both record from Chrome. Screencastify caps free videos at 10 and 30 minutes; Showthrough has no caps and you pay once.",
+      "Showthrough vs Screencastify: both record from Chrome. Screencastify caps free videos at 10 and 30 minutes; Showthrough is free with no caps at all.",
     h1: "A Screencastify alternative with no video cap or time limit",
     intro: [
       "Screencastify and Showthrough are both Chrome screen recorders, so this is a close comparison. Screencastify is built around education: quizzes, assignments and grade sync for schools.",
-      "Its free plan allows 10 videos of up to 30 minutes, with a watermark, and paid plans are billed per user. Showthrough has no video count, no time limit and no watermark, and you pay once.",
+      "Its free plan allows 10 videos of up to 30 minutes, with a watermark, and paid plans are billed per user. Showthrough is free forever with no video count, no time limit and no watermark, and its extras are one payment.",
     ],
     summary: "A Chrome recorder built for classrooms, with quizzes, assignments and LMS grade sync.",
     freePlan: "10 videos, 30 minutes each, watermark",
@@ -202,7 +205,7 @@ export const alternatives: Alternative[] = [
     rows: [
       { label: "Works as", them: "Chrome extension", us: "Chrome extension" },
       { label: "Built for", them: "Classrooms and schools", us: "Freelancers, agencies and small teams" },
-      { label: "How you pay", them: "Per user, monthly or yearly", us: "One payment ({price})" },
+      { label: "How you pay", them: "Per user, monthly or yearly", us: "Free forever, or one payment ({price}) for paid features" },
       { label: "Number of videos", them: "10 on Free, unlimited on paid", us: "Unlimited" },
       { label: "Recording length", them: "30, 60 or 180 minutes depending on plan", us: "No limit" },
       { label: "Watermark", them: "On the free plan", us: "Never" },
@@ -213,11 +216,11 @@ export const alternatives: Alternative[] = [
     theyWin: [
       "Screencastify has tools for teaching: questions inside videos, assignments, and grade sync with an LMS.",
       "It includes editing tools, a teleprompter and, on Pro, captions, transcripts and translations.",
-      "It has a free plan and education pricing for schools.",
+      "It has education pricing for schools and districts.",
     ],
     weWin: [
       "No recording time limit on any plan. Screencastify stops at 30, 60 or 180 minutes depending on what you pay.",
-      "One payment instead of a per-user subscription.",
+      "Free forever, and paid extras are one payment instead of a per-user subscription.",
       "No watermark, ever.",
       "The video uploads while you record, so the link works the second you stop.",
     ],
@@ -243,7 +246,7 @@ export const alternatives: Alternative[] = [
     name: "Snagit",
     pricingUrl: "https://www.techsmith.com/store/snagit",
     checked: "10 November 2026",
-    updated: "2026-11-10",
+    updated: "2026-11-27",
     title: "Snagit alternative for screen recording and sharing",
     description:
       "Showthrough vs Snagit: Snagit is a desktop screenshot tool with a yearly subscription. Showthrough records screen and camera from Chrome and shares a link instantly.",
@@ -263,7 +266,7 @@ export const alternatives: Alternative[] = [
     pricingNote: "TechSmith's store lists subscriptions only and a 14-day money-back guarantee.",
     rows: [
       { label: "Main job", them: "Screenshots, annotation and guides", us: "Screen and camera recording with instant links" },
-      { label: "How you pay", them: "Every year, per user", us: "One payment ({price})" },
+      { label: "How you pay", them: "Every year, per user", us: "Free forever, or one payment ({price}) for paid features" },
       { label: "Runs on", them: "Mac and Windows desktop app", us: "Chrome on Mac, Windows, Linux and ChromeOS" },
       { label: "Screenshots", them: "Yes, its strength", us: "No" },
       { label: "Share link", them: "Through TechSmith's hosting", us: "Copied the moment you stop" },
@@ -277,7 +280,7 @@ export const alternatives: Alternative[] = [
     weWin: [
       "Built for video messages: the link is copied the moment you stop, and viewers watch in any browser.",
       "Viewers can comment at the exact moment in the video and react with emoji.",
-      "One payment instead of a yearly renewal.",
+      "Free forever, and paid extras are one payment instead of a yearly renewal.",
       "Works on Chromebooks and Linux, anywhere Chrome runs.",
     ],
     pickThem: "Keep Snagit if most of what you send is screenshots and written guides.",
@@ -302,7 +305,7 @@ export const alternatives: Alternative[] = [
     name: "Tella",
     pricingUrl: "https://www.tella.com/pricing",
     checked: "10 November 2026",
-    updated: "2026-11-10",
+    updated: "2026-11-27",
     title: "Tella alternative for quick, unedited recordings",
     description:
       "Showthrough vs Tella: Tella is a recorder and editor for polished videos with no free plan. Showthrough is for quick recordings you share the moment you stop.",
@@ -323,8 +326,8 @@ export const alternatives: Alternative[] = [
     pricingNote: "Tella has no free plan; new accounts get a 7-day free trial. Its page lists annual prices only.",
     rows: [
       { label: "Built for", them: "Polished, edited videos", us: "Quick recordings shared instantly" },
-      { label: "How you pay", them: "Per user, billed annually", us: "One payment ({price})" },
-      { label: "Free plan", them: "No, 7-day trial", us: "No free plan" },
+      { label: "How you pay", them: "Per user, billed annually", us: "Free forever, or one payment ({price}) for paid features" },
+      { label: "Free plan", them: "No, 7-day trial", us: "Free forever: unlimited videos, no time limit" },
       { label: "Editing", them: "Timeline, transcript and AI editing", us: "Coming soon" },
       { label: "Recording length", them: "6 hours per clip", us: "No limit" },
       { label: "Runs on", them: "Mac and Windows apps, Chrome extension", us: "Chrome on Mac, Windows, Linux and ChromeOS" },
@@ -338,7 +341,7 @@ export const alternatives: Alternative[] = [
     ],
     weWin: [
       "No editing step. Press Finish and the link is already in your clipboard.",
-      "One payment instead of a yearly per-user plan.",
+      "Free forever, and paid extras are one payment instead of a yearly per-user plan.",
       "Videos live in your own Cloudflare account, connected in one click while we handle the rest.",
     ],
     pickThem: "Pick Tella if your videos are published pieces, like product demos, launch videos or lessons, and you want to edit them.",
@@ -363,14 +366,14 @@ export const alternatives: Alternative[] = [
     name: "Zight",
     pricingUrl: "https://zight.com/pricing/",
     checked: "10 November 2026",
-    updated: "2026-11-10",
+    updated: "2026-11-27",
     title: "Zight alternative with no 5-minute limit",
     description:
-      "Showthrough vs Zight (formerly CloudApp): Zight's free plan caps recordings at 5 minutes and 1 GB. Showthrough has no time limit and you pay once.",
-    h1: "A Zight alternative for longer recordings, paid for once",
+      "Showthrough vs Zight (formerly CloudApp): Zight's free plan caps recordings at 5 minutes and 1 GB. Showthrough is free with no time limit.",
+    h1: "A free Zight alternative for longer recordings",
     intro: [
       "Zight, formerly CloudApp, does screenshots, GIFs and screen recordings in one app, with annotations and AI on paid plans. It runs on Mac, Windows, iOS, Android and Chrome.",
-      "Its free plan stops at 5-minute recordings, 720p and 1 GB of storage. Paid plans are billed per user. Showthrough only does video, with no time limit and one payment.",
+      "Its free plan stops at 5-minute recordings, 720p and 1 GB of storage. Paid plans are billed per user. Showthrough only does video, free forever with no time limit, and one payment for extras.",
     ],
     summary: "Screenshots, GIFs and screen recordings in one app, formerly CloudApp.",
     freePlan: "5-minute recordings, 720p, 1 GB",
@@ -385,7 +388,7 @@ export const alternatives: Alternative[] = [
     pricingNote: "Zight's page shows annual prices and says annual billing saves 20% over monthly.",
     rows: [
       { label: "Captures", them: "Screenshots, GIFs and video", us: "Video only" },
-      { label: "How you pay", them: "Per user, monthly or yearly", us: "One payment ({price})" },
+      { label: "How you pay", them: "Per user, monthly or yearly", us: "Free forever, or one payment ({price}) for paid features" },
       { label: "Recording length", them: "5 minutes on Free, unlimited on paid", us: "No limit" },
       { label: "Storage", them: "1 GB free, 5 GB on Create", us: "Your Cloudflare: 10 GB free, then about $0.015 per GB a month" },
       { label: "Your own storage", them: "Custom S3 on the Scale plan only", us: "Always: your own Cloudflare account, connected in one click (we handle the rest)" },
@@ -400,7 +403,7 @@ export const alternatives: Alternative[] = [
     weWin: [
       "Storing videos in your own cloud is the default, not an enterprise add-on.",
       "No 5-minute limit and no storage cap beyond your own Cloudflare account.",
-      "One payment instead of a per-user subscription.",
+      "Free forever, and paid extras are one payment instead of a per-user subscription.",
     ],
     pickThem: "Pick Zight if you want one tool for screenshots, GIFs and video, or need its mobile apps.",
     pickUs: "Pick Showthrough if video is what you send, and you want long recordings stored in your own account.",
@@ -424,7 +427,7 @@ export const alternatives: Alternative[] = [
     name: "ScreenPal",
     pricingUrl: "https://screenpal.com/plans",
     checked: "10 November 2026",
-    updated: "2026-11-10",
+    updated: "2026-11-27",
     title: "ScreenPal alternative with instant share links",
     description:
       "Showthrough vs ScreenPal (formerly Screencast-O-Matic): ScreenPal is a low-cost recorder and editor. Showthrough records from Chrome and the link is ready when you stop.",
@@ -446,7 +449,7 @@ export const alternatives: Alternative[] = [
       "ScreenPal's plans page shows sale prices that change often, so check it for today's numbers. The 15-minute free limit is confirmed in ScreenPal's help centre.",
     rows: [
       { label: "Built for", them: "Tutorials, lessons, edited videos", us: "Quick updates and walkthroughs" },
-      { label: "How you pay", them: "Yearly or monthly subscription", us: "One payment ({price})" },
+      { label: "How you pay", them: "Yearly or monthly subscription", us: "Free forever, or one payment ({price}) for paid features" },
       { label: "Recording length", them: "15 minutes on Free, unlimited on paid", us: "No limit" },
       { label: "Editor", them: "Yes", us: "Coming soon" },
       { label: "Quizzes and stock library", them: "Yes", us: "No" },
@@ -455,12 +458,11 @@ export const alternatives: Alternative[] = [
     theyWin: [
       "ScreenPal includes a video editor, a stock library, screenshots and quizzes.",
       "Its paid plans are among the cheapest recurring plans in this category.",
-      "It has a free plan.",
     ],
     weWin: [
       "The link works the second you stop recording, because the video uploads while you talk.",
       "Viewers comment at the exact moment and react with emoji, with no account needed to watch.",
-      "One payment and your videos stay in your own Cloudflare account, connected in one click while we handle the rest.",
+      "Free forever, and your videos stay in your own Cloudflare account, connected in one click while we handle the rest.",
     ],
     pickThem: "Pick ScreenPal if you make edited tutorials or lessons and want the lowest monthly cost.",
     pickUs: "Pick Showthrough if you send recordings to clients and teammates and want them out the door instantly.",
@@ -484,10 +486,10 @@ export const alternatives: Alternative[] = [
     name: "Cap",
     pricingUrl: "https://cap.so/pricing",
     checked: "10 November 2026",
-    updated: "2026-11-10",
+    updated: "2026-11-27",
     title: "Cap alternative: own your videos without self-hosting",
     description:
-      "Showthrough vs Cap: Cap is an open-source recorder you can self-host. Showthrough puts videos in your own Cloudflare in one click, for one payment for the whole team.",
+      "Showthrough vs Cap: Cap is an open-source recorder you can self-host. Showthrough puts videos in your own Cloudflare in one click, free forever, with one payment for the whole team's extras.",
     h1: "A Cap alternative: your own storage, without running servers",
     intro: [
       "Cap is an open-source screen recorder for Mac, Windows and Linux, with a good editor. You can self-host it, or pay for Cap Pro to use cloud sharing and your own S3 bucket.",
@@ -506,7 +508,7 @@ export const alternatives: Alternative[] = [
       { label: "Open source", them: "Yes, on GitHub", us: "No" },
       { label: "Runs on", them: "Mac, Windows and Linux desktop app", us: "Chrome on Mac, Windows, Linux and ChromeOS" },
       { label: "Your own storage", them: "Self-host, or your S3 bucket on Cap Pro", us: "Your Cloudflare, set up in one click" },
-      { label: "How you pay for sharing", them: "Per user: Cap Pro subscription", us: "One payment ({price})" },
+      { label: "How you pay for sharing", them: "Per user: Cap Pro subscription", us: "Free forever, or one payment ({price}) for paid features" },
       { label: "Share link limits", them: "25 a month, 5 minutes each on Free", us: "None" },
       { label: "Editor", them: "Yes, Studio Mode", us: "Coming soon" },
       { label: "AI features", them: "On Cap Pro", us: "Coming soon" },
@@ -518,11 +520,11 @@ export const alternatives: Alternative[] = [
     ],
     weWin: [
       "Owning your videos takes one click: Showthrough creates the storage, video app and database inside your own Cloudflare account. No servers to run or update.",
-      "Sharing isn't billed per user per month. One payment covers sharing too.",
+      "Sharing is free with no link limit. Paid extras are one payment, not billed per user per month.",
       "Nothing to install beyond a Chrome extension, so it works on Chromebooks.",
     ],
     pickThem: "Pick Cap if open source matters to you, you want a desktop editor, or you're happy to self-host.",
-    pickUs: "Pick Showthrough if you want your videos in your own cloud without running anything, and one price for sharing.",
+    pickUs: "Pick Showthrough if you want your videos in your own cloud without running anything, and free sharing with no limits.",
     faqs: [
       {
         q: "Is Showthrough open source?",

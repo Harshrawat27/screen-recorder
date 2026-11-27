@@ -54,13 +54,12 @@ export function SiteNav() {
           <Link href="/login" className="hidden rounded-full px-3.5 py-2 text-[15px] font-medium text-text hover:bg-sunken sm:block">
             Sign in
           </Link>
-          {/* Straight to buying: sign in first if needed, then Dodo checkout for the plan on sale (see /buy). */}
+          {/* Free plan: sign in with Google if needed, then the dashboard (see /start). */}
           <a
-            href="/buy"
+            href="/start"
             className="btn-primary inline-flex h-11 items-center whitespace-nowrap rounded-full bg-text px-4 text-sm font-semibold sm:h-12 sm:px-5 sm:text-[15px] text-canvas transition-colors hover:bg-text/85"
           >
-            <span className="sm:hidden">Get it</span>
-            <span className="hidden sm:inline">Get {site.name}</span>
+            Start free
           </a>
         </div>
       </nav>

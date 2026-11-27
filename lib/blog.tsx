@@ -152,15 +152,15 @@ const FREE_ALTS_CHECKED = "22 November 2026";
 const freeAltsFaqs = [
   {
     q: "What is the best free Loom alternative?",
-    a: "It depends on what you need. Screenity is the closest free option inside Chrome, with no video or time limit, but it saves files to your computer instead of giving you a link. Cap gives you share links for free, up to 25 a month and 5 minutes each. OBS Studio is best for long, high-quality recordings if you don't mind a learning curve.",
+    a: "It depends on what you need. Showthrough is free with no video or time limit and gives you a share link the moment you stop, because your videos are stored in your own Cloudflare account. Screenity is another free option inside Chrome, with no video or time limit, but it saves files to your computer instead of giving you a link. Cap gives you share links for free, up to 25 a month and 5 minutes each. OBS Studio is best for long, high-quality recordings if you don't mind a learning curve.",
   },
   {
     q: "Is there a free Loom alternative with no time limit?",
-    a: "Yes. Screenity's free recorder and OBS Studio both have no time limit. Both save the video as a file, so you share it yourself. Among tools that host your video, Vidyard and Screencastify allow 30 minutes per recording on their free plans.",
+    a: "Yes. Showthrough is free with no time limit and gives you a share link. Screenity's free recorder and OBS Studio have no time limit either, but save the video as a file, so you share it yourself. Among tools that host your video, Vidyard and Screencastify allow 30 minutes per recording on their free plans.",
   },
   {
     q: "Which free Loom alternatives have no watermark?",
-    a: "Screenity's free recorder and OBS Studio add no watermark. Screencastify's free plan adds a Castify watermark to your videos.",
+    a: "Showthrough, Screenity's free recorder and OBS Studio add no watermark. Screencastify's free plan adds a Castify watermark to your videos.",
   },
   {
     q: "Is Screenity really free?",
@@ -260,7 +260,7 @@ const loomExtensionFaqs = [
   },
   {
     q: "What's a good alternative to the Loom Chrome extension?",
-    a: "Showthrough is a Chrome extension that also gives you a link the moment you stop, with no limit on videos or length, for a one-time payment. Screenity is free and open source but saves a file. Screencastify and Vidyard have free plans with limits.",
+    a: "Showthrough is a free Chrome extension that also gives you a link the moment you stop, with no limit on videos or length. Screenity is free and open source but saves a file. Screencastify and Vidyard have free plans with limits.",
   },
 ];
 
@@ -283,7 +283,7 @@ const macRecorderFaqs = [
   },
   {
     q: "Is there a Mac screen recorder without a subscription?",
-    a: "Yes. The built-in tool, QuickTime and OBS are free. CleanShot X and Showthrough are one-time payments. Loom, Screen Studio and Cap Pro are subscriptions.",
+    a: "Yes. The built-in tool, QuickTime, OBS and Showthrough are free, and Showthrough's paid plan is a one-time payment, like CleanShot X. Loom, Screen Studio and Cap Pro are subscriptions.",
   },
 ];
 
@@ -352,7 +352,7 @@ const loomVsVidyardFaqs = [
   },
   {
     q: "Is there an alternative to Loom and Vidyard without a monthly fee?",
-    a: "Yes. Showthrough is a Chrome extension that gives you a share link the moment you stop recording, with no limit on videos or length, for a one-time payment. It has no sales analytics or CRM integrations.",
+    a: "Yes. Showthrough is a free Chrome extension that gives you a share link the moment you stop recording, with no limit on videos or length, and its paid plan is a one-time payment. It has no sales analytics or CRM integrations.",
   },
 ];
 
@@ -371,11 +371,11 @@ const bestRecorderFaqs = [
   },
   {
     q: "Which screen recorder is best for freelancers and agencies?",
-    a: "One that gives you a share link the moment you stop, so a client can watch without downloading anything. Showthrough does this for a one-time payment; Loom does it on a per-user monthly plan.",
+    a: "One that gives you a share link the moment you stop, so a client can watch without downloading anything. Showthrough does this free, with no limit on videos or length; Loom does it on a per-user monthly plan.",
   },
   {
     q: "Is there a good screen recorder without a subscription?",
-    a: "Yes. OBS Studio and the built-in tools are free, and CleanShot X and Showthrough are one-time payments. Loom, Screen Studio, Camtasia, Cap Pro and ScreenPal's paid plans are subscriptions.",
+    a: "Yes. OBS Studio, the built-in tools and Showthrough are free, and CleanShot X and Showthrough's paid plan are one-time payments. Loom, Screen Studio, Camtasia, Cap Pro and ScreenPal's paid plans are subscriptions.",
   },
 ];
 
@@ -389,7 +389,7 @@ export const posts: Post[] = [
     excerpt:
       "The built-in Chromebook recorder step by step, the same job in Chrome on Windows and Mac, and how to send a link instead of a file.",
     published: "2026-11-18",
-    updated: "2026-11-18",
+    updated: "2026-11-27",
     readingMinutes: 7,
     image: {
       src: "/blog/showthrough-recording-panel.webp",
@@ -551,7 +551,7 @@ export const posts: Post[] = [
         </p>
         <p>
           Two things are different from most recorders. There&rsquo;s no limit on the number of videos or their length. And the videos are stored in
-          your own Cloudflare account, not on our servers, so they stay yours. {site.name} is a one-time purchase with no subscription.{" "}
+          your own Cloudflare account, not on our servers, so they stay yours. {site.name} is free forever, and its paid plan is a one-time purchase with no subscription.{" "}
           <WatchDemoButton className="cursor-pointer font-medium text-text underline underline-offset-2">See how it works</WatchDemoButton>.
         </p>
         <p>
@@ -577,7 +577,7 @@ export const posts: Post[] = [
                 <td>Free</td>
                 <td>Free</td>
                 <td>Free</td>
-                <td>One-time payment</td>
+                <td>Free, no limits</td>
               </tr>
               <tr>
                 <th scope="row">Your voice</th>
@@ -658,7 +658,7 @@ export const posts: Post[] = [
     excerpt:
       "Every Loom plan, what the free plan stops you doing, what a team of 5 or 10 really pays, and the cheaper ways to send screen recordings.",
     published: "2026-11-19",
-    updated: "2026-11-19",
+    updated: "2026-11-27",
     readingMinutes: 6,
     image: {
       src: "/blog/loom-pricing.webp",
@@ -856,7 +856,7 @@ export const posts: Post[] = [
         <p>
           That&rsquo;s why I built <Link href="/">Showthrough</Link>. It&rsquo;s a Chrome extension that records your screen, camera and voice and
           copies the link the moment you stop. There&rsquo;s no limit on the number of videos or their length, videos are stored in your own
-          Cloudflare account, and it&rsquo;s a <Link href="/pricing">one-time payment</Link> instead of a monthly bill per person. It doesn&rsquo;t
+          Cloudflare account, and it&rsquo;s free, with a <Link href="/pricing">one-time payment</Link> for extras instead of a monthly bill per person. It doesn&rsquo;t
           have Loom&rsquo;s AI tools or a desktop app yet, so it suits quick updates more than polished, edited videos.
         </p>
         <p>
@@ -883,7 +883,7 @@ export const posts: Post[] = [
     excerpt:
       "What async communication means, how it compares with meetings, real examples, and the habits that make it work for teams and freelancers.",
     published: "2026-11-21",
-    updated: "2026-11-21",
+    updated: "2026-11-27",
     readingMinutes: 7,
     image: {
       src: "/blog/async-communication.webp",
@@ -1091,8 +1091,8 @@ export const posts: Post[] = [
         </ul>
         <p>
           For video, I built <Link href="/">Showthrough</Link>, a Chrome extension that records your screen, camera and voice and copies the link the
-          moment you stop. There&rsquo;s no limit on the number of videos or their length, and viewers can comment at the exact moment
-          they&rsquo;re asking about. If you&rsquo;re comparing options, see <Link href="/alternatives">the screen recorders we compare</Link>.
+          moment you stop. It&rsquo;s free, with no limit on the number of videos or their length, and on the paid plan viewers can comment at the exact
+          moment they&rsquo;re asking about. If you&rsquo;re comparing options, see <Link href="/alternatives">the screen recorders we compare</Link>.
         </p>
 
         <h2>Questions people ask</h2>
@@ -1114,7 +1114,7 @@ export const posts: Post[] = [
     excerpt:
       "What Loom's free plan includes, what happens when you hit 25 videos or 5 minutes, and whether you'll need to pay.",
     published: "2026-11-21",
-    updated: "2026-11-21",
+    updated: "2026-11-27",
     readingMinutes: 5,
     image: {
       src: "/blog/is-loom-free.webp",
@@ -1249,8 +1249,8 @@ export const posts: Post[] = [
         <p>
           Some screen recorders are free and open source if you host them yourself; others charge once instead of every month. I built{" "}
           <Link href="/">Showthrough</Link> after hitting Loom&rsquo;s limits: there&rsquo;s no cap on the number of videos or their length, your
-          videos are stored in your own Cloudflare account, and it&rsquo;s a <Link href="/pricing">one-time payment</Link>. It doesn&rsquo;t have a
-          free plan or Loom&rsquo;s AI tools yet. For a full comparison, see <Link href="/alternatives/loom">Showthrough vs Loom</Link> or{" "}
+          videos are stored in your own Cloudflare account, and it&rsquo;s free forever (the paid plan is a <Link href="/pricing">one-time payment</Link>). It
+          doesn&rsquo;t have Loom&rsquo;s AI tools yet. For a full comparison, see <Link href="/alternatives/loom">Showthrough vs Loom</Link> or{" "}
           <Link href="/alternatives">all the alternatives we compare</Link>.
         </p>
 
@@ -1266,18 +1266,18 @@ export const posts: Post[] = [
   },
   {
     slug: "free-loom-alternatives",
-    title: "7 free Loom alternatives, and what each free plan really allows",
-    metaTitle: "7 free Loom alternatives and their real limits",
+    title: "8 free Loom alternatives, and what each free plan really allows",
+    metaTitle: "8 free Loom alternatives and their real limits",
     description:
-      "Seven free Loom alternatives compared: Screenity, OBS, Cap, Vidyard, Screencastify, ScreenPal and Zight. The real limits on each free plan, and who each suits.",
+      "Eight free Loom alternatives compared: Showthrough, Screenity, OBS, Cap, Vidyard, Screencastify, ScreenPal and Zight. The real limits on each free plan, and who each suits.",
     excerpt:
-      "Seven screen recorders with a free plan, the limits on each one, and which to pick for client updates, tutorials or long recordings.",
+      "Eight screen recorders with a free plan, the limits on each one, and which to pick for client updates, tutorials or long recordings.",
     published: "2026-11-22",
-    updated: "2026-11-22",
+    updated: "2026-11-27",
     readingMinutes: 7,
     image: {
       src: "/blog/free-loom-alternatives.webp",
-      alt: "Seven screen recorder cards labelled with free-plan limits such as 5 min, 30 min and 10 videos, and one card highlighted in orange labelled no limit",
+      alt: "Screen recorder cards labelled with free-plan limits such as 5 min, 30 min and 10 videos, and one card highlighted in orange labelled no limit",
       width: 1600,
       height: 900,
     },
@@ -1287,13 +1287,13 @@ export const posts: Post[] = [
         <p>
           Loom&rsquo;s free plan stops at 25 videos and 5 minutes per recording (see{" "}
           <Link href="/blog/is-loom-free">Is Loom free?</Link>). If that&rsquo;s too tight, there are free screen recorders that go further. Each one
-          has its own catch: a monthly cap, a watermark, or no share link at all. Here are seven worth trying, with the real limits on each free plan.
+          has its own catch: a monthly cap, a watermark, or no share link at all. Here are eight worth trying, with the real limits on each free plan.
         </p>
 
         <figure>
           <Image
             src="/blog/free-loom-alternatives.webp"
-            alt="Seven screen recorder cards labelled with free-plan limits such as 5 min, 30 min and 10 videos, and one card highlighted in orange labelled no limit"
+            alt="Screen recorder cards labelled with free-plan limits such as 5 min, 30 min and 10 videos, and one card highlighted in orange labelled no limit"
             width={1600}
             height={900}
             sizes="(min-width: 768px) 720px, 100vw"
@@ -1323,6 +1323,12 @@ export const posts: Post[] = [
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <th scope="row">Showthrough</th>
+                <td>No video or time limit</td>
+                <td>Yes, the moment you stop</td>
+                <td>Client and team updates with no limits</td>
+              </tr>
               <tr>
                 <th scope="row">Screenity</th>
                 <td>No video or time limit</td>
@@ -1369,7 +1375,19 @@ export const posts: Post[] = [
           </table>
         </div>
 
-        <h2>1. Screenity: free and unlimited in Chrome</h2>
+        <h2>1. Showthrough: free share links with no limits</h2>
+        <p>
+          <Link href="/">Showthrough</Link> is the one we make, so read this with that in mind. It&rsquo;s a Chrome extension that records your screen,
+          camera and voice and copies a share link the moment you stop. The free plan has no limit on how many videos you record or how long they
+          are, no watermark, and viewers watch in any browser without an account. It can do that because your videos are stored in your own
+          Cloudflare account, which you connect in one click while we handle the setup.
+        </p>
+        <p>
+          <strong>The catch:</strong> you need a free Cloudflare account. Comments, reactions, team members and notifications are on the paid
+          plan, which is a <Link href="/pricing">one-time payment</Link>, not a subscription. It has no AI summaries or editor yet.
+        </p>
+
+        <h2>2. Screenity: free and unlimited in Chrome</h2>
         <p>
           <a href="https://screenity.io/extension" target="_blank" rel="noopener noreferrer nofollow">
             Screenity
@@ -1382,7 +1400,7 @@ export const posts: Post[] = [
           zooms and captions, is a paid upgrade.
         </p>
 
-        <h2>2. OBS Studio: free, powerful, and harder to learn</h2>
+        <h2>3. OBS Studio: free, powerful, and harder to learn</h2>
         <p>
           <a href="https://obsproject.com" target="_blank" rel="noopener noreferrer nofollow">
             OBS Studio
@@ -1395,7 +1413,7 @@ export const posts: Post[] = [
           two-minute update to a client.
         </p>
 
-        <h2>3. Cap: open source, with free share links</h2>
+        <h2>4. Cap: open source, with free share links</h2>
         <p>
           <a href="https://cap.so/pricing" target="_blank" rel="noopener noreferrer nofollow">
             Cap
@@ -1408,7 +1426,7 @@ export const posts: Post[] = [
           <Link href="/alternatives/cap">Showthrough vs Cap</Link>.
         </p>
 
-        <h2>4. Vidyard: 30-minute videos, 5 a month</h2>
+        <h2>5. Vidyard: 30-minute videos, 5 a month</h2>
         <p>
           <a href="https://www.vidyard.com/pricing/" target="_blank" rel="noopener noreferrer nofollow">
             Vidyard
@@ -1420,7 +1438,7 @@ export const posts: Post[] = [
           dashboard, are on paid plans. See <Link href="/alternatives/vidyard">Showthrough vs Vidyard</Link>.
         </p>
 
-        <h2>5. Screencastify: made for classrooms</h2>
+        <h2>6. Screencastify: made for classrooms</h2>
         <p>
           <a href="https://www.screencastify.com/pricing" target="_blank" rel="noopener noreferrer nofollow">
             Screencastify
@@ -1433,7 +1451,7 @@ export const posts: Post[] = [
           <Link href="/alternatives/screencastify">Showthrough vs Screencastify</Link>.
         </p>
 
-        <h2>6. ScreenPal: 15-minute recordings with an editor</h2>
+        <h2>7. ScreenPal: 15-minute recordings with an editor</h2>
         <p>
           <a href="https://screenpal.com/plans" target="_blank" rel="noopener noreferrer nofollow">
             ScreenPal
@@ -1447,7 +1465,7 @@ export const posts: Post[] = [
           <Link href="/alternatives/screenpal">Showthrough vs ScreenPal</Link>.
         </p>
 
-        <h2>7. Zight: screenshots, GIFs and short videos</h2>
+        <h2>8. Zight: screenshots, GIFs and short videos</h2>
         <p>
           <a href="https://zight.com/pricing/" target="_blank" rel="noopener noreferrer nofollow">
             Zight
@@ -1471,6 +1489,9 @@ export const posts: Post[] = [
         <h2>Which one should you pick?</h2>
         <ul>
           <li>
+            <strong>Updates to clients or teammates every day, with a link and no limits:</strong> Showthrough.
+          </li>
+          <li>
             <strong>Short updates to clients, a few a month:</strong> Cap, or stay on Loom&rsquo;s free plan.
           </li>
           <li>
@@ -1487,16 +1508,16 @@ export const posts: Post[] = [
           When I started freelancing, I sent client updates mostly as text messages, Google Docs or Google Meet calls. Writing out something that
           was easier to show took a long time, and booking a call for a two-minute update wasted everyone&rsquo;s time. Loom fixed that, but its
           free plan ran out quickly: clients wanted small updates every day, so the 25-video and 5-minute limits came up within a week or two.
-          That&rsquo;s the trade-off with every tool on this list. The ones with no limits give you a file to upload yourself, and the ones that
-          give you a link cap how much you can record.
+          That&rsquo;s the trade-off with almost every tool on this list. The ones with no limits give you a file to upload yourself, and the ones
+          that give you a link cap how much you can record. Showthrough is the exception, and it&rsquo;s why I built it.
         </p>
 
-        <h2>If you&rsquo;d rather pay once than work around limits</h2>
+        <h2>What Showthrough&rsquo;s paid plan adds</h2>
         <p>
-          That&rsquo;s why I built <Link href="/">Showthrough</Link>. It isn&rsquo;t free, so it&rsquo;s not on the list above. It&rsquo;s a{" "}
-          <Link href="/pricing">one-time payment</Link> instead of a monthly fee. You get a share link the moment you stop recording, there&rsquo;s no
-          limit on the number or length of videos, and your videos are stored in your own Cloudflare account. Connecting Cloudflare is one click, and
-          we handle the setup. For more options, see <Link href="/alternatives">all the Loom alternatives we compare</Link>.
+          Everything above is free in <Link href="/">Showthrough</Link>, for good. If you want more, the paid plan is a 
+          <Link href="/pricing">one-time payment</Link> instead of a monthly fee, and it covers your whole team. It adds comments and reactions at the
+          exact moment in the video, live notifications when someone watches, team members with no per-seat pricing, and folders. For more
+          options, see <Link href="/alternatives">all the Loom alternatives we compare</Link>.
         </p>
 
         <h2>Questions people ask</h2>
@@ -1518,7 +1539,7 @@ export const posts: Post[] = [
     excerpt:
       "The three steps to download a Loom video, who's allowed to, why the button disappears, and how to get your whole library out.",
     published: "2026-11-22",
-    updated: "2026-11-22",
+    updated: "2026-11-27",
     readingMinutes: 6,
     image: {
       src: "/blog/download-loom-videos.webp",
@@ -1690,7 +1711,7 @@ export const posts: Post[] = [
         <p>
           That&rsquo;s one reason I built <Link href="/">Showthrough</Link> to store videos in your own Cloudflare account instead of ours.
           Connecting it is one click, and we handle the setup. A plan change can&rsquo;t lock you out of your own recordings, because they never
-          sat on our servers, and you can download any video as a file whenever you like. It&rsquo;s a <Link href="/pricing">one-time payment</Link>, with no free plan. For other options, see{" "}
+          sat on our servers, and you can download any video as a file whenever you like. It&rsquo;s free forever, and the paid plan is a <Link href="/pricing">one-time payment</Link>. For other options, see{" "}
           <Link href="/alternatives">the best Loom alternatives</Link>.
         </p>
 
@@ -1713,7 +1734,7 @@ export const posts: Post[] = [
     excerpt:
       "Three free ways to record your screen on Windows, with sound, where the files go, and what to do when something doesn't work.",
     published: "2026-11-23",
-    updated: "2026-11-23",
+    updated: "2026-11-27",
     readingMinutes: 7,
     image: {
       src: "/blog/how-to-screen-record-on-windows.webp",
@@ -1914,7 +1935,8 @@ export const posts: Post[] = [
           That&rsquo;s why most people who record to explain something use a recorder that gives them a link instead. I built{" "}
           <Link href="/">Showthrough</Link> for that: it&rsquo;s a Chrome extension, so it works the same on Windows, Mac and Chromebook. It
           records your screen, camera and voice, uploads while you talk, and copies a share link the moment you stop. Videos are stored in your
-          own Cloudflare account, connected in one click while we handle the setup. It&rsquo;s a <Link href="/pricing">one-time payment</Link>. For
+          own Cloudflare account, connected in one click while we handle the setup. It&rsquo;s free with no limit on videos or length, and the paid plan is a{" "}
+          <Link href="/pricing">one-time payment</Link>. For
           other options, see <Link href="/alternatives">the best Loom alternatives</Link>, or{" "}
           <Link href="/blog/how-to-screen-record-on-chromebook">how to screen record on a Chromebook</Link>.
         </p>
@@ -1938,7 +1960,7 @@ export const posts: Post[] = [
     excerpt:
       "Six screen recorders that work on a Chromebook, what each free plan allows, and which to pick for school, work or client updates.",
     published: "2026-11-23",
-    updated: "2026-11-23",
+    updated: "2026-11-27",
     readingMinutes: 7,
     image: {
       src: "/blog/best-screen-recorders-for-chromebook.webp",
@@ -1973,8 +1995,8 @@ export const posts: Post[] = [
           <p>
             <strong>Quick answer:</strong> for a quick recording you&rsquo;ll keep yourself, use the <strong>built-in Screen capture</strong>{" "}
             tool. For free recording with no limits, use <strong>Screenity</strong>. To send a link to someone, use a tool that hosts your video:{" "}
-            <strong>Loom</strong> or <strong>Screencastify</strong> on their free plans, or <strong>Showthrough</strong> if you&rsquo;d rather pay
-            once and skip the limits.
+            <strong>Showthrough</strong>, which is free with no limits, or <strong>Loom</strong> or <strong>Screencastify</strong> on their
+            free plans.
           </p>
         </div>
 
@@ -2003,7 +2025,7 @@ export const posts: Post[] = [
               </tr>
               <tr>
                 <th scope="row">Showthrough</th>
-                <td>No free plan; one payment</td>
+                <td>No video or time limit</td>
                 <td>Yes, the moment you stop</td>
                 <td>Daily updates with no limits</td>
               </tr>
@@ -2055,8 +2077,8 @@ export const posts: Post[] = [
           handle the setup.
         </p>
         <p>
-          <strong>The catch:</strong> there&rsquo;s no free plan. It&rsquo;s a <Link href="/pricing">one-time payment</Link> instead of a
-          subscription, with refunds within 7 days. It also has no AI summaries or video editor yet.
+          <strong>The catch:</strong> you need a free Cloudflare account. Comments, team members and notifications are on the paid plan, a 
+          <Link href="/pricing">one-time payment</Link> instead of a subscription. It also has no AI summaries or video editor yet.
         </p>
 
         <h2>3. Loom: the best-known option, with tight free limits</h2>
@@ -2127,7 +2149,7 @@ export const posts: Post[] = [
             <strong>Sales outreach:</strong> Vidyard.
           </li>
           <li>
-            <strong>Updates to clients or teammates every day, or recordings longer than 5 minutes:</strong> Showthrough, or a paid plan elsewhere.
+            <strong>Updates to clients or teammates every day, or recordings longer than 5 minutes:</strong> Showthrough, free with no limits.
           </li>
         </ul>
         <p>
@@ -2171,7 +2193,7 @@ export const posts: Post[] = [
     excerpt:
       "What the Loom Chrome extension does, what you get for free, where it falls short of the desktop app, and alternatives if the limits get in the way.",
     published: "2026-11-24",
-    updated: "2026-11-24",
+    updated: "2026-11-27",
     readingMinutes: 6,
     image: {
       src: "/blog/loom-chrome-extension.webp",
@@ -2343,8 +2365,8 @@ export const posts: Post[] = [
               <Link href="/">Showthrough</Link>
             </strong>{" "}
             is a Chrome extension that works the same way: record your screen, a tab or a window with your camera, and a link is copied the moment
-            you stop. There&rsquo;s no limit on videos or length, and you pay once instead of every month (see{" "}
-            <Link href="/pricing">pricing</Link>). The catch: there&rsquo;s no free plan, and no AI summaries or editor yet. We make it.
+            you stop. It&rsquo;s free with no limit on videos or length, and the paid plan is one payment instead of every month (see{" "}
+            <Link href="/pricing">pricing</Link>). The catch: no AI summaries or editor yet. We make it.
           </li>
           <li>
             <strong>Screenity</strong> is free and open source with no time limit, but it saves a file you have to upload and share yourself.
@@ -2379,7 +2401,7 @@ export const posts: Post[] = [
     excerpt:
       "Eight screen recorders for Mac, from the free built-in tool to polished demo apps, with what each costs and which to pick for what you're recording.",
     published: "2026-11-24",
-    updated: "2026-11-24",
+    updated: "2026-11-27",
     readingMinutes: 8,
     image: {
       src: "/blog/best-screen-recorders-for-mac.webp",
@@ -2446,7 +2468,7 @@ export const posts: Post[] = [
               </tr>
               <tr>
                 <th scope="row">Showthrough</th>
-                <td>Pay once</td>
+                <td>Free, no limits</td>
                 <td>Yes, the moment you stop</td>
                 <td>Updates to clients and teams</td>
               </tr>
@@ -2516,8 +2538,8 @@ export const posts: Post[] = [
           Cloudflare account, set up in one click.
         </p>
         <p>
-          <strong>The catch:</strong> there&rsquo;s no free plan. You pay once instead of every month (see <Link href="/pricing">pricing</Link>
-          ). It has no editor, AI summaries or zoom effects yet, so it&rsquo;s for updates, not polished demos. We make it.
+          <strong>The catch:</strong> you need a free Cloudflare account, and comments and teams are on the paid plan, one payment instead of every
+          month (see <Link href="/pricing">pricing</Link>). It has no editor, AI summaries or zoom effects yet, so it&rsquo;s for updates, not polished demos. We make it.
         </p>
 
         <h2>4. Loom: the best-known option for teams</h2>
@@ -2600,7 +2622,7 @@ export const posts: Post[] = [
             <strong>Recording for yourself, now and then:</strong> the Screenshot toolbar or QuickTime.
           </li>
           <li>
-            <strong>Sending updates to clients or teammates:</strong> Showthrough, if you&rsquo;d rather pay once, or Loom, if your team already
+            <strong>Sending updates to clients or teammates:</strong> Showthrough, free with no limits, or Loom, if your team already
             uses it.
           </li>
           <li>
@@ -2636,7 +2658,7 @@ export const posts: Post[] = [
     excerpt:
       "Seven sections that make a freelance proposal easy to say yes to, a template to copy, a filled-in example, and why a two-minute video helps you win.",
     published: "2026-11-24",
-    updated: "2026-11-24",
+    updated: "2026-11-27",
     readingMinutes: 7,
     image: {
       src: "/blog/freelance-project-proposal-template.webp",
@@ -2825,8 +2847,7 @@ export const posts: Post[] = [
         </ol>
         <p>
           You can do this with any screen recorder that gives you a link. <Link href="/">Showthrough</Link> is the one we make: it copies a link
-          the moment you stop, has no limit on videos or length, and you pay once instead of every month (see <Link href="/pricing">pricing</Link>
-          ).
+          the moment you stop, has no limit on videos or length, and it&rsquo;s free (see <Link href="/pricing">pricing</Link>).
         </p>
 
         <h2>Five mistakes that lose proposals</h2>
@@ -2868,7 +2889,7 @@ export const posts: Post[] = [
     excerpt:
       "The two built-in ways to record your Mac's screen, how to get sound from apps as well as your voice, where the file goes, and what to do when something goes wrong.",
     published: "2026-11-25",
-    updated: "2026-11-25",
+    updated: "2026-11-27",
     readingMinutes: 7,
     image: {
       src: "/blog/how-to-screen-record-on-mac.webp",
@@ -3009,7 +3030,7 @@ export const posts: Post[] = [
               </tr>
               <tr>
                 <th scope="row">Showthrough (Chrome)</th>
-                <td>Pay once</td>
+                <td>Free, no limits</td>
                 <td>Tab audio</td>
                 <td>A share link the moment you stop</td>
               </tr>
@@ -3050,7 +3071,7 @@ export const posts: Post[] = [
         <p>
           <Link href="/">Showthrough</Link> is the one we make. It&rsquo;s a Chrome extension: record your screen, a window or a tab with your camera
           and voice, and a share link is copied the moment you stop. There&rsquo;s no limit on videos or length, viewers watch in any browser, and
-          you pay once instead of every month (see <Link href="/pricing">pricing</Link>). It has no editor yet, so for polished demos the
+          it&rsquo;s free, with a one-time paid plan for extras (see <Link href="/pricing">pricing</Link>). It has no editor yet, so for polished demos the
           built-in tools plus an editor still suit better.
         </p>
 
@@ -3073,7 +3094,7 @@ export const posts: Post[] = [
     excerpt:
       "Loom is built for team updates, Vidyard for sales. Here's how they compare on price, free plans and features, and how to choose.",
     published: "2026-11-25",
-    updated: "2026-11-25",
+    updated: "2026-11-27",
     readingMinutes: 6,
     image: {
       src: "/blog/loom-vs-vidyard.webp",
@@ -3239,7 +3260,8 @@ export const posts: Post[] = [
         <p>
           If you&rsquo;re comparing these two because of the price, and you mostly need to record a quick video and send a link, there&rsquo;s a
           third option. <Link href="/">Showthrough</Link> is a Chrome extension that copies a share link the moment you stop recording. There&rsquo;s
-          no limit on videos or length, and you pay once instead of every month (see <Link href="/pricing">pricing</Link>).
+          no limit on videos or length, it&rsquo;s free, and its paid plan is one payment instead of every month (see{" "}
+          <Link href="/pricing">pricing</Link>).
         </p>
         <p>
           To be clear about the trade-off: it has no sales analytics, CRM integrations or AI features. If you need those, Vidyard or Loom is the
@@ -3267,7 +3289,7 @@ export const posts: Post[] = [
     excerpt:
       "Ten screen recorders worth using in 2026, what each costs, and which to pick for client updates, tutorials, product demos or recording for free.",
     published: "2026-11-26",
-    updated: "2026-11-26",
+    updated: "2026-11-27",
     readingMinutes: 10,
     image: {
       src: "/blog/best-screen-recorders.webp",
@@ -3297,7 +3319,7 @@ export const posts: Post[] = [
 
         <div className="callout">
           <p>
-            <strong>Quick answer:</strong> to send updates to clients or a team, use <strong>Showthrough</strong> (pay once) or{" "}
+            <strong>Quick answer:</strong> to send updates to clients or a team, use <strong>Showthrough</strong> (free, no limits) or{" "}
             <strong>Loom</strong> (monthly). For free with full control, use <strong>OBS Studio</strong>. For edited tutorials, use{" "}
             <strong>Camtasia</strong>. For polished Mac demos, use <strong>Screen Studio</strong>. For a quick recording you keep, use the tool
             already built into your computer.
@@ -3324,7 +3346,7 @@ export const posts: Post[] = [
               <tr>
                 <th scope="row">Showthrough</th>
                 <td>Chrome (Windows, Mac, Chromebook)</td>
-                <td>Pay once</td>
+                <td>Free, no limits</td>
                 <td>Client and team updates</td>
               </tr>
               <tr>
@@ -3393,8 +3415,8 @@ export const posts: Post[] = [
           click.
         </p>
         <p>
-          <strong>The catch:</strong> there&rsquo;s no free plan. You pay once instead of every month (see <Link href="/pricing">pricing</Link>
-          ). There&rsquo;s no editor or AI summaries yet, so it&rsquo;s built for updates, not polished videos. We make it.
+          <strong>The catch:</strong> you need a free Cloudflare account, and comments and teams are on the paid plan, one payment instead of every
+          month (see <Link href="/pricing">pricing</Link>). There&rsquo;s no editor or AI summaries yet, so it&rsquo;s built for updates, not polished videos. We make it.
         </p>
 
         <h2>2. Loom: the best-known video messaging tool</h2>
@@ -3519,7 +3541,7 @@ export const posts: Post[] = [
           </li>
           <li>
             <strong>Remote teams:</strong> Loom, if the whole team will reply in videos and comments. Showthrough, if you&rsquo;d rather not pay per
-            person every month.
+            person every month: it&rsquo;s free, and its paid plan is one payment.
           </li>
           <li>
             <strong>Tutorials, courses and YouTube:</strong> Camtasia for record-and-edit in one app, or OBS for free.
@@ -3554,7 +3576,7 @@ export const posts: Post[] = [
             <strong>How often will you record?</strong> Free plans with video or length limits run out fast if you record every day.
           </li>
           <li>
-            <strong>Monthly or once?</strong> Per-user monthly plans add up for teams. Some tools are one-time payments.
+            <strong>Monthly or once?</strong> Per-user monthly plans add up for teams. Some tools are free with no limits, and some are one-time payments.
           </li>
         </ol>
         <p>

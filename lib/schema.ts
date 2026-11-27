@@ -23,13 +23,14 @@ export function softwareAppSchema(price: number) {
     url: site.url,
     image: `${site.url}/opengraph-image.png`,
     description:
-      "A Chrome screen recorder: record your screen, camera and voice and share the link the moment you stop. Videos are stored in your own Cloudflare account. One payment, no subscription.",
+      "A free Chrome screen recorder with no video limit and no time limit: record your screen, camera and voice and share the link the moment you stop. Videos are stored in your own Cloudflare account. Free forever; the paid plan is one payment, no subscription.",
     applicationCategory: "MultimediaApplication",
     operatingSystem: "Windows, macOS, Linux, ChromeOS",
     browserRequirements: "Requires Google Chrome",
     installUrl: site.chromeStoreUrl,
     publisher: { "@id": orgId },
-    offers: offerSchema(price),
+    // The free plan, then the paid one.
+    offers: [{ "@type": "Offer", name: "Free", price: "0", priceCurrency: "USD", url: `${site.url}/pricing`, availability: "https://schema.org/InStock" }, offerSchema(price)],
   };
 }
 

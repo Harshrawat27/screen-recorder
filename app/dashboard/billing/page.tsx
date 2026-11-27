@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/dashboard-ui";
-import { buttonClass } from "@/components/ui";
+import { CheckIcon, buttonClass } from "@/components/ui";
 import { getAccess } from "@/lib/billing";
 import { firstName, getTeamContext } from "@/lib/team";
 import { pages } from "@/lib/dashboard-pages";
@@ -76,11 +76,39 @@ export default async function BillingPage() {
           </>
         ) : (
           <>
-            <h2 className="text-xl">No purchase yet</h2>
-            <p className="mt-2 text-muted">Showthrough is a one-time payment for your whole team. Buy it, connect Cloudflare in one click (we handle the rest) and start recording.</p>
-            <a href="/pricing" className={buttonClass("primary", "md", "mt-6")}>
-              See pricing
-            </a>
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl">Free plan</h2>
+              <span className="rounded-full bg-text px-2.5 py-0.5 text-xs font-semibold text-canvas">Forever</span>
+            </div>
+            <p className="mt-2 text-muted">
+              Unlimited recordings with no time limit, share links, search, Watch later and MP4 downloads. Free forever, no card needed.
+            </p>
+            <p className="mt-6 text-[15px] font-semibold">Upgrade once, keep it for life</p>
+            <ul className="mt-3 space-y-2 text-[15px] text-muted">
+              {[
+                "Comments, reactions and view counts",
+                "Live notifications",
+                "Your whole team, no per-seat pricing",
+                "Folders and buttons under your videos",
+                "Share pages without “Recorded with Showthrough”",
+              ].map((perk) => (
+                <li key={perk} className="flex items-start gap-2.5">
+                  <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-text text-canvas">
+                    <CheckIcon className="size-3" />
+                  </span>
+                  {perk}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {/* /buy signs in if needed, then goes straight to checkout. */}
+              <a href="/buy" className={buttonClass("primary", "md")}>
+                Upgrade
+              </a>
+              <a href="/pricing" className={buttonClass("secondary", "md")}>
+                See pricing
+              </a>
+            </div>
           </>
         )}
       </section>

@@ -17,7 +17,7 @@ import { site } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
-const UPDATED = "2026-11-22";
+const UPDATED = "2026-11-27";
 const CHECKED = "between 10 and 22 November 2026";
 
 export const metadata: Metadata = {
@@ -48,19 +48,20 @@ function tools(price: number): Tool[] {
     {
       id: "showthrough",
       name: site.name,
-      verdict: "best if you want to pay once",
+      verdict: "best free Loom alternative with no limits",
       site: site.url,
-      price: `$${price} once, no subscription`,
-      free: "No free plan",
+      price: `Free forever; paid is $${price} once, no subscription`,
+      free: "Unlimited videos, no time limit",
       length: "No limit",
       platform: "Chrome on Windows, Mac, Linux and ChromeOS",
       body: [
-        "We make Showthrough, so read this one with that in mind. It’s a Chrome extension that records your screen, camera and voice, and gives you a share link the moment you stop. Viewers can watch, comment and react without an account.",
-        "The difference is where your videos live and how you pay. Recordings are stored in your own Cloudflare account, connected in one click while we handle the setup, so there’s no per-seat bill that grows with your team. Cloudflare’s first 10 GB a month are free, which is about 8 hours of recordings, and you can delete old videos to stay under it; after that it’s $0.015 per GB.",
+        "We make Showthrough, so read this one with that in mind. It’s a Chrome extension that records your screen, camera and voice, and gives you a share link the moment you stop. It’s free forever, with no limit on how many videos you record or how long they are, and viewers watch without an account.",
+        "The difference is where your videos live and how you pay. Recordings are stored in your own Cloudflare account, connected in one click while we handle the setup, which is why the free plan has no limits. The paid plan is one payment for your whole team and adds comments, reactions, live notifications, team members and folders, so there’s no per-seat bill that grows with your team. Cloudflare’s first 10 GB a month are free, which is about 8 hours of recordings, and you can delete old videos to stay under it; after that it’s $0.015 per GB.",
       ],
-      good: ["Freelancers and small teams who send updates every day", "Long walkthroughs and handovers, with no time limit", "Anyone who wants to keep their videos in an account they own"],
+      good: ["Anyone who wants Loom-style links free, with no video or time limit", "Freelancers and small teams who send updates every day", "Anyone who wants to keep their videos in an account they own"],
       watch: [
-        "No free plan, though you can get a refund within 7 days",
+        "Needs a free Cloudflare account, connected in one click",
+        "Comments, team members and notifications are on the one-time paid plan",
         "No AI summaries, video editor or mobile app yet; they’re on the roadmap",
       ],
     },
@@ -288,7 +289,7 @@ export default async function AlternativesPage() {
             </p>
             <ul>
               <li>
-                <strong>Pay once, no subscription:</strong> <a href="#showthrough">{site.name}</a>
+                <strong>Free with no limits, and links to share:</strong> <a href="#showthrough">{site.name}</a>
               </li>
               <li>
                 <strong>Sales outreach:</strong> <a href="#vidyard">Vidyard</a>
@@ -394,7 +395,7 @@ export default async function AlternativesPage() {
           <ol>
             <li>
               <strong>Do you need a link or is a file fine?</strong> If you send videos to clients or teammates, pick a tool that gives you a link.
-              Screenity and OBS are free with no limits, but you share the file yourself.
+              {site.name} is free with no limits and gives you a link; Screenity and OBS are free with no limits, but you share the file yourself.
             </li>
             <li>
               <strong>How long are your recordings?</strong> Free plans cap length at 5 minutes (Loom, Zight, Cap&rsquo;s share links), 15
@@ -426,17 +427,17 @@ export default async function AlternativesPage() {
           <h3>What is the best Loom alternative?</h3>
           <p>
             It depends on the job. Vidyard is best for sales, Screencastify for teaching, Tella for edited demos and Cap for open source. For free
-            recording with no limits, use Screenity or OBS Studio. If you want to pay once instead of per person every month, {site.name} is built
-            for that.
+            recording with no limits and a share link, {site.name} is free forever with no video or time limit, and its paid plan is one payment
+            instead of per person every month. Screenity and OBS Studio are free too, but give you a file to share yourself.
           </p>
           <h3>Is there a free Loom alternative?</h3>
           <p>
-            Yes. Screenity and OBS Studio are free with no limits but give you a file. Cap, Vidyard, Screencastify, ScreenPal and Zight have free
-            plans with share links and limits. Each is compared in <Link href="/blog/free-loom-alternatives">7 free Loom alternatives</Link>.
+            Yes. {site.name} is free forever with share links and no limit on videos or length. Screenity and OBS Studio are free with no limits
+            but give you a file. Cap, Vidyard, Screencastify, ScreenPal and Zight have free plans with share links and limits. Each is compared in <Link href="/blog/free-loom-alternatives">8 free Loom alternatives</Link>.
           </p>
           <h3>Is there a Loom alternative without a subscription?</h3>
           <p>
-            Yes. {site.name} is a one-time payment, Cap sells a one-time desktop license for local recordings, and Screenity and OBS Studio are
+            Yes. {site.name} is free forever, and its paid plan is a one-time payment. Cap sells a one-time desktop license for local recordings, and Screenity and OBS Studio are
             free. Most others are monthly or yearly subscriptions per user.
           </p>
           <h3>Which Loom alternative works in Chrome?</h3>

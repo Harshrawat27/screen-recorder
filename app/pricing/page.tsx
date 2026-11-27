@@ -8,8 +8,8 @@ import { breadcrumbSchema, softwareAppSchema } from "@/lib/schema";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Pricing: one payment, whole team, no monthly fee",
-  description: "Showthrough is a one-time purchase for your whole team, with team invites included. No per-seat fee, no subscription, and videos in your own Cloudflare.",
+  title: "Pricing: free forever, or pay once for your whole team",
+  description: "Showthrough is free forever: unlimited screen recordings with no time limit. Pay once to add comments, notifications and your whole team. No per-seat fee, no subscription.",
   alternates: { canonical: "/pricing" },
 };
 
@@ -26,7 +26,7 @@ export default async function PricingPage({ searchParams }: PageProps<"/pricing"
   const params = await searchParams;
 
   let notice: React.ReactNode = null;
-  if (params.locked !== undefined) notice = <Notice>Buy {"Showthrough"} to connect Cloudflare (one click, we handle the rest) and start recording. It&rsquo;s a one-time payment.</Notice>;
+  if (params.locked !== undefined) notice = <Notice>That&rsquo;s part of the paid plan. Recording and sharing stay free forever.</Notice>;
   if (params.error !== undefined) notice = <Notice>We couldn&rsquo;t open checkout just now. Try again in a minute.</Notice>;
   if (params.soldout !== undefined) notice = <Notice>Early pricing has ended. Sales open again on 30 November.</Notice>;
 
@@ -37,7 +37,7 @@ export default async function PricingPage({ searchParams }: PageProps<"/pricing"
         <SiteNav />
       </div>
       <main className="pt-6">
-        <h1 className="sr-only">Showthrough pricing: pay once, use it forever</h1>
+        <h1 className="sr-only">Showthrough pricing: free forever, or pay once for more</h1>
         <Pricing sold={sold} price={price} notice={notice} />
         <Faq />
       </main>

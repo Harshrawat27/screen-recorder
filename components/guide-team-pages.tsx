@@ -14,7 +14,7 @@ export const teamGuideContent: Record<string, React.ReactNode> = {
     <>
       <Lead>
         Invite your team to record into your Showthrough. Everyone signs in with their own Google account, and every video is
-        saved in your Cloudflare. One purchase covers everyone.
+        saved in your Cloudflare. Teams are on the paid plan, and one payment covers everyone.
       </Lead>
       <Note title="Who does what">
         <p>
