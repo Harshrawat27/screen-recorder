@@ -221,7 +221,7 @@ const windowsRecordFaqs = [
 const chromebookRecorderFaqs = [
   {
     q: "What is the best free screen recorder for Chromebook?",
-    a: "The built-in Screen capture tool is free with no sign-up and saves a file. If you want more features for free, Screenity is free and open source with no watermark or time limit, and also saves a file. For free share links, Loom, Screencastify and Vidyard have free plans with limits.",
+    a: "The built-in Screen capture tool is free with no sign-up and saves a file. If you want more features for free, Screenity is free and open source with no watermark or time limit, and also saves a file. For a free share link with no limits, Showthrough is free with no video or time limit. Loom, Screencastify and Vidyard have free plans with limits.",
   },
   {
     q: "Does Chromebook have a built-in screen recorder?",
@@ -267,7 +267,7 @@ const loomExtensionFaqs = [
 const macRecorderFaqs = [
   {
     q: "What is the best free screen recorder for Mac?",
-    a: "The built-in Screenshot toolbar (Shift + Command + 5) is free, fast and already on your Mac. If you want more control for free, OBS Studio is free and open source, and Cap has a free plan for personal use.",
+    a: "The built-in Screenshot toolbar (Shift + Command + 5) is free, fast and already on your Mac. If you want a share link instead of a file, Showthrough is free with no video or time limit. If you want more control for free, OBS Studio is free and open source, and Cap has a free plan for personal use.",
   },
   {
     q: "How do I screen record on a Mac?",
@@ -363,7 +363,7 @@ const bestRecorderFaqs = [
   },
   {
     q: "What is the best free screen recorder?",
-    a: "OBS Studio is the most capable free recorder, on Windows, Mac and Linux, with no watermark or time limit. The tools built into Windows, macOS and ChromeOS are free too and quicker for simple recordings.",
+    a: "To send a link, Showthrough is free with no video or time limit, and copies the link the moment you stop. To save a file, OBS Studio is the most capable free recorder, on Windows, Mac and Linux, with no watermark or time limit. The tools built into Windows, macOS and ChromeOS are free too and quicker for simple recordings.",
   },
   {
     q: "Which screen recorder has no watermark and no time limit?",
@@ -411,7 +411,7 @@ export const posts: Post[] = [
             <strong>Quick answer:</strong> press <Keys>Shift</Keys> + <Keys>Ctrl</Keys> + <Keys>Show windows</Keys> (the key with a rectangle and two
             lines). Select <strong>Screen record</strong>, choose full screen, part of the screen or one window, and start recording. Press{" "}
             <Keys>Search</Keys> + <Keys>Shift</Keys> + <Keys>X</Keys> to stop. The video saves to your <strong>Downloads</strong> folder as a .webm
-            file.
+            file. To share a link instead of a file, <Link href="/">Showthrough</Link> is free with no video or time limit.
           </p>
         </div>
 
@@ -488,7 +488,7 @@ export const posts: Post[] = [
         </p>
         <p>
           <strong>A Chrome extension</strong> works the same way on every computer, Chromebooks included. Extensions can record a single tab with its
-          sound, and many give you a share link instead of a file.
+          sound, and many give you a share link instead of a file. <Link href="/">Showthrough</Link>, the one we make, does that for free with no video or time limit.
         </p>
 
         <h2>When you need a link, not a file</h2>
@@ -690,7 +690,7 @@ export const posts: Post[] = [
           <p>
             <strong>Quick answer:</strong> Starter is free, with 25 videos per person and a 5-minute limit on screen recordings. Business costs{" "}
             <strong>$18 per user per month</strong> and removes those limits. Business + AI costs <strong>$24 per user per month</strong> and adds
-            Loom&rsquo;s AI tools. Enterprise is priced by quote. Paying yearly saves up to 17%.
+            Loom&rsquo;s AI tools. Enterprise is priced by quote. Paying yearly saves up to 17%. If you&rsquo;d rather not pay at all, <Link href="/">Showthrough</Link> is free with no video or time limit.
           </p>
         </div>
 
@@ -850,8 +850,8 @@ export const posts: Post[] = [
 
         <h2>Cheaper ways to send screen recordings</h2>
         <p>
-          If per-user pricing is the problem, there are tools that charge differently. Some open-source recorders are free if you host them
-          yourself. Others charge once instead of every month.
+          If per-user pricing is the problem, there are tools that charge differently. Some are free with no limits, some open-source recorders
+          are free if you host them yourself, and others charge once instead of every month.
         </p>
         <p>
           That&rsquo;s why I built <Link href="/">Showthrough</Link>. It&rsquo;s a Chrome extension that records your screen, camera and voice and
@@ -1146,7 +1146,7 @@ export const posts: Post[] = [
           <p>
             <strong>Quick answer:</strong> Loom&rsquo;s Starter plan is free, with up to <strong>25 videos per person</strong>, a{" "}
             <strong>5-minute limit</strong> on each screen recording, and video up to <strong>720p</strong>. Removing those limits costs $18 per user
-            per month on the Business plan.
+            per month on the Business plan. For a free alternative without those limits, <Link href="/">Showthrough</Link> is free with no video or time limit.
           </p>
         </div>
 
@@ -1303,9 +1303,10 @@ export const posts: Post[] = [
 
         <div className="callout">
           <p>
-            <strong>Quick answer:</strong> for recording in Chrome with no limits, use <strong>Screenity</strong>. It&rsquo;s free and open source,
-            but it saves a file instead of giving you a link. For free share links, use <strong>Cap</strong> (25 a month, 5 minutes each). For long,
-            high-quality recordings on a desktop, use <strong>OBS Studio</strong>.
+            <strong>Quick answer:</strong> for free share links with no video or time limit, use <strong><Link href="/">Showthrough</Link></strong>: it records in Chrome and
+            copies the link the moment you stop. To record to a file in Chrome, use <strong>Screenity</strong>, which is free and open source. For long,
+            high-quality recordings on a desktop, use <strong>OBS Studio</strong>. <strong>Cap</strong> gives you 25 free share links a month, 5 minutes
+            each.
           </p>
         </div>
 
@@ -1571,7 +1572,8 @@ export const posts: Post[] = [
           <p>
             <strong>Quick answer:</strong> open the video from your Loom Library, open the menu above the video, and choose{" "}
             <strong>Download</strong>. You get an MP4 file. This works for admins and creators on Business and Business + AI, admins on
-            Education, and admins and members on Enterprise. On the free Starter plan, nobody can download.
+            Education, and admins and members on Enterprise. On the free Starter plan, nobody can download. <Link href="/">Showthrough</Link> is free, and you can download any of
+            your videos as an MP4.
           </p>
         </div>
 
@@ -1767,7 +1769,7 @@ export const posts: Post[] = [
             <strong>Quick answer:</strong> on Windows 11, press <Keys>Windows</Keys> + <Keys>Shift</Keys> + <Keys>R</Keys>, drag to select part
             of the screen, select <strong>Start</strong>, then <strong>Stop</strong>. The video saves as an MP4 in{" "}
             <strong>Videos &gt; Screen Recordings</strong>. On Windows 10, open the app you want to record and press <Keys>Windows</Keys> +{" "}
-            <Keys>Alt</Keys> + <Keys>R</Keys> to record with the Xbox Game Bar.
+            <Keys>Alt</Keys> + <Keys>R</Keys> to record with the Xbox Game Bar. To share a link instead of a file, <Link href="/">Showthrough</Link> is free with no video or time limit.
           </p>
         </div>
 
@@ -1994,9 +1996,9 @@ export const posts: Post[] = [
         <div className="callout">
           <p>
             <strong>Quick answer:</strong> for a quick recording you&rsquo;ll keep yourself, use the <strong>built-in Screen capture</strong>{" "}
-            tool. For free recording with no limits, use <strong>Screenity</strong>. To send a link to someone, use a tool that hosts your video:{" "}
-            <strong>Showthrough</strong>, which is free with no limits, or <strong>Loom</strong> or <strong>Screencastify</strong> on their
-            free plans.
+            tool. To send a link with no limits, use <strong><Link href="/">Showthrough</Link></strong>, which is free with no video or time limit. To record to a file with
+            more features, use <strong>Screenity</strong>. <strong>Loom</strong> and <strong>Screencastify</strong> also give you links, on free
+            plans with limits.
           </p>
         </div>
 
@@ -2154,7 +2156,8 @@ export const posts: Post[] = [
         </ul>
         <p>
           When I was freelancing, the free plans ran out within a week or two, because clients wanted small updates every day. The free tools with
-          no limits solved that, but then I was uploading files and fixing sharing settings for every update. If you&rsquo;re comparing more than
+          no limits solved that, but then I was uploading files and fixing sharing settings for every update. That&rsquo;s why I made <Link href="/">Showthrough</Link> free,
+          with a link and no limits. If you&rsquo;re comparing more than
           Chromebook options, see <Link href="/alternatives">the best Loom alternatives</Link>.
         </p>
 
@@ -2229,7 +2232,7 @@ export const posts: Post[] = [
               25 videos per person
             </a>
             , 5 minutes per recording, and up to 720p. Paid plans start at $18 per user per month. For 4K, drawing or speaker notes you need the
-            desktop app.
+            desktop app. For a Chrome extension without those limits, <Link href="/">Showthrough</Link> is free with no video or time limit.
           </p>
         </div>
 
@@ -2432,7 +2435,7 @@ export const posts: Post[] = [
         <div className="callout">
           <p>
             <strong>Quick answer:</strong> for a quick recording you keep yourself, use the free <strong>Shift + Command + 5</strong> toolbar. To
-            send a link to a client or teammate, use <strong>Showthrough</strong> or <strong>Loom</strong>. For polished product demos, use{" "}
+            send a link to a client or teammate, use <strong>Showthrough</strong> (free, no limits) or <strong>Loom</strong>. For polished product demos, use{" "}
             <strong>Screen Studio</strong>. For screenshots and recordings in one app, use <strong>CleanShot X</strong>. For full control for free,
             use <strong>OBS</strong>.
           </p>
@@ -2921,7 +2924,8 @@ export const posts: Post[] = [
           <p>
             <strong>Quick answer:</strong> press <strong>Shift + Command + 5</strong>, choose what to record, pick your microphone under{" "}
             <strong>Options</strong>, and click <strong>Record</strong>. Stop with <strong>Command + Control + Esc</strong>. The video saves to your
-            Desktop as a .mov file. For sound from apps, turn on <strong>Include System Audio</strong> in Options on macOS 27 or later.
+            Desktop as a .mov file. For sound from apps, turn on <strong>Include System Audio</strong> in Options on macOS 27 or later. To share a
+            link instead of a file, <Link href="/">Showthrough</Link> is free with no video or time limit.
           </p>
         </div>
 
@@ -3125,7 +3129,8 @@ export const posts: Post[] = [
           <p>
             <strong>Quick answer:</strong> pick <strong>Loom</strong> for quick updates, walkthroughs and feedback inside a team. It&rsquo;s{" "}
             $18 per user per month. Pick <strong>Vidyard</strong> if you&rsquo;re in sales and want to track who watched your videos and connect
-            them to your CRM. Its paid plans start at $59 per user per month, billed yearly.
+            them to your CRM. Its paid plans start at $59 per user per month, billed yearly. If you just want to send screen recordings without a
+            monthly bill, <Link href="/">Showthrough</Link> is free with no video or time limit.
           </p>
         </div>
 
@@ -3209,6 +3214,9 @@ export const posts: Post[] = [
         <p>
           If you record a few longer videos, Vidyard&rsquo;s free plan goes further. If you record lots of short ones, Loom&rsquo;s does, until you
           hit 25.
+        </p>
+        <p>
+          If neither limit works for you, <Link href="/">Showthrough</Link> is free with no video or time limit, and it gives you a share link the moment you stop. We make it.
         </p>
 
         <h2>Where Loom wins</h2>
@@ -3431,7 +3439,7 @@ export const posts: Post[] = [
           <Link href="/blog/loom-vs-vidyard">Loom vs Vidyard</Link>.
         </p>
 
-        <h2>3. OBS Studio: the best free recorder</h2>
+        <h2>3. OBS Studio: the most powerful free recorder</h2>
         <p>
           <a href="https://obsproject.com" target="_blank" rel="noopener noreferrer nofollow">
             OBS Studio
@@ -3556,7 +3564,7 @@ export const posts: Post[] = [
             <strong>Schools:</strong> Screencastify.
           </li>
           <li>
-            <strong>Recording for free:</strong> OBS or your computer&rsquo;s built-in tool.
+            <strong>Recording for free:</strong> Showthrough for a share link with no limits, or OBS or your computer&rsquo;s built-in tool for a file.
           </li>
         </ul>
         <p>
