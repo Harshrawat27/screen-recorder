@@ -14,6 +14,7 @@ import { toLibraryVideos, videosBy } from "@/lib/library";
 import { getPersonal, personalEnabled } from "@/lib/personal";
 import { requireSession } from "@/lib/session";
 import { getAccess, syncPayment } from "@/lib/billing";
+import { ownerFeatures } from "@/lib/plan";
 
 export const metadata: Metadata = { title: "Library", robots: { index: false } };
 
@@ -65,17 +66,21 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
     }
   }
 
-  if (!access.paid) return <LockedLibrary pending={returning} />;
+  // Free plan or paid: everyone can connect Cloudflare and record. Paid features depend on the
+  // plan of whoever owns this workspace (lib/plan.ts).
+  const pending = returning && !access.paid;
 
   const team = await getTeamContext(user);
   const member = team.role === "member";
   const workspace = team.workspace;
+  const features = await ownerFeatures(team.ownerId);
   const [library, folders, later, people] = await Promise.all([
     workspace ? listVideos(workspace.worker_url, workspace.upload_key) : { videos: [], reachable: true },
     listFolders(workspace),
     personalEnabled(workspace) ? getPersonal(workspace, user.id, "watch_later") : null,
-    teamsEnabled(workspace) ? teamPeople(team.ownerId) : [],
+    features.team && teamsEnabled(workspace) ? teamPeople(team.ownerId) : [],
   ]);
+  // Paid features keep their buttons on the free plan: using them opens the upgrade popup.
   const canFolder = foldersEnabled(workspace);
   // My library: only the recordings I made. Teammates' recordings are under Team.
   const videos = workspace ? videosBy(library.videos, workspace, user.id, user.id) : [];
@@ -94,13 +99,21 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
         >
           <LibraryActions
             foldersEnabled={canFolder}
+            foldersLocked={!features.folders}
             updateHint={member ? `Your admin (${firstName(team.owner)}) hasn't installed this update yet` : undefined}
           />
         </PageHeader>
 
-        {returning && (
+        {returning && access.paid && (
           <p role="status" className="mt-8 max-w-3xl rounded-control border border-line bg-surface px-4 py-3 text-sm">
-            <span className="font-semibold">Payment received. Thank you!</span> Connect Cloudflare below to start recording.
+            <span className="font-semibold">Payment received. Thank you!</span>{" "}
+            {connected ? "Every paid feature is on now." : "Connect Cloudflare below to start recording."}
+          </p>
+        )}
+        {pending && (
+          <p role="status" className="mt-8 max-w-3xl rounded-control border border-line bg-surface px-4 py-3 text-sm">
+            <span className="font-semibold">We&rsquo;re confirming your payment.</span> This usually takes a few seconds. Refresh the page if this
+            message stays.
           </p>
         )}
 
@@ -196,6 +209,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
             folders={folders.map((f) => ({ id: f.id, name: f.name, videos: f.videos, people: [], href: `/dashboard/folders/${f.id}` }))}
             folderOptions={folders.map((f) => ({ id: f.id, name: f.name }))}
             foldersEnabled={canFolder}
+            foldersLocked={!features.folders}
             scope={null}
             space={workspace.space}
             watchLater={later?.filter((i) => i.space === workspace.space).map((i) => i.videoId)}
@@ -218,42 +232,6 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
   );
 }
 
-// Before purchase: the dashboard is visible, but nothing works yet. "Connect Cloudflare" leads to pricing.
-function LockedLibrary({ pending }: { pending: boolean }) {
-  return (
-    <main className="px-5 py-8 sm:px-10 sm:py-10">
-      <GuideBar />
-      <PageHeader title={pages.library.title} description={pages.library.description} />
-
-      {pending && (
-        <p role="status" className="mt-8 max-w-3xl rounded-control border border-line bg-surface px-4 py-3 text-sm">
-          <span className="font-semibold">We&rsquo;re confirming your payment.</span> This usually takes a few seconds. Refresh the page if this
-          message stays.
-        </p>
-      )}
-
-      <section aria-labelledby="setup" className="mt-10 max-w-3xl rounded-panel border border-line bg-surface p-6 sm:p-8">
-        <h2 id="setup" className="text-xl font-bold tracking-tight">
-          Get ready to record
-        </h2>
-        <p className="mt-1 text-muted">Three steps. You only do this once.</p>
-        <ol className="mt-6 divide-y divide-line">
-          <Step n={1} done={false} title="Connect your Cloudflare" body="Just one click: press Allow on Cloudflare and we handle the rest, setting up private storage for your videos in your own account. About 30 seconds.">
-            <a href="/pricing?locked" className={buttonClass("primary", "md")}>
-              Connect Cloudflare
-            </a>
-          </Step>
-          <Step n={2} done={false} title="Connect the Chrome extension" body={extensionBody}>
-            <Pill>After step 1</Pill>
-          </Step>
-          <Step n={3} done={false} title="Record your first video" body="Click the Showthrough icon, record, stop. The link is copied for you.">
-            <Pill>After step 2</Pill>
-          </Step>
-        </ol>
-      </section>
-    </main>
-  );
-}
 
 function ConnectInline() {
   return (

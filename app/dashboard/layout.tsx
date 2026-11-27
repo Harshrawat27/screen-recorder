@@ -7,7 +7,7 @@ import { Avatar } from '@/components/dashboard-ui';
 import { Logo } from '@/components/header';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { UpdateBox } from '@/components/update-box';
-import { getAccess } from '@/lib/billing';
+import { getAccess, ownAccess } from '@/lib/billing';
 import { WORKER_VERSION } from '@/lib/cloudflare';
 import { TeamSwitcher } from '@/components/team-ui';
 import { firstName, getTeamContext, teamChoices } from '@/lib/team';
@@ -27,10 +27,12 @@ export default async function DashboardLayout({
     getTeamContext(user),
   ]);
   const member = team.role === 'member';
-  const choices = await teamChoices(user, access.paid && !access.viaTeam);
+  // Everyone has their own (free or paid) space, plus any teams they're on.
+  const choices = await teamChoices(user, true);
   const switcher = <TeamSwitcher choices={choices} current={team.ownerId} />;
   // Only the admin can update the video backend (it needs their Cloudflare); members see a note.
-  const update = member ? null : availableUpdate(team.workspace, access);
+  // Free accounts don't see it (paid features need an upgrade, not an update).
+  const update = member ? null : availableUpdate(team.workspace, access.viaTeam ? await ownAccess(user) : access);
   const adminBehind =
     member && team.workspace && team.workspace.worker_version < WORKER_VERSION;
 

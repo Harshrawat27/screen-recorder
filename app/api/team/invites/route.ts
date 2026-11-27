@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { getAccess } from "@/lib/billing";
 import { requestOrigin } from "@/lib/origin";
 import { getSession } from "@/lib/session";
 import { createInvite, revokeInvite, teamsEnabled } from "@/lib/team";
 import { getWorkspace } from "@/lib/db";
+import { ownerFeatures } from "@/lib/plan";
+import { planRequired } from "@/lib/plan-response";
 
 // The admin's invites. POST { email }: an invite link for that person (the same link if they
 // were already invited). DELETE { token }: cancel an invite that hasn't been used.
@@ -13,9 +14,8 @@ export const dynamic = "force-dynamic";
 async function admin() {
   const session = await getSession();
   if (!session) return { error: NextResponse.json({ error: "Sign in first." }, { status: 401 }) };
-  // Invites are always to your own team, which needs your own purchase.
-  const access = await getAccess(session.user);
-  if (!access.paid || access.viaTeam) return { error: NextResponse.json({ error: "Buy Showthrough to invite your own team." }, { status: 402 }) };
+  // Invites are always to your own team: a paid feature of your own plan.
+  if (!(await ownerFeatures(session.user.id)).team) return { error: planRequired() };
   const ws = await getWorkspace(session.user.id);
   if (!ws) return { error: NextResponse.json({ error: "Connect Cloudflare first." }, { status: 409 }) };
   if (!teamsEnabled(ws)) return { error: NextResponse.json({ error: "Press Update in the sidebar to invite your team." }, { status: 409 }) };

@@ -13,7 +13,8 @@ async function owner() {
   const session = await getSession();
   if (!session) return null;
   // Photos live in the team's Cloudflare (each person's own file), so members can have one too.
-  const ws = (await getTeamContext(session.user)).workspace;
+  const team = await getTeamContext(session.user);
+  const ws = team.workspace;
   return avatarEnabled(ws) ? { userId: session.user.id, ws } : null;
 }
 

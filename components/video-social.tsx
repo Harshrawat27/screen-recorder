@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import "./video-social.css";
+import { openUpgrade } from "@/components/upgrade";
 
 // The share page. A top bar with the title, stats and every tool (Copy link, the owner's
 // buttons, download and sharing, Watch later); the video with its call-to-action buttons and
@@ -43,6 +44,8 @@ type Me = { id: string; name: string; image: string | null };
 type Social =
   | {
       enabled: true;
+      /** The sender is on the free plan: they see the panel, and using it offers the upgrade. */
+      locked?: boolean;
       isOwner: boolean;
       me: Me | null;
       views: number;
@@ -123,6 +126,7 @@ export function VideoSocial({
   title: initialTitle,
   createdAt: initialCreatedAt,
   commentsOn,
+  badge,
 }: {
   space: string;
   id: string;
@@ -135,6 +139,8 @@ export function VideoSocial({
   createdAt: number | null;
   /** Whether this video's backend has comments, known on the server so the layout never jumps. */
   commentsOn: boolean;
+  /** "Recorded with Showthrough": always on the free plan; paid senders can turn it off. */
+  badge: boolean;
 }) {
   const api = `/api/v/${space}/${id}/social`;
   const cta = useCta(space, id);
@@ -337,6 +343,7 @@ export function VideoSocial({
   }
 
   function react(emoji: string, atSec: number | null) {
+    if (social?.enabled && social.locked) return openUpgrade("comments");
     setBurst({ emoji, key: Date.now() });
     setSocial((s) =>
       s && s.enabled
@@ -385,6 +392,10 @@ export function VideoSocial({
 
   // Starting a comment pauses the video and pins the comment to that moment.
   function startDraft() {
+    if (social?.enabled && social.locked) {
+      (document.activeElement as HTMLElement | null)?.blur();
+      return openUpgrade("comments");
+    }
     if (draftAt !== null || draft) return;
     const video = videoRef.current;
     if (video && !video.paused) video.pause();
@@ -573,6 +584,7 @@ export function VideoSocial({
         <>
           <CtaButtons cta={cta} />
           {reactionBar}
+          {badge && (
           <p className="mt-6 text-sm text-muted">
             Recorded with{" "}
             <Link href="/" className="font-semibold text-text underline decoration-line-strong underline-offset-4 hover:decoration-brand">
@@ -580,6 +592,7 @@ export function VideoSocial({
             </Link>
             . Stored in the sender&rsquo;s own cloud.
           </p>
+          )}
         </>
       }
     />

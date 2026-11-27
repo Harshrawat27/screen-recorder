@@ -5,6 +5,8 @@ import { FOLDER_ID, foldersEnabled } from "@/lib/folders";
 import { clearSearchCache } from "@/lib/search";
 import { getSession } from "@/lib/session";
 import { TITLE_MAX, VIDEO_ID, deleteVideo, getVideo, moveVideo, renameVideo, setVisibility } from "@/lib/video-files";
+import { ownerFeatures } from "@/lib/plan";
+import { planRequired } from "@/lib/plan-response";
 
 // Rename (PATCH) or delete (DELETE) one of your own recordings.
 
@@ -29,7 +31,7 @@ async function ownWorkspace(params: Params["params"]) {
     if (!video) return { error: NextResponse.json({ error: "not_found" }, { status: 404 }) };
     if (!canManage(video, session.user.id, ws.owner_id)) return { error: NextResponse.json({ error: "not_yours" }, { status: 403 }) };
   }
-  return { ws, id };
+  return { ws, id, ownerId: team.ownerId };
 }
 
 export async function PATCH(request: Request, { params }: Params) {
@@ -39,6 +41,7 @@ export async function PATCH(request: Request, { params }: Params) {
 
   // Who can find it in the team's dashboard.
   if ("visibility" in input) {
+    if (!(await ownerFeatures(found.ownerId)).team) return planRequired();
     if (!teamsEnabled(found.ws)) return NextResponse.json({ error: "update_needed" }, { status: 409 });
     const visibility = input.visibility === "chosen" ? "chosen" : "team";
     const sharedWith = Array.isArray(input.sharedWith) ? input.sharedWith.filter((v): v is string => typeof v === "string").slice(0, 200) : [];
@@ -55,6 +58,7 @@ export async function PATCH(request: Request, { params }: Params) {
   if ("folderId" in input) {
     const folderId = input.folderId === null ? null : String(input.folderId);
     if (folderId !== null && !FOLDER_ID.test(folderId)) return NextResponse.json({ error: "bad_folder" }, { status: 400 });
+    if (!(await ownerFeatures(found.ownerId)).folders) return planRequired();
     if (!foldersEnabled(found.ws)) return NextResponse.json({ error: "update_needed" }, { status: 409 });
     try {
       const status = await moveVideo(found.ws, found.id, folderId);

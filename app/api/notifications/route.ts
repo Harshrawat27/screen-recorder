@@ -2,6 +2,7 @@ import { createHmac } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getTeamContext } from "@/lib/team";
 import { getSession } from "@/lib/session";
+import { ownerFeatures } from "@/lib/plan";
 
 // The dashboard bell. Notifications are stored in the team's own Cloudflare (D1, through its
 // Worker, from version 7); this route only passes the question along with the key we hold, for
@@ -47,6 +48,7 @@ export async function GET() {
   if (!ctx) return NextResponse.json({ error: "sign_in" }, { status: 401 });
   const { user, team, ws } = ctx;
   if (!ws) return NextResponse.json({ enabled: false, reason: "no_workspace", items: [], unread: 0 });
+  if (!(await ownerFeatures(team.ownerId)).notifications) return NextResponse.json({ enabled: false, reason: "plan", items: [], unread: 0 });
   if (ws.worker_version < NOTIFICATIONS_VERSION) {
     return NextResponse.json({ enabled: false, reason: team.role === "member" ? "admin_update" : "update", items: [], unread: 0 });
   }

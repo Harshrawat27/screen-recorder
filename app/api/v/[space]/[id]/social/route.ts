@@ -5,6 +5,8 @@ import { getMembership, getTeamContext, people } from "@/lib/team";
 import { managesVideo } from "@/lib/video-files";
 import { addPersonal, personalEnabled } from "@/lib/personal";
 import { getSession } from "@/lib/session";
+import { ownerFeatures } from "@/lib/plan";
+import { planRequired } from "@/lib/plan-response";
 
 // Comments, reactions and views for a shared video. They're stored in the video owner's own
 // Cloudflare (D1, through their Worker). This route is the only way in: it checks who is
@@ -106,12 +108,18 @@ export async function GET(_request: Request, { params }: Params) {
   // The admin, or (on a team) whoever recorded this video.
   const isOwner = await managesVideo(ws, id, session?.user.id);
   const me = session ? viewer(session.user) : null;
+  // Comments, reactions and views are a paid feature of the sender's plan. On the free plan,
+  // viewers don't see them at all; the sender still sees the panel (locked), and using it opens
+  // the upgrade popup.
+  const locked = !(await ownerFeatures(ws.owner_id)).comments;
+  if (locked && !isOwner) return NextResponse.json({ enabled: false, reason: "plan", isOwner, me });
   // Comments arrived with version 2 of the Worker; older ones need the owner to update.
   if (ws.worker_version < 2) return NextResponse.json({ enabled: false, reason: "update", isOwner, me });
   const res = await workerCall<WorkerSocial>(ws, id);
   if (!res.ok || !res.data) return NextResponse.json({ enabled: false, reason: "unreachable", isOwner, me });
   return NextResponse.json({
     enabled: true,
+    locked,
     isOwner,
     me,
     ...shape(res.data, me?.id ?? null, isOwner),
@@ -124,6 +132,9 @@ export async function POST(request: Request, { params }: Params) {
   if (!found) return NextResponse.json({ error: "not_found" }, { status: 404 });
   const { ws, id } = found;
   if (ws.worker_version < 2) return NextResponse.json({ error: "not_enabled" }, { status: 409 });
+  // Free plan: no comments, reactions, view counts or notifications on the sender's videos.
+  // (Recent still works for the viewer, below: that's the viewer's own plan.)
+  const paid = (await ownerFeatures(ws.owner_id)).comments;
   const input = (await request.json().catch(() => ({}))) as {
     action?: string;
     body?: string;
@@ -151,6 +162,7 @@ export async function POST(request: Request, { params }: Params) {
         ? viewer(session.user)
         : null;
     const about = { ownerId: ws.owner_id, viewer: teammate };
+    if (!paid) return NextResponse.json({ counted: false });
     if (await managesVideo(ws, id, session?.user.id)) {
       // Their plays don't count as views, but the admin watching a member's video still tells them.
       if (teammate && ws.worker_version >= 7) after(() => workerCall(ws, `${id}/views`, { method: "POST", body: { ...about, count: false } }).then(() => {}));
@@ -165,6 +177,7 @@ export async function POST(request: Request, { params }: Params) {
     return NextResponse.json({ counted: true, views: res.data?.views ?? null });
   }
 
+  if (!paid) return planRequired();
   // Everything else needs a signed-in account.
   if (!session) return NextResponse.json({ error: "sign_in" }, { status: 401 });
   const me = viewer(session.user);

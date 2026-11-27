@@ -8,6 +8,8 @@ import { avatarEnabled, getAvatar } from "@/lib/avatar";
 import { pages } from "@/lib/dashboard-pages";
 import { firstName, getTeamContext } from "@/lib/team";
 import { requireSession } from "@/lib/session";
+import { BadgeSetting } from "@/components/badge-setting";
+import { getHideBadge, lockOf, ownerAccess } from "@/lib/plan";
 
 export const metadata: Metadata = { title: pages.profile.title, robots: { index: false } };
 
@@ -50,6 +52,11 @@ export default async function ProfilePage() {
       </main>
     );
   }
+  // Hiding our name on share pages is paid; free accounts see the switch, and turning it off
+  // opens the upgrade popup.
+  const badge = member ? null : (
+    <BadgeSetting initialHidden={!lockOf(await ownerAccess(team.ownerId), "hideBadge") && (await getHideBadge(user.id).catch(() => false))} />
+  );
   if (!avatarEnabled(workspace)) {
     return (
       <main className="px-5 py-8 sm:px-10 sm:py-10">
@@ -62,6 +69,7 @@ export default async function ProfilePage() {
               : "Profile photos come with the latest version of your video backend. Press Update in the sidebar; it takes about 30 seconds and keeps everything as it is."
           }
         />
+        {badge}
         {disconnect}
       </main>
     );
@@ -72,6 +80,7 @@ export default async function ProfilePage() {
     <main className="px-5 py-8 sm:px-10 sm:py-10">
       {header}
       <AvatarEditor name={user.name} email={user.email} userId={user.id} googleImage={user.image ?? null} initial={avatar} />
+      {badge}
       {disconnect}
     </main>
   );

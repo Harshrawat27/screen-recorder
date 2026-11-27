@@ -30,6 +30,7 @@ import {
 import { VideoThumb } from '@/components/video-thumb';
 import { type TeamPerson, VisibilityDialog } from '@/components/visibility-dialog';
 import { site } from '@/lib/site';
+import { openUpgrade } from '@/components/upgrade';
 
 // The library: tabs, view toggle, folders and video cards.
 // Rename and delete are real (see app/api/videos). Folders, starring and archive are
@@ -48,6 +49,8 @@ export type LibraryVideo = {
   views: number;
   comments: number;
   reactions: number;
+  /** Whether to show views, comments and reactions (paid plan). */
+  stats?: boolean;
   folderId: string | null;
   /** Who recorded it (account id). */
   recordedBy?: string;
@@ -80,6 +83,8 @@ type VideoActions = {
   moved: (id: string, folderId: string | null) => void;
   folders: FolderOption[];
   foldersEnabled: boolean;
+  /** Folders are on the paid plan: "Add to folder" offers the upgrade. */
+  foldersLocked?: boolean;
   /** Videos in the viewer's Watch later; null when Watch later isn't available yet. */
   later: Set<string> | null;
   toggleLater: (id: string) => void;
@@ -376,7 +381,7 @@ function VideoMenu({
   const [dialog, setDialog] = useState<
     'rename' | 'delete' | 'move' | 'share' | null
   >(null);
-  const { folders, foldersEnabled, moved, later, toggleLater, team } =
+  const { folders, foldersEnabled, foldersLocked, moved, later, toggleLater, team } =
     useContext(Actions);
   // Teammates' videos can be watched, saved and downloaded, but only changed by whoever made them.
   const manage = video.canManage !== false;
@@ -405,7 +410,7 @@ function VideoMenu({
           {manage && (
             <DropdownMenuItem
               disabled={!foldersEnabled}
-              onClick={() => setDialog('move')}
+              onClick={() => (foldersLocked ? openUpgrade('folders') : setDialog('move'))}
             >
               Add to folder
             </DropdownMenuItem>
@@ -661,6 +666,7 @@ function DeleteDialog({
 }
 
 function Stats({ video }: { video: LibraryVideo }) {
+  if (video.stats === false) return null;
   return (
     <div className='tabular flex items-center gap-4 text-[13px] text-muted'>
       <span className='inline-flex items-center gap-1.5' title='Views'>
@@ -915,6 +921,7 @@ export function LibraryView({
   author,
   folderOptions = [],
   foldersEnabled = false,
+  foldersLocked = false,
   scope = null,
   space,
   watchLater,
@@ -929,6 +936,8 @@ export function LibraryView({
   /** Every folder, for "Add to folder". */
   folderOptions?: FolderOption[];
   foldersEnabled?: boolean;
+  /** On the free plan: folder buttons stay, and offer the upgrade. */
+  foldersLocked?: boolean;
   /** The folder being shown, or null for the library's top level. */
   scope?: string | null;
   /** This workspace's space, for Watch later. */
@@ -971,6 +980,7 @@ export function LibraryView({
     },
     folders: folderOptions,
     foldersEnabled,
+    foldersLocked,
     moved: (id, folderId) => {
       setMovedTo((prev) => ({ ...prev, [id]: folderId }));
       router.refresh();
@@ -1119,9 +1129,11 @@ export function LibraryView({
 /** The two buttons beside the page title. */
 export function LibraryActions({
   foldersEnabled = false,
+  foldersLocked = false,
   updateHint,
 }: {
   foldersEnabled?: boolean;
+  foldersLocked?: boolean;
   /** Hover text on features that need an update the viewer can't install (team members). */
   updateHint?: string;
 }) {
@@ -1129,6 +1141,7 @@ export function LibraryActions({
     <div className='flex items-center gap-2'>
       <NewFolderButton
         enabled={foldersEnabled}
+        locked={foldersLocked}
         updateHint={updateHint}
         className='inline-flex h-10 items-center gap-2 rounded-control border border-line bg-surface px-4 text-sm font-semibold transition-colors hover:border-line-strong hover:bg-sunken'
       />

@@ -3,11 +3,12 @@ import Link from "next/link";
 import { Avatar, PageHeader } from "@/components/dashboard-ui";
 import { LeaveTeamButton, RemoveMemberButton, TeamInvites } from "@/components/team-ui";
 import { buttonClass } from "@/components/ui";
-import { getAccess } from "@/lib/billing";
 import { listVideos } from "@/lib/cloudflare";
 import { pages } from "@/lib/dashboard-pages";
 import { requestOrigin } from "@/lib/origin";
 import { requireSession } from "@/lib/session";
+import { lockOf, ownerAccess } from "@/lib/plan";
+import { LockedFeature } from "@/components/locked-feature";
 import { canSee, recorderOf } from "@/lib/team-access";
 import { type Person, firstName, getTeamContext, listInvites, listMembers, teamPeople, teamsEnabled } from "@/lib/team";
 
@@ -59,7 +60,7 @@ function PersonRow({
 
 export default async function TeamPage() {
   const { user } = await requireSession();
-  const [team, access] = await Promise.all([getTeamContext(user), getAccess(user)]);
+  const team = await getTeamContext(user);
   const member = team.role === "member";
   const ws = team.workspace;
   const header = (
@@ -82,19 +83,10 @@ export default async function TeamPage() {
     </main>
   );
 
-  if (!member && !access.paid) {
-    return frame(
-      <Message
-        title="Buy Showthrough to add your team"
-        body="One purchase covers everyone you invite, with no per-seat pricing."
-        action={
-          <Link href="/pricing" className={buttonClass("primary", "md", "mt-6")}>
-            See pricing
-          </Link>
-        }
-      />,
-    );
-  }
+  // Teams are a paid feature. Admins on the free plan still see this page; inviting someone
+  // opens the upgrade popup. Members of a team whose admin is on the free plan get a note.
+  const lock = member ? lockOf(await ownerAccess(team.ownerId), "team") : null;
+  if (lock) return frame(<LockedFeature feature="team" lock={lock} member />);
   if (!ws) {
     return frame(
       member ? (

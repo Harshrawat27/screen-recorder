@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getTeamContext } from "@/lib/team";
 import { FOLDER_ID, FOLDER_NAME_MAX, deleteFolder, foldersEnabled, renameFolder } from "@/lib/folders";
 import { getSession } from "@/lib/session";
+import { ownerFeatures } from "@/lib/plan";
+import { planRequired } from "@/lib/plan-response";
 
 // PATCH { name }: rename a folder. DELETE: remove it; its videos go back to the library.
 
@@ -17,6 +19,7 @@ async function folder(params: Params["params"]) {
   // Renaming and deleting a team's shared folders is for the admin.
   const team = await getTeamContext(session.user);
   if (team.role === "member") return { error: NextResponse.json({ error: "admin_only" }, { status: 403 }) };
+  if (!(await ownerFeatures(team.ownerId)).folders) return { error: planRequired() };
   const ws = team.workspace;
   if (!ws || !foldersEnabled(ws)) return { error: NextResponse.json({ error: "update_needed" }, { status: 409 }) };
   return { ws, id };

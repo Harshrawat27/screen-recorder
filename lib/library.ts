@@ -26,7 +26,8 @@ function when(ms: number | null) {
  * Library cards for a viewer. `viewerId` decides what they may change (their own recordings, or
  * everything for the admin); leave it out for the admin's own pages.
  */
-export function toLibraryVideos(videos: VideoSummary[], ws: Workspace, viewerId: string = ws.owner_id): LibraryVideo[] {
+/** `stats`: show views, comments and reactions (the workspace owner's plan includes them). */
+export function toLibraryVideos(videos: VideoSummary[], ws: Workspace, viewerId: string = ws.owner_id, stats = true): LibraryVideo[] {
   return videos.map((video) => ({
     id: video.id,
     title: video.title || "Untitled recording",
@@ -40,6 +41,7 @@ export function toLibraryVideos(videos: VideoSummary[], ws: Workspace, viewerId:
     views: video.views ?? 0,
     comments: video.comments ?? 0,
     reactions: video.reactions ?? 0,
+    stats,
     folderId: video.folderId ?? null,
     recordedBy: recorderOf(video, ws.owner_id),
     canManage: canManage(video, viewerId, ws.owner_id),

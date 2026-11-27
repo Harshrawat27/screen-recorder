@@ -8,6 +8,7 @@ import { foldersEnabled, listFolders } from "@/lib/folders";
 import { toLibraryVideos, videosBy } from "@/lib/library";
 import { getPersonal, personalEnabled } from "@/lib/personal";
 import { requireSession } from "@/lib/session";
+import { ownerFeatures } from "@/lib/plan";
 import { firstName, getTeamContext, teamPeople, teamsEnabled } from "@/lib/team";
 
 export const metadata: Metadata = { title: "Team member", robots: { index: false } };
@@ -20,7 +21,8 @@ export default async function TeamMemberPage({ params }: { params: Promise<{ id:
   if (id === user.id) redirect("/dashboard");
   const team = await getTeamContext(user);
   const ws = team.workspace;
-  if (!ws || !teamsEnabled(ws)) notFound();
+  const features = await ownerFeatures(team.ownerId);
+  if (!ws || !teamsEnabled(ws) || !features.team) notFound();
   const people = await teamPeople(team.ownerId);
   const person = people.find((p) => p.id === id);
   if (!person) notFound();
@@ -61,6 +63,7 @@ export default async function TeamMemberPage({ params }: { params: Promise<{ id:
           folders={[]}
           folderOptions={folders.map((f) => ({ id: f.id, name: f.name }))}
           foldersEnabled={foldersEnabled(ws)}
+          foldersLocked={!features.folders}
           scope={null}
           space={ws.space}
           watchLater={later?.filter((i) => i.space === ws.space).map((i) => i.videoId)}

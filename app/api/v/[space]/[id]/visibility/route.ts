@@ -4,6 +4,7 @@ import { getSession } from "@/lib/session";
 import { teamPeople } from "@/lib/team";
 import { canManage } from "@/lib/team-access";
 import { getVideo, setVisibility } from "@/lib/video-files";
+import { ownerFeatures } from "@/lib/plan";
 
 // "Who can see this" on the video page. Found by the video's own space, not by the team the
 // viewer has open in the dashboard, so it works from any share link. Only the admin and whoever
@@ -21,7 +22,7 @@ async function load(params: Params["params"]) {
   const session = await getSession();
   if (!session) return null;
   const ws = await getWorkspaceBySpace(space);
-  if (!ws || ws.worker_version < 7) return null;
+  if (!ws || ws.worker_version < 7 || !(await ownerFeatures(ws.owner_id)).team) return null;
   const video = await getVideo(ws, id).catch(() => null);
   if (!video || !canManage(video, session.user.id, ws.owner_id)) return null;
   const people = await teamPeople(ws.owner_id);

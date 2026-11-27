@@ -12,6 +12,13 @@ export const WORKER_RELEASES: Record<number, string> = {
   7: "Team members: invite your team to record into your library, each with their own account. Live notifications: see who watched, commented on or reacted to your videos, the moment it happens.",
 };
 
+/**
+ * Who each version is for. "paid": only paid features (free accounts aren't shown the update box
+ * for it). "free": something every account gets (fixes, recording). "required": the site needs it,
+ * so everyone is asked. For now free accounts never see the box; this is here so that can be built.
+ */
+export const RELEASE_FOR: Record<number, "paid" | "free" | "required"> = { 2: "paid", 3: "paid", 4: "paid", 5: "paid", 6: "paid", 7: "paid" };
+
 /** Whether this account's purchase includes a given Worker version. */
 export function includesVersion(access: Access, version = WORKER_VERSION) {
   if (access.free) return true;

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { buttonClass } from "@/components/ui";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { openUpgrade } from "@/components/upgrade";
 
 // Folders: create, rename, delete, and add a video to one. Videos always stay in the library
 // too; a folder is just another place to find them. Everything is stored in the
@@ -126,14 +127,25 @@ function NameDialog({
 
 /** "New folder" beside the library title. */
 /** `updateHint`: why it's greyed out, shown on hover (team members can't update themselves). */
-export function NewFolderButton({ enabled, className, updateHint = "Press Update in the sidebar to use folders" }: { enabled: boolean; className: string; updateHint?: string }) {
+/** `locked`: folders are on the paid plan; pressing it offers the upgrade. */
+export function NewFolderButton({
+  enabled,
+  locked = false,
+  className,
+  updateHint = "Press Update in the sidebar to use folders",
+}: {
+  enabled: boolean;
+  locked?: boolean;
+  className: string;
+  updateHint?: string;
+}) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   return (
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => (locked ? openUpgrade("folders") : setOpen(true))}
         disabled={!enabled}
         title={enabled ? undefined : updateHint}
         className={`${className} disabled:cursor-not-allowed disabled:opacity-50`}

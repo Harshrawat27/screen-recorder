@@ -8,8 +8,6 @@ import { firstName, getMemberships, getTeamContext, listMembers, memberKey } fro
 import { getWorkspace } from "@/lib/db";
 import { requestOrigin } from "@/lib/origin";
 import { requireSession } from "@/lib/session";
-import { getAccess } from "@/lib/billing";
-import { redirect } from "next/navigation";
 
 export const metadata: Metadata = { title: "Connect the extension", robots: { index: false } };
 
@@ -17,7 +15,6 @@ export default async function ExtensionConnectPage({ searchParams }: { searchPar
   // Straight after joining a team: connect quietly, then carry on to the dashboard.
   const afterJoin = (await searchParams).after === "join";
   const { user } = await requireSession();
-  if (!(await getAccess(user)).paid) redirect("/pricing?locked");
   const team = await getTeamContext(user);
   const workspace = team.workspace;
   const origin = await requestOrigin();

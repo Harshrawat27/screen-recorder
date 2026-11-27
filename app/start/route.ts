@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { getAccess } from "@/lib/billing";
 import { getTeamContext } from "@/lib/team";
 import { getSession } from "@/lib/session";
 
@@ -13,7 +12,6 @@ export async function GET(request: Request) {
     NextResponse.redirect(new URL(path, request.url));
   const session = await getSession();
   if (!session) return to("/login?next=/start");
-  if (!(await getAccess(session.user)).paid) return to("/pricing");
   if (!(await getTeamContext(session.user)).workspace) return to("/dashboard");
   return to("/extension/connect");
 }

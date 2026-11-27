@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { VideoSocial } from "@/components/video-social";
 import { MEDIA_URL } from "@/lib/config";
 import { getWorkspaceBySpace } from "@/lib/db";
+import { ownerFeatures, showsBadge } from "@/lib/plan";
+import { getSession } from "@/lib/session";
+import { managesVideo } from "@/lib/video-files";
 
 const SPACE = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
 const ID = /^[a-z0-9]{8,64}$/;
@@ -48,6 +51,10 @@ export default async function SharedVideoPage({ params, searchParams }: PageProp
   // Read on the server so the page arrives with its title and its final layout: comments need
   // version 2 of the owner's Worker.
   const [meta, ws] = await Promise.all([readMeta(base), getWorkspaceBySpace(space).catch(() => null)]);
+  // What the sender's plan includes: comments (paid), and whether "Recorded with" shows.
+  const [features, badge] = ws ? await Promise.all([ownerFeatures(ws.owner_id), showsBadge(ws.owner_id)]) : [null, true];
+  // On the free plan only the sender sees the comments panel (locked: using it offers the upgrade).
+  const ownerOnFree = Boolean(ws && features && !features.comments && (await managesVideo(ws, id, (await getSession())?.user.id)));
 
   return (
     <div className="min-h-screen">
@@ -60,7 +67,8 @@ export default async function SharedVideoPage({ params, searchParams }: PageProp
         finishing={finishing}
         title={meta?.title || null}
         createdAt={typeof meta?.createdAt === "number" ? meta.createdAt : null}
-        commentsOn={Boolean(ws && ws.worker_version >= 2)}
+        commentsOn={Boolean(ws && ws.worker_version >= 2 && (features?.comments || ownerOnFree))}
+        badge={badge}
       />
     </div>
   );

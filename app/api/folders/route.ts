@@ -3,6 +3,8 @@ import { getTeamContext } from "@/lib/team";
 import { FOLDER_NAME_MAX, createFolder, foldersEnabled, listFolders } from "@/lib/folders";
 import { clearSearchCache } from "@/lib/search";
 import { getSession } from "@/lib/session";
+import { ownerFeatures } from "@/lib/plan";
+import { planRequired } from "@/lib/plan-response";
 
 // GET: your folders. POST { name }: create one.
 
@@ -12,8 +14,11 @@ async function workspace() {
   const session = await getSession();
   if (!session) return { error: NextResponse.json({ error: "sign_in" }, { status: 401 }) };
   // Folders are shared by the whole team: anyone in it can see them and create new ones.
-  const ws = (await getTeamContext(session.user)).workspace;
+  const team = await getTeamContext(session.user);
+  const ws = team.workspace;
   if (!ws) return { error: NextResponse.json({ error: "not_connected" }, { status: 409 }) };
+  if (!(await ownerFeatures(team.ownerId)).folders) return { error: planRequired() };
+
   if (!foldersEnabled(ws)) return { error: NextResponse.json({ error: "update_needed" }, { status: 409 }) };
   return { ws };
 }

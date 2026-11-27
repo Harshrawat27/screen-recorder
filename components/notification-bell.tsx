@@ -4,6 +4,7 @@ import { Popover } from '@base-ui/react/popover';
 import Link from 'next/link';
 import { useState, useSyncExternalStore } from 'react';
 import { Avatar } from '@/components/dashboard-ui';
+import { openUpgrade } from '@/components/upgrade';
 
 // The bell in the dashboard's top bar: new comments and reactions on your videos. They're kept
 // in your own Cloudflare. The list loads when the dashboard opens; after that a live connection
@@ -243,6 +244,8 @@ export function NotificationBell() {
 
   const onOpenChange = (next: boolean) => {
     if (next === open) return;
+    // Free plan: the bell is there, and pressing it offers the upgrade.
+    if (next && data?.reason === 'plan') return openUpgrade('notifications');
     setOpen(next);
     if (next) store.opened();
     else store.closed();

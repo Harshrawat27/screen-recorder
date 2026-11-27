@@ -98,7 +98,7 @@ function hasFreeAccess(email: string) {
 /** `viaTeam`: covered by the admin's purchase, as a member of their team. */
 export type Access = { paid: boolean; purchase: Purchase | null; free: boolean; viaTeam?: boolean };
 
-async function ownAccess(user: { id: string; email: string }): Promise<Access> {
+export async function ownAccess(user: { id: string; email: string }): Promise<Access> {
   if (hasFreeAccess(user.email)) return { paid: true, purchase: null, free: true };
   const purchase = await getPurchase(user.id);
   return { paid: Boolean(purchase), purchase, free: false };

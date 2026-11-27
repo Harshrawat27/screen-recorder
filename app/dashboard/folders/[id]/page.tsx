@@ -10,6 +10,7 @@ import { FOLDER_ID, foldersEnabled, listFolders } from "@/lib/folders";
 import { toLibraryVideos, visibleTo } from "@/lib/library";
 import { getPersonal, personalEnabled } from "@/lib/personal";
 import { requireSession } from "@/lib/session";
+import { ownerFeatures } from "@/lib/plan";
 
 export const metadata: Metadata = { title: "Folder", robots: { index: false } };
 
@@ -19,13 +20,14 @@ export default async function FolderPage({ params }: { params: Promise<{ id: str
   const { user } = await requireSession();
   const team = await getTeamContext(user);
   const workspace = team.workspace;
+  const features = await ownerFeatures(team.ownerId);
   if (!workspace || !foldersEnabled(workspace)) notFound();
 
   const [folders, library, later, people] = await Promise.all([
     listFolders(workspace),
     listVideos(workspace.worker_url, workspace.upload_key),
     personalEnabled(workspace) ? getPersonal(workspace, user.id, "watch_later") : null,
-    teamsEnabled(workspace) ? teamPeople(team.ownerId) : [],
+    features.team && teamsEnabled(workspace) ? teamPeople(team.ownerId) : [],
   ]);
   const folder = folders.find((f) => f.id === id);
   if (!folder) notFound();

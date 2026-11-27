@@ -16,7 +16,8 @@ const ID = /^[a-z0-9]{8,64}$/;
 async function viewer() {
   const session = await getSession();
   if (!session) return null;
-  const ws = (await getTeamContext(session.user)).workspace;
+  const team = await getTeamContext(session.user);
+  const ws = team.workspace;
   return personalEnabled(ws) ? { userId: session.user.id, ws } : null;
 }
 

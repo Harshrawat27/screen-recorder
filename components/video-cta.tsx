@@ -6,6 +6,7 @@ import { buttonClass } from "@/components/ui";
 import { VideoVisibility } from "@/components/video-visibility";
 import { useVideoDownload } from "@/components/video-download";
 import { type Cta, CTA_LABEL_MAX, CTA_MAX, cleanButtons, ctaHost } from "@/lib/cta";
+import { openUpgrade } from "@/components/upgrade";
 
 // The call-to-action buttons under a shared video, and the owner's tools for the video (shown
 // in the share page's top bar). Each button shows, in small type, the site it opens. The owner
@@ -36,17 +37,20 @@ function DownloadButton({ src }: { src: string }) {
   );
 }
 
-export type CtaState = { buttons: Cta[]; isOwner: boolean; loaded: boolean };
+export type CtaState = { buttons: Cta[]; isOwner: boolean; enabled: boolean; loaded: boolean };
 
 /** The video's buttons and whether the viewer may edit them, loaded once for the page. */
 export function useCta(space: string, id: string) {
-  const [state, setState] = useState<CtaState>({ buttons: [], isOwner: false, loaded: false });
+  const [state, setState] = useState<CtaState>({ buttons: [], isOwner: false, enabled: false, loaded: false });
   const api = `/api/v/${space}/${id}/cta`;
   useEffect(() => {
     let live = true;
     fetch(api)
       .then((res) => res.json())
-      .then((data: { buttons?: Cta[]; isOwner?: boolean }) => live && setState({ buttons: data.buttons ?? [], isOwner: Boolean(data.isOwner), loaded: true }))
+      .then(
+        (data: { buttons?: Cta[]; isOwner?: boolean; enabled?: boolean }) =>
+          live && setState({ buttons: data.buttons ?? [], isOwner: Boolean(data.isOwner), enabled: Boolean(data.enabled), loaded: true }),
+      )
       .catch(() => live && setState((s) => ({ ...s, loaded: true })));
     return () => {
       live = false;
@@ -124,7 +128,8 @@ export function CtaOwnerTools({ cta, space, id, src }: { cta: CtaHandle; space: 
 
   return (
     <>
-      <button type="button" onClick={edit} className={buttonClass("secondary", "sm")}>
+      {/* Buttons under videos are on the paid plan: on free, pressing it offers the upgrade. */}
+      <button type="button" onClick={cta.enabled ? edit : () => openUpgrade("cta")} className={buttonClass("secondary", "sm")}>
         {buttons.length ? (
           "Edit buttons"
         ) : (

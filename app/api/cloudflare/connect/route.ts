@@ -4,7 +4,7 @@ import { SetupError, WORKER_VERSION, exchangeCode, provision, waitForWorker } fr
 import { getWorkspace, saveWorkspace } from "@/lib/db";
 import { includesVersion } from "@/lib/updates";
 import { getSession } from "@/lib/session";
-import { getAccess } from "@/lib/billing";
+import { getAccess, ownAccess } from "@/lib/billing";
 
 export const maxDuration = 60;
 
@@ -14,18 +14,15 @@ export async function POST(request: Request) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
   const access = await getAccess(session.user);
-  // This connects their own Cloudflare, so it needs their own purchase: being on someone
-  // else's team covers recording into that team only.
-  if (access.viaTeam) {
-    return NextResponse.json({ error: "Buy Showthrough to connect your own Cloudflare. Your team's admin manages the team's." }, { status: 402 });
-  }
-  if (!access.paid) {
-    return NextResponse.json({ error: "Buy Showthrough to connect Cloudflare." }, { status: 402 });
-  }
-  // Already set up: connecting again updates the video backend to the latest version, which
-  // must be included in their purchase. (Early buyers: always.)
+  // Anyone can connect their own Cloudflare: the free plan records and shares there, and paid
+  // features are locked by plan on this website (lib/plan.ts), not in the Worker. Being on
+  // someone's team doesn't change what your own Cloudflare gets: that's your own plan.
+  const own = access.viaTeam ? await ownAccess(session.user) : access;
+  // Already set up: connecting again updates the video backend to the latest version. Free
+  // accounts may (it adds nothing they can use without upgrading); paid ones need the update to
+  // be included in their purchase (early buyers: always).
   const current = await getWorkspace(session.user.id);
-  if (current && current.worker_version < WORKER_VERSION && !includesVersion(access)) {
+  if (current && current.worker_version < WORKER_VERSION && own.paid && !includesVersion(own)) {
     return NextResponse.json({ error: "This update isn't included in your purchase." }, { status: 402 });
   }
 
