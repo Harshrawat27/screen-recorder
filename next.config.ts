@@ -26,13 +26,11 @@ const nextConfig: NextConfig = {
           { key: "Permissions-Policy", value: "geolocation=(), usb=()" },
         ],
       },
-      // Embeds: any website may show these in an <iframe>, and they may play full screen.
+      // Embeds may play full screen. (No frame-ancestors rule: any page may show them, including a
+      // local .html file, which "frame-ancestors *" would refuse.)
       {
         source: "/embed/:path*",
-        headers: [
-          { key: "Content-Security-Policy", value: "frame-ancestors *" },
-          { key: "Permissions-Policy", value: "geolocation=(), usb=(), fullscreen=*, autoplay=*, picture-in-picture=*" },
-        ],
+        headers: [{ key: "Permissions-Policy", value: "geolocation=(), usb=(), fullscreen=*, autoplay=*, picture-in-picture=*" }],
       },
     ];
   },

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { VideoSocial } from "@/components/video-social";
+import { FrameToEmbed } from "@/components/frame-to-embed";
 import { MEDIA_URL } from "@/lib/config";
 import { site } from "@/lib/site";
 import { getWorkspaceBySpace } from "@/lib/db";
@@ -62,6 +63,7 @@ export default async function SharedVideoPage({ params, searchParams }: PageProp
 
   return (
     <div className="min-h-screen">
+      <FrameToEmbed space={space} id={id} />
       <VideoSocial
         space={space}
         id={id}
