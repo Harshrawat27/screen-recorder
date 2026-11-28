@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { languageAlternates } from "@/lib/i18n";
 import { LegalPage } from "@/components/legal-page";
 import { site } from "@/lib/site";
 
@@ -6,12 +7,12 @@ export const metadata: Metadata = {
   title: "Terms",
   description:
     "The terms for using Showthrough: your one-time license, which updates are included, refunds within 7 days, and your responsibilities for the videos you record.",
-  alternates: { canonical: "/terms" },
+  alternates: { canonical: "/terms", languages: languageAlternates("/terms") },
 };
 
 export default function Terms() {
   return (
-    <LegalPage title="Terms" updated="21 November 2026">
+    <LegalPage title="Terms" updated="28 November 2026">
       <p>
         These terms cover {site.name}: the website, the dashboard, the share pages and the Chrome extension. By using{" "}
         {site.name} you agree to them. They are short on purpose.
@@ -23,8 +24,9 @@ export default function Terms() {
         {site.name} for as long as the product exists.
       </p>
       <p>
-        Purchases made at the early prices ($29, and the $39 Black Friday price until 27 November 2026, 11:59 PM Pacific time) include every future update. Purchases made after
-        that include the version available at the time of purchase, without future updates; that version keeps working.
+        Purchases made at $29 or $39 (including the Black Friday sale and the current $39 lifetime price) include every future update. If the price
+        changes later, for example to $79 when the Mac app launches, purchases made at the new price may include only the version available at the
+        time of purchase, as stated on the pricing page at that time; that version keeps working.
       </p>
 
       <h2>Payments and refunds</h2>

@@ -1,18 +1,14 @@
-import { EARLY_ENDS, LAUNCH_DATE, earlyOpen } from "@/lib/pricing";
 import { site } from "@/lib/site";
 
 // Structured data shared by the homepage and /pricing, so both describe the same product
-// and the same offer. The offer follows the price ladder in lib/pricing.ts on its own:
-// on sale until the Black Friday deadline, then a pre-order until the launch.
+// and the same offer: the lifetime price in lib/pricing.ts, on sale now.
 
 export const orgId = `${site.url}/#organization`;
 export const appId = `${site.url}/#software`;
 
 export function offerSchema(price: number) {
   const base = { "@type": "Offer", price: String(price), priceCurrency: "USD", url: `${site.url}/pricing` };
-  return earlyOpen()
-    ? { ...base, availability: "https://schema.org/InStock", priceValidUntil: EARLY_ENDS.slice(0, 10) }
-    : { ...base, availability: "https://schema.org/PreOrder", availabilityStarts: LAUNCH_DATE };
+  return { ...base, availability: "https://schema.org/InStock" };
 }
 
 export function softwareAppSchema(price: number) {

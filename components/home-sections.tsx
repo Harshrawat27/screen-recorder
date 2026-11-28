@@ -3,8 +3,12 @@ import { CookieSettingsLink } from "@/components/analytics";
 import { Savings } from "@/components/savings";
 import { CheckIcon, LogoMark, buttonClass } from "@/components/ui";
 import { site } from "@/lib/site";
-import { Countdown } from "@/components/countdown";
-import { EARLY_ENDS, EARLY_ENDS_LABEL, LAUNCH_PRICE, SALE_PRICE, type TierState, earlyOpen, tierStates } from "@/lib/pricing";
+import { LIFETIME_PRICE, MAC_PRICE, type TierState, shownTiers } from "@/lib/pricing";
+import { type Locale, fill, localeNames, localePath, locales } from "@/lib/i18n";
+import { homeCopy } from "@/lib/i18n/home";
+import type { HomeCopy } from "@/lib/i18n/home-types";
+
+type V = HomeCopy["features"]["v"];
 
 // Home page sections below the hero. Black and white for now; every color comes from theme tokens.
 
@@ -25,12 +29,14 @@ function Tile({
   title,
   body,
   soon = false,
+  soonLabel = "Coming soon",
   className = "",
   children,
 }: {
   title: string;
   body: string;
   soon?: boolean;
+  soonLabel?: string;
   className?: string;
   children: React.ReactNode;
 }) {
@@ -45,7 +51,7 @@ function Tile({
               href="/roadmap"
               className="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold text-muted transition-colors hover:border-line-strong hover:text-text"
             >
-              Coming soon
+              {soonLabel}
             </Link>
           )}
         </div>
@@ -55,13 +61,13 @@ function Tile({
   );
 }
 
-function StopVisual() {
+function StopVisual({ v }: { v: V }) {
   return (
     <div className="flex h-full min-h-[260px] flex-col items-center justify-center gap-5">
       <div className="flex items-center gap-3 rounded-full border border-line bg-surface py-2 pl-4 pr-2 shadow-pop">
         <span className="size-2.5 rounded-full bg-text" />
         <span className="tabular font-semibold">4:12</span>
-        <span className="btn-primary rounded-full bg-text px-4 py-1.5 text-sm font-semibold text-canvas">Stop</span>
+        <span className="btn-primary rounded-full bg-text px-4 py-1.5 text-sm font-semibold text-canvas">{v.stop}</span>
       </div>
       <svg viewBox="0 0 20 40" className="h-8 w-4 text-faint" fill="none" aria-hidden>
         <path d="M10 2v34M4 30l6 6 6-6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -71,46 +77,46 @@ function StopVisual() {
           <span className="grid size-5 place-items-center rounded-full bg-text text-canvas">
             <CheckIcon className="size-3" />
           </span>
-          Link copied
+          {v.linkCopied}
         </div>
         <p className="mt-2 truncate rounded-lg bg-sunken px-3 py-2 font-mono text-[13px] text-muted">showthrough.com/v/st-fdce/199b07a9</p>
-        <p className="mt-2 text-xs text-faint">Paste it in Slack, email or a ticket</p>
+        <p className="mt-2 text-xs text-faint">{v.pasteIt}</p>
       </div>
     </div>
   );
 }
 
-function CloudVisual() {
+function CloudVisual({ v }: { v: V }) {
   return (
     <div className="flex h-full min-h-[200px] items-center justify-center gap-3">
       <div className="rounded-2xl border border-line bg-surface px-4 py-3 text-center text-sm shadow-pop">
-        <p className="font-semibold">Your browser</p>
-        <p className="text-xs text-muted">records</p>
+        <p className="font-semibold">{v.yourBrowser}</p>
+        <p className="text-xs text-muted">{v.records}</p>
       </div>
       <svg viewBox="0 0 60 12" className="h-3 w-14 text-faint" fill="none" aria-hidden>
         <path d="M2 6h52M48 1l6 5-6 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       <div className="rounded-2xl border-2 border-text bg-surface px-4 py-3 text-center text-sm shadow-pop">
-        <p className="font-semibold">Your Cloudflare</p>
-        <p className="text-xs text-muted">stores</p>
+        <p className="font-semibold">{v.yourCloudflare}</p>
+        <p className="text-xs text-muted">{v.stores}</p>
       </div>
     </div>
   );
 }
 
-function PriceVisual({ price }: { price: number }) {
+function PriceVisual({ price, v }: { price: number; v: V }) {
   return (
     <div className="flex h-full min-h-[200px] flex-col justify-center gap-4">
       <div>
         <div className="flex justify-between text-sm">
-          <span className="text-muted">Loom, 10 people, 1 year</span>
+          <span className="text-muted">{v.loomTeam}</span>
           <span className="tabular font-semibold text-muted">${(10 * site.loom.perUserPerMonth * 12).toLocaleString("en-US")}</span>
         </div>
         <div className="mt-2 h-2.5 rounded-full bg-line-strong" />
       </div>
       <div>
         <div className="flex justify-between text-sm">
-          <span className="font-semibold">{site.name}, forever</span>
+          <span className="font-semibold">{fill(v.oursForever, { name: site.name })}</span>
           <span className="tabular font-semibold">${price}</span>
         </div>
         <div className="mt-2 h-2.5 rounded-full bg-line">
@@ -141,7 +147,7 @@ function BubbleVisual() {
   );
 }
 
-function ViewerVisual() {
+function ViewerVisual({ v }: { v: V }) {
   return (
     <div className="flex h-full min-h-[200px] items-center justify-center">
       <div className="w-full max-w-[280px] overflow-hidden rounded-xl border border-line bg-surface shadow-pop">
@@ -155,21 +161,21 @@ function ViewerVisual() {
           </span>
         </div>
         <div className="flex items-center justify-between px-3 py-2.5 text-xs">
-          <span className="font-semibold">No sign-up to watch</span>
-          <span className="text-muted">Any browser</span>
+          <span className="font-semibold">{v.noSignup}</span>
+          <span className="text-muted">{v.anyBrowser}</span>
         </div>
       </div>
     </div>
   );
 }
 
-function SafeVisual() {
+function SafeVisual({ v }: { v: V }) {
   return (
     <div className="flex h-full min-h-[200px] flex-col justify-center gap-2.5">
       {[
-        { label: "Saved on this computer", done: true },
-        { label: "Uploading as you talk", done: true },
-        { label: "Wi-Fi dropped? Picks up where it left off", done: false },
+        { label: v.safeRows[0], done: true },
+        { label: v.safeRows[1], done: true },
+        { label: v.safeRows[2], done: false },
       ].map((row) => (
         <div key={row.label} className="flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-3 text-sm">
           <span className={`grid size-5 shrink-0 place-items-center rounded-full ${row.done ? "bg-text text-canvas" : "border-2 border-line-strong"}`}>
@@ -182,17 +188,17 @@ function SafeVisual() {
   );
 }
 
-function TeamVisual() {
+function TeamVisual({ v }: { v: V }) {
   const people = [
-    { name: "You", note: "Admin" },
+    { name: v.you, note: v.admin },
     { name: "Priya", note: "priya@studio.com" },
     { name: "Marco", note: "marco@studio.com" },
   ];
   return (
     <div className="flex h-full min-h-[200px] flex-col justify-center gap-3">
       <div className="flex items-center gap-2">
-        <span className="min-w-0 flex-1 truncate rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-faint">teammate@company.com</span>
-        <span className="btn-primary shrink-0 rounded-xl bg-text px-3.5 py-2.5 text-sm font-semibold text-canvas">Invite</span>
+        <span className="min-w-0 flex-1 truncate rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-faint">{v.teammate}</span>
+        <span className="btn-primary shrink-0 rounded-xl bg-text px-3.5 py-2.5 text-sm font-semibold text-canvas">{v.invite}</span>
       </div>
       <div className="rounded-xl border border-line bg-surface px-3.5 shadow-pop">
         {people.map((p, i) => (
@@ -207,14 +213,14 @@ function TeamVisual() {
   );
 }
 
-function DownloadVisual() {
+function DownloadVisual({ v }: { v: V }) {
   return (
     <div className="flex h-full min-h-[200px] items-center justify-center">
       <div className="flex w-full max-w-[300px] items-center gap-3 rounded-2xl border border-line bg-surface p-3.5 shadow-pop">
         <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-sunken text-[11px] font-bold tracking-wide text-muted">MP4</span>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold">client-walkthrough.mp4</p>
-          <p className="text-xs text-muted">Saved to Downloads</p>
+          <p className="text-xs text-muted">{v.savedTo}</p>
         </div>
         <span className="grid size-8 shrink-0 place-items-center rounded-full bg-text text-canvas">
           <svg viewBox="0 0 16 16" className="size-4" fill="none" aria-hidden>
@@ -226,10 +232,10 @@ function DownloadVisual() {
   );
 }
 
-function TalkVisual() {
+function TalkVisual({ v }: { v: V }) {
   const comments = [
-    { who: "Priya", at: "1:12", text: "Can we keep the old button color here?" },
-    { who: "Marco", at: "2:40", text: "This flow is so much clearer. Ship it." },
+    { who: "Priya", at: "1:12", text: v.comment1 },
+    { who: "Marco", at: "2:40", text: v.comment2 },
   ];
   const reactions = [
     { emoji: "👍", count: 6, mine: true },
@@ -261,71 +267,46 @@ function TalkVisual() {
             {r.count}
           </span>
         ))}
-        <span className="tabular ml-auto text-sm text-muted">128 views</span>
+        <span className="tabular ml-auto text-sm text-muted">{v.views}</span>
       </div>
     </div>
   );
 }
 
-export function Features({ price }: { price: number }) {
+export function Features({ price, locale = "en" }: { price: number; locale?: Locale }) {
+  const t = homeCopy(locale).features;
+  const v = t.v;
   return (
     <section id="how" className="mx-auto max-w-6xl scroll-mt-6 px-5 py-24 sm:px-8 sm:py-32">
-      <SectionIntro
-        title="Everything Loom does for async video. None of the monthly bill."
-        body="Record from Chrome, share a link, get back to work. Free forever, with no limit on videos or length: your recordings sit in your own Cloudflare account, connected in one click while we handle the rest."
-      />
+      <SectionIntro title={t.title} body={t.body} />
 
       <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Tile
-          className="md:col-span-2 lg:row-span-2"
-          title="The link is ready the moment you stop"
-          body="Your video uploads while you talk. Press stop and the link is already on your clipboard, playing for whoever opens it."
-        >
-          <StopVisual />
+        <Tile className="md:col-span-2 lg:row-span-2" title={t.stop.title} body={t.stop.body}>
+          <StopVisual v={v} />
         </Tile>
-        <Tile
-          className="md:col-span-2"
-          title="Your videos live in your Cloudflare"
-          body="Connecting your free Cloudflare is one click: press Allow and we handle the rest, setting up private storage for you. Your recordings never sit on our servers."
-        >
-          <CloudVisual />
+        <Tile className="md:col-span-2" title={t.cloud.title} body={t.cloud.body}>
+          <CloudVisual v={v} />
         </Tile>
-        <Tile title="Free, then pay once" body={`Record and share free, forever. $${price} once adds comments, teams and more for everyone. No seats, no subscription.`}>
-          <PriceVisual price={price} />
+        <Tile title={t.price.title} body={fill(t.price.body, { price })}>
+          <PriceVisual price={price} v={v} />
         </Tile>
-        <Tile title="Camera bubble" body="Put your face in the corner so it feels like a conversation.">
+        <Tile title={t.bubble.title} body={t.bubble.body}>
           <BubbleVisual />
         </Tile>
-        <Tile className="md:col-span-1 lg:col-span-2" title="Anyone can watch" body="Viewers just open the link. It plays in any browser, on any phone, without an account.">
-          <ViewerVisual />
+        <Tile className="md:col-span-1 lg:col-span-2" title={t.viewer.title} body={t.viewer.body}>
+          <ViewerVisual v={v} />
         </Tile>
-        <Tile
-          className="md:col-span-1 lg:col-span-2"
-          title="Recordings don't get lost"
-          body="Every recording is saved on your computer until it has fully uploaded, so a closed tab or a dropped connection doesn't cost you a take."
-        >
-          <SafeVisual />
+        <Tile className="md:col-span-1 lg:col-span-2" title={t.safe.title} body={t.safe.body}>
+          <SafeVisual v={v} />
         </Tile>
-        <Tile
-          className="md:col-span-1 lg:col-span-2"
-          title="Bring your whole team"
-          body="Invite people by email into one shared library. Everyone records with their own account, and removing someone locks them out right away."
-        >
-          <TeamVisual />
+        <Tile className="md:col-span-1 lg:col-span-2" title={t.team.title} body={t.team.body}>
+          <TeamVisual v={v} />
         </Tile>
-        <Tile
-          className="md:col-span-1 lg:col-span-2"
-          title="Download any video"
-          body="Save any of your recordings as a regular MP4 file, to keep, edit or upload anywhere."
-        >
-          <DownloadVisual />
+        <Tile className="md:col-span-1 lg:col-span-2" title={t.download.title} body={t.download.body}>
+          <DownloadVisual v={v} />
         </Tile>
-        <Tile
-          className="md:col-span-2 lg:col-span-4"
-          title="Comments and reactions"
-          body="Viewers sign in with Google to comment at the exact moment in the video or react with an emoji, and you see the views on every video. All stored in your Cloudflare, like your videos."
-        >
-          <TalkVisual />
+        <Tile className="md:col-span-2 lg:col-span-4" title={t.talk.title} body={t.talk.body}>
+          <TalkVisual v={v} />
         </Tile>
       </div>
     </section>
@@ -334,48 +315,27 @@ export function Features({ price }: { price: number }) {
 
 /* ---------- Pricing ---------- */
 
-// The free plan, forever (lib/plan.ts has the exact split).
-const freeIncludes = [
-  "Unlimited recordings, no time limit on any video",
-  "Screen, camera bubble (or your photo), mic and tab audio",
-  "A share link the moment you stop, playable by anyone",
-  "Search, Recent and Watch later",
-  "Download any recording as an MP4",
-  "Videos stored in your own Cloudflare, connected in one click",
-];
+type P = HomeCopy["pricing"];
 
-const included: { key: string; text: React.ReactNode }[] = [
-  { key: "free", text: "Everything in Free" },
-  { key: "social", text: "Comments, reactions and view counts on every video" },
-  { key: "notify", text: "Live notifications when someone watches, comments or reacts" },
-  { key: "team", text: "Invite your whole team, no per-seat pricing" },
-  { key: "folders", text: "Folders, and buttons under your videos (book a call, open a doc)" },
-  { key: "badge", text: "Share pages without “Recorded with Showthrough”" },
-  {
-    key: "updates",
-    text: (
-      <span>
-        Free{" "}
-        <Link href="/roadmap" className="underline underline-offset-2 hover:text-muted">
-          future updates
-        </Link>{" "}
-        for life if you buy by {EARLY_ENDS_LABEL}. After that, each update costs a small fee.
-      </span>
-    ),
-  },
-];
-
-const badge: Record<TierState, string> = {
-  open: "On sale now",
-  closed: "Closed",
-  ended: "Ended",
-  later: "Next",
-};
-
-function TierCard({ name, price, updates, note, state }: { name: string; price: number; updates: string; note: string; state: TierState }) {
+function TierCard({
+  name,
+  price,
+  updates,
+  note,
+  state,
+  hasUpdates,
+  t,
+}: {
+  name: string;
+  price: number;
+  updates: string;
+  note: string;
+  state: TierState;
+  hasUpdates: boolean;
+  t: P;
+}) {
   const open = state === "open";
   const gone = state === "closed" || state === "ended";
-  const hasUpdates = updates.startsWith("Lifetime");
   return (
     <div
       aria-disabled={!open || undefined}
@@ -388,7 +348,7 @@ function TierCard({ name, price, updates, note, state }: { name: string; price: 
         <span
           className={`rounded-full px-3 py-1 text-xs font-semibold ${open ? "bg-text text-canvas" : "border border-line text-muted"}`}
         >
-          {badge[state]}
+          {t.badges[state]}
         </span>
       </div>
       <p className="mt-6 flex items-baseline gap-2">
@@ -398,12 +358,7 @@ function TierCard({ name, price, updates, note, state }: { name: string; price: 
         >
           ${price}
         </span>
-        {open && price < LAUNCH_PRICE && (
-          <span className="text-2xl text-muted line-through" aria-label={`instead of $${LAUNCH_PRICE}`}>
-            ${LAUNCH_PRICE}
-          </span>
-        )}
-        <span className="text-muted">once</span>
+        <span className="text-muted">{t.once}</span>
       </p>
       <p className="mt-2 text-muted">{note}</p>
 
@@ -422,20 +377,14 @@ function TierCard({ name, price, updates, note, state }: { name: string; price: 
         {updates}
       </p>
 
-      {open && (
-        <p className="mt-6 rounded-control bg-sunken px-3.5 py-2.5 text-sm font-semibold">
-          <Countdown to={EARLY_ENDS} label={EARLY_ENDS_LABEL} />
-        </p>
-      )}
-
       <div className="mt-auto pt-8">
         {open ? (
           <a href="/buy" className={buttonClass("primary", "lg", "w-full rounded-full")}>
-            Buy for ${price}
+            {fill(t.buy, { price })}
           </a>
         ) : (
           <span className={buttonClass("secondary", "lg", "w-full cursor-default rounded-full opacity-70")}>
-            {state === "later" ? "Not on sale yet" : state === "ended" ? "Ended" : "Closed"}
+            {state === "later" ? t.laterButton : t.badges[state]}
           </span>
         )}
       </div>
@@ -443,14 +392,21 @@ function TierCard({ name, price, updates, note, state }: { name: string; price: 
   );
 }
 
-export function Pricing({ price, notice }: { sold?: number; price: number; notice?: React.ReactNode }) {
+function Check() {
+  return (
+    <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-text text-canvas">
+      <CheckIcon className="size-3" />
+    </span>
+  );
+}
+
+export function Pricing({ price, notice, locale = "en" }: { sold?: number; price: number; notice?: React.ReactNode; locale?: Locale }) {
+  const t = homeCopy(locale).pricing;
+  const s = homeCopy(locale).savings;
   return (
     <section id="pricing" className="scroll-mt-6 border-y border-line bg-surface/60">
       <div className="mx-auto max-w-6xl px-5 py-24 sm:px-8 sm:py-32">
-        <SectionIntro
-          title="Free forever. Pay once for more."
-          body="Loom charges every person, every month. Showthrough is free to record and share, with no limits. Pay once to add comments, notifications and your whole team."
-        />
+        <SectionIntro title={t.title} body={t.body} />
 
         {notice && <div className="mx-auto mt-10 max-w-3xl">{notice}</div>}
 
@@ -458,60 +414,88 @@ export function Pricing({ price, notice }: { sold?: number; price: number; notic
         <div className="mt-14 grid gap-8 rounded-[24px] border-2 border-text bg-surface p-7 shadow-pop sm:p-9 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
           <div>
             <div className="flex items-center gap-3">
-              <p className="text-lg font-semibold">Free</p>
-              <span className="rounded-full bg-text px-3 py-1 text-xs font-semibold text-canvas">Forever</span>
+              <p className="text-lg font-semibold">{t.free}</p>
+              <span className="rounded-full bg-text px-3 py-1 text-xs font-semibold text-canvas">{t.forever}</span>
             </div>
             <p className="mt-6 flex items-baseline gap-2">
               <span className="font-display text-[64px] leading-none" style={{ letterSpacing: "-0.03em" }}>
                 $0
               </span>
-              <span className="text-muted">no card needed</span>
+              <span className="text-muted">{t.noCard}</span>
             </p>
-            <p className="mt-2 text-muted">No video limit, no time limit. Your Cloudflare keeps the videos, so we never have to cap them.</p>
+            <p className="mt-2 text-muted">{t.freeNote}</p>
             <a href="/start" className={buttonClass("primary", "lg", "mt-8 w-full rounded-full sm:w-auto sm:px-10")}>
-              Start free
+              {t.startFree}
             </a>
           </div>
           <ul className="grid gap-3.5 text-[15px] sm:grid-cols-2">
-            {freeIncludes.map((text) => (
+            {t.freeIncludes.map((text) => (
               <li key={text} className="flex items-start gap-3">
-                <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-text text-canvas">
-                  <CheckIcon className="size-3" />
-                </span>
+                <Check />
                 {text}
               </li>
             ))}
           </ul>
         </div>
 
-        <p className="mt-14 text-center text-lg font-semibold">Paid: pay once, keep it for life</p>
+        <p className="mt-14 text-center text-lg font-semibold">{t.paidHeading}</p>
 
-        <div className="mt-6 grid gap-5 lg:grid-cols-3">
-          {tierStates().map(({ tier, state }) => (
-            <TierCard key={tier.id} name={tier.name} price={tier.price} updates={tier.updates} note={tier.note} state={state} />
-          ))}
+        <div className="mx-auto mt-6 grid max-w-4xl gap-5 md:grid-cols-2">
+          {shownTiers().map(({ tier, state }) => {
+            const copy = tier.id === "launch" ? t.tiers.launch : t.tiers.first100;
+            return (
+              <TierCard
+                key={tier.id}
+                name={copy.name}
+                price={tier.price}
+                updates={copy.updates}
+                note={copy.note}
+                state={state}
+                hasUpdates={tier.id !== "launch"}
+                t={t}
+              />
+            );
+          })}
         </div>
 
         <div className="mt-6 grid items-start gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="rounded-[24px] border border-line bg-surface p-7 sm:p-9">
-            <p className="text-lg font-semibold">Paid includes</p>
+            <p className="text-lg font-semibold">{t.paidIncludes}</p>
             <ul className="mt-6 space-y-3.5 text-[15px]">
-              {included.map((item) => (
-                <li key={item.key} className="flex items-start gap-3">
-                  <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-text text-canvas">
-                    <CheckIcon className="size-3" />
-                  </span>
-                  {item.text}
+              {t.included.map((text) => (
+                <li key={text} className="flex items-start gap-3">
+                  <Check />
+                  {text}
                 </li>
               ))}
+              <li className="flex items-start gap-3">
+                <Check />
+                <span>
+                  {t.updatesBefore}
+                  <Link href="/roadmap" className="underline underline-offset-2 hover:text-muted">
+                    {t.updatesLink}
+                  </Link>
+                  {fill(t.updatesAfter, { price: LIFETIME_PRICE, mac: MAC_PRICE })}
+                </span>
+              </li>
             </ul>
-            <p className="mt-7 border-t border-line pt-6 text-sm leading-relaxed text-faint">
-              Free forever, or a one-time payment: never a subscription. Cloudflare storage is free up to 10 GB; beyond that,
-              Cloudflare bills your account about $0.015 per GB a month.
-            </p>
+            <p className="mt-7 border-t border-line pt-6 text-sm leading-relaxed text-faint">{t.footnote}</p>
           </div>
 
-          <Savings price={price} />
+          <Savings
+            price={price}
+            labels={{
+              people: s.people,
+              loomOver: fill(s.loomOver, { years: 3 }),
+              oursEver: fill(s.oursEver, { name: site.name }),
+              keeps: s.keeps,
+              note: fill(s.note, {
+                plan: site.loom.planName,
+                price: `$${site.loom.perUserPerMonth}`,
+                checked: site.loom.checked,
+              }),
+            }}
+          />
         </div>
       </div>
     </section>
@@ -593,8 +577,8 @@ const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
     ),
   },
   {
-    q: "Why are there three prices?",
-    a: `Our first buyers paid $29. Our Black Friday price is $${SALE_PRICE} until ${EARLY_ENDS_LABEL}, and both include every future update, forever. After that the price is $99, and that purchase covers the version you buy without future updates. Whatever you buy keeps working.`,
+    q: "Will the price go up?",
+    a: `Yes. Right now the paid plan is $${LIFETIME_PRICE} once, with every future update included, forever. Once the Mac app is live, the price goes to $${MAC_PRICE}, and future updates may be paid for people who buy then. Buy at $${LIFETIME_PRICE} now and you keep every update. Whatever you buy keeps working.`,
   },
   {
     q: "Is it a subscription?",
@@ -636,17 +620,19 @@ const faqs: { q: string; a: React.ReactNode; text?: string }[] = [
 /** The FAQ as plain text, for FAQPage structured data. */
 export const faqText = faqs.map((item) => ({ q: item.q, a: item.text ?? String(item.a) }));
 
-export function Faq() {
+export function Faq({ locale = "en" }: { locale?: Locale } = {}) {
+  const copy = homeCopy(locale);
+  const items: { q: string; a: React.ReactNode }[] = locale === "en" ? faqs : copy.faqs;
   return (
     <section id="faq" className="mx-auto max-w-6xl scroll-mt-6 px-5 py-24 sm:px-8 sm:py-32">
       <div className="mx-auto max-w-3xl">
         <div className="text-center">
           <h2 className="text-[40px] leading-[1.04] sm:text-[56px]" style={{ letterSpacing: "-0.025em" }}>
-            Questions, answered.
+            {copy.faqTitle}
           </h2>
         </div>
         <div className="mt-12 divide-y divide-line border-y border-line">
-          {faqs.map((item) => (
+          {items.map((item) => (
             <details key={item.q} className="faq group py-5">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-semibold">
                 {item.q}
@@ -667,32 +653,29 @@ export function Faq() {
 
 /* ---------- Final call to action ---------- */
 
-export function FinalCta({ price }: { price: number }) {
-  const onSale = earlyOpen();
+export function FinalCta({ price, locale = "en" }: { price: number; locale?: Locale }) {
+  const t = homeCopy(locale).cta;
   return (
     <section className="px-2 pb-2 sm:px-3 sm:pb-3">
       <div className="mx-auto flex max-w-[1400px] flex-col items-center rounded-[28px] bg-text px-6 py-20 text-center text-canvas sm:rounded-[32px] sm:py-28">
         <h2 className="max-w-[16ch] text-[44px] leading-[1.02] sm:text-[72px]" style={{ letterSpacing: "-0.03em" }}>
-          Record free. No limits.
+          {t.title}
         </h2>
         <p className="mt-6 max-w-[50ch] text-lg leading-relaxed opacity-75">
-          Unlimited videos, no time limit, free forever.{" "}
-          {onSale
-            ? `Want comments, notifications and your team? Black Friday: $${SALE_PRICE} once, not $${LAUNCH_PRICE}, with every future update, until ${EARLY_ENDS_LABEL}.`
-            : `Want comments, notifications and your team? Pay once, from $${LAUNCH_PRICE}.`}
+          {fill(t.body, { price })}
         </p>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           <a
             href="/start"
             className="inline-flex h-13 items-center rounded-full bg-canvas px-8 text-base font-semibold text-text shadow-pop transition-opacity hover:opacity-90"
           >
-            Start free
+            {t.start}
           </a>
           <a
-            href={onSale ? "/buy" : "/pricing"}
+            href="/buy"
             className="inline-flex h-13 items-center rounded-full border border-canvas/30 px-8 text-base font-semibold text-canvas transition-colors hover:bg-canvas/10"
           >
-            {onSale ? `Buy for $${price}` : "See pricing"}
+            {fill(t.buy, { price })}
           </a>
         </div>
       </div>
@@ -702,70 +685,97 @@ export function FinalCta({ price }: { price: number }) {
 
 /* ---------- Footer ---------- */
 
-const footerColumns = [
-  {
-    title: "Product",
-    links: [
-      { href: "/#how", label: "Features" },
-      { href: "/pricing", label: "Pricing" },
-      { href: "/#faq", label: "FAQ" },
-      { href: "/roadmap", label: "Roadmap" },
-      { href: "/blog", label: "Blog" },
-      { href: "/guide", label: "Setup guide" },
-      { href: "/guide/team", label: "Team guide" },
-      { href: "/support", label: "Support" },
-    ],
-  },
-  {
-    title: "Compare",
-    links: [
-      { href: "/alternatives/loom", label: "Loom alternative" },
-      { href: "/alternatives/cap", label: "Cap alternative" },
-      { href: "/alternatives/vidyard", label: "Vidyard alternative" },
-      { href: "/alternatives/screencastify", label: "Screencastify alternative" },
-      { href: "/alternatives", label: "All alternatives" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { href: "/about", label: "About" },
-      { href: "/privacy", label: "Privacy" },
-      { href: "/terms", label: "Terms" },
-    ],
-  },
-];
+function footerColumns(locale: Locale) {
+  const t = homeCopy(locale).footer;
+  const home = locale === "en" ? "" : localePath(locale, "/");
+  return [
+    {
+      key: "product",
+      title: t.product,
+      links: [
+        { href: `${home}/#how`, label: t.features },
+        { href: locale === "en" ? "/pricing" : `${home}/#pricing`, label: t.pricing },
+        { href: `${home}/#faq`, label: t.faq },
+        { href: "/roadmap", label: t.roadmap },
+        { href: "/blog", label: t.blog },
+        { href: localePath(locale, "/guide"), label: t.guide },
+        { href: "/guide/team", label: t.teamGuide },
+        { href: "/support", label: t.support },
+      ],
+    },
+    {
+      key: "compare",
+      title: t.compare,
+      links: [
+        { href: "/alternatives/loom", label: t.loomAlt },
+        { href: "/alternatives/cap", label: t.capAlt },
+        { href: "/alternatives/vidyard", label: t.vidyardAlt },
+        { href: "/alternatives/screencastify", label: t.screencastifyAlt },
+        { href: "/alternatives", label: t.allAlts },
+      ],
+    },
+    {
+      key: "company",
+      title: t.company,
+      links: [
+        { href: "/about", label: t.about },
+        { href: localePath(locale, "/privacy"), label: t.privacy },
+        { href: localePath(locale, "/terms"), label: t.terms },
+      ],
+    },
+  ];
+}
 
-export function SiteFooter() {
+/**
+ * The footer. `path` is the current page's path without a language prefix ("/", "/privacy"…)
+ * when the page exists in every language, so the language links go to the same page.
+ */
+export function SiteFooter({ locale = "en", path }: { locale?: Locale; path?: string } = {}) {
+  const t = homeCopy(locale).footer;
   return (
     <footer className="mx-auto max-w-6xl px-5 pb-10 pt-16 sm:px-8">
       <div className="flex flex-col justify-between gap-10 sm:flex-row">
         <div className="max-w-xs">
-          <Link href="/" className="flex items-center gap-2.5 font-semibold">
+          <Link href={localePath(locale, "/")} className="flex items-center gap-2.5 font-semibold">
             <LogoMark className="size-7" />
             <span className="text-[17px]">{site.name}</span>
           </Link>
-          <p className="mt-3 text-sm leading-relaxed text-muted">Screen recording you own. Free forever, videos live in your Cloudflare, and paid is a one-time payment.</p>
+          <p className="mt-3 text-sm leading-relaxed text-muted">{t.tagline}</p>
         </div>
         <nav aria-label="Footer" className="grid grid-cols-2 gap-x-12 gap-y-8 text-sm sm:grid-cols-3">
-          {footerColumns.map((column) => (
-            <div key={column.title} className="flex flex-col gap-3">
+          {footerColumns(locale).map((column) => (
+            <div key={column.key} className="flex flex-col gap-3">
               <p className="font-semibold">{column.title}</p>
               {column.links.map((link) => (
                 <Link key={link.href} href={link.href} className="text-muted hover:text-text">
                   {link.label}
                 </Link>
               ))}
-              {column.title === "Company" && <CookieSettingsLink className="text-left text-muted hover:text-text" />}
+              {column.key === "company" && <CookieSettingsLink className="text-left text-muted hover:text-text" />}
             </div>
           ))}
         </nav>
       </div>
-      <div className="mt-14 flex flex-col justify-between gap-2 border-t border-line pt-6 text-sm text-faint sm:flex-row">
+      <nav aria-label={t.language} className="mt-12 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+        <span className="font-semibold">{t.language}</span>
+        {locales.map((l) => (
+          <Link
+            key={l}
+            href={localePath(l, path ?? "/")}
+            hrefLang={l}
+            lang={l}
+            aria-current={l === locale ? "true" : undefined}
+            className={l === locale ? "font-semibold text-text" : "text-muted hover:text-text"}
+          >
+            {localeNames[l]}
+          </Link>
+        ))}
+      </nav>
+      <div className="mt-6 flex flex-col justify-between gap-2 border-t border-line pt-6 text-sm text-faint sm:flex-row">
         <p>
           © {new Date().getFullYear()} {site.name}
         </p>
-        <p>Not affiliated with Cloudflare or any product we compare against.</p>
+        <p>{t.notAffiliated}</p>
       </div>
     </footer>
   );

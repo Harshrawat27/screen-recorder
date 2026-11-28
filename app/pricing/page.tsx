@@ -28,7 +28,7 @@ export default async function PricingPage({ searchParams }: PageProps<"/pricing"
   let notice: React.ReactNode = null;
   if (params.locked !== undefined) notice = <Notice>That&rsquo;s part of the paid plan. Recording and sharing stay free forever.</Notice>;
   if (params.error !== undefined) notice = <Notice>We couldn&rsquo;t open checkout just now. Try again in a minute.</Notice>;
-  if (params.soldout !== undefined) notice = <Notice>Early pricing has ended. Sales open again on 30 November.</Notice>;
+  if (params.soldout !== undefined) notice = <Notice>That price has ended. Here&rsquo;s the current price.</Notice>;
 
   return (
     <>

@@ -3,75 +3,72 @@ import { SayNoHeadline } from '@/components/say-no';
 import { SendToComputer } from '@/components/send-to-computer';
 import { SiteNav } from '@/components/site-nav';
 import { buttonClass } from '@/components/ui';
-import { EARLY_ENDS_SHORT, LAUNCH_LABEL, LAUNCH_PRICE, earlyOpen } from '@/lib/pricing';
+import { type Locale, fill, localePath } from '@/lib/i18n';
+import { homeCopy } from '@/lib/i18n/home';
+import { MAC_PRICE } from '@/lib/pricing';
 import './sky-hero.css';
 
-export function SkyHero({ price }: { price: number }) {
-  const onSale = earlyOpen();
+export function SkyHero({ price, locale = 'en' }: { price: number; locale?: Locale }) {
+  const t = homeCopy(locale).hero;
+  const pageUrl = `https://www.showthrough.com${locale === 'en' ? '/' : localePath(locale, '/')}`;
   return (
     <>
-    <SiteNav />
+    <SiteNav locale={locale} />
     <section className='sky relative isolate overflow-hidden'>
 
       <div className='relative mx-auto flex max-w-5xl flex-col items-center px-5 pt-8 text-center sm:px-8 sm:pt-28'>
         {/* Phones only: about half of visitors arrive on a phone, where Showthrough can't record. */}
-        <SendToComputer />
-        <p className='sky-glass inline-flex items-center gap-2 whitespace-nowrap rounded-full py-1.5 pl-3.5 pr-4 text-[13px] font-medium sm:text-sm'>
+        <SendToComputer url={pageUrl} note={t.phoneNote} send={t.phoneSend} copiedLabel={t.phoneCopied} shareText={t.phoneShareText} />
+        <p
+          className={
+            locale === 'en'
+              ? 'sky-glass inline-flex items-center gap-2 whitespace-nowrap rounded-full py-1.5 pl-3.5 pr-4 text-[13px] font-medium sm:text-sm'
+              : 'sky-glass inline-flex max-w-full flex-wrap items-center justify-center gap-x-2 gap-y-0.5 rounded-full py-1.5 pl-3.5 pr-4 text-[13px] font-medium sm:flex-nowrap sm:whitespace-nowrap sm:text-sm'
+          }
+        >
           <span className='live-dot' aria-hidden />
-          {onSale ? (
-            <>
-              <span className='font-semibold'>Black Friday sale:</span>
-              <span className='text-muted line-through'>${LAUNCH_PRICE}</span>
-              <span className='font-semibold'>${price}</span>
-              <span>
-                <span className='hidden sm:inline'>with lifetime updates, </span>until {EARLY_ENDS_SHORT}
-              </span>
-            </>
-          ) : (
-            `Back on sale ${LAUNCH_LABEL}`
-          )}
+          <span className='font-semibold'>{t.pillLabel}</span>
+          <span className='font-semibold'>{fill(t.pillPrice, { price })}</span>
+          <span>
+            <span className='hidden sm:inline'>{t.pillUpdates}</span>
+            <span className='text-muted'>{fill(t.pillAfterMac, { mac: MAC_PRICE })}</span>
+          </span>
         </p>
 
-        <SayNoHeadline />
+        <SayNoHeadline items={t.items} h1={t.h1} line1={t.line1} sayNo={t.sayNo} long={locale !== 'en'} />
 
-        <p className='mt-7 max-w-[52ch] text-lg leading-relaxed text-muted'>
-          Record your screen, camera and voice in one click from Chrome. Every
-          video lives in your own Cloudflare, not on our servers. Connecting it
-          is one click too; we handle the rest.
-        </p>
+        <p className='mt-7 max-w-[52ch] text-lg leading-relaxed text-muted'>{t.sub}</p>
 
         <div className='mt-9 flex flex-wrap justify-center gap-3'>
           {/* /start signs in with Google if needed, then goes to the dashboard to connect Cloudflare. */}
           <a href='/start' className={buttonClass('primary', 'lg', 'rounded-full px-7')}>
-            Start free
+            {t.startFree}
           </a>
           <WatchDemoButton className={buttonClass('secondary', 'lg', 'rounded-full px-7')}>
-            See how it works
+            {t.seeHow}
           </WatchDemoButton>
         </div>
-        <p className='mt-5 text-sm font-medium text-text'>
-          Free forever. Unlimited videos, no time limit, no card needed.
-        </p>
+        <p className='mt-5 text-sm font-medium text-text'>{t.freeLine}</p>
         <p className='mt-1.5 text-sm text-muted'>
-          Comments, teams and more:{' '}
-          <a href={onSale ? '/buy' : '/pricing'} className='underline underline-offset-2 hover:text-text'>
-            {onSale ? `$${price} once` : 'pay once'}
+          {t.paidLead}{' '}
+          <a href='/buy' className='underline underline-offset-2 hover:text-text'>
+            {fill(t.paidLink, { price })}
           </a>
-          , no subscription ·{' '}
+          {t.noSub}
           <a
             href='https://appsumo.com/pl/hielhvnokZ/'
             target='_blank'
             rel='noopener noreferrer'
             className='font-semibold text-text underline underline-offset-2 hover:text-muted'
           >
-            Want to purchase from AppSumo?
+            {t.appsumo}
           </a>
         </p>
         {/* The most asked question on this page (most-opened FAQ). */}
         <p className='mt-1.5 text-sm text-muted'>
-          Uses a free Cloudflare account, first 10 GB free ·{' '}
+          {t.cfLine}
           <a href='#faq' className='underline underline-offset-2 hover:text-text'>
-            Will Cloudflare charge me?
+            {t.cfFaq}
           </a>
         </p>
       </div>

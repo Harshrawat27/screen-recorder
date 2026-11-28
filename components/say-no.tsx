@@ -13,12 +13,32 @@ const ITEMS = [
   { no: 'pointless stand-ups', yes: 'Share a link the moment you stop' },
 ];
 
+type Props = {
+  items?: { no: string; yes: string }[];
+  h1?: string;
+  line1?: string;
+  sayNo?: string;
+  /** Other languages run longer than English, so the headline is set smaller and may wrap. */
+  long?: boolean;
+};
+
 const CYCLE_MS = 3400;
+
+// The second line and its hidden measuring copy must share these sizes.
+const SECOND = 'font-display font-medium';
+const SECOND_EN = 'text-[25px] sm:text-[60px]';
+const SECOND_LONG = 'text-[18px] sm:text-[34px] lg:text-[48px]';
 
 // useLayoutEffect warns on the server; this runs it only in the browser.
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
-export function SayNoHeadline() {
+export function SayNoHeadline({
+  items = ITEMS,
+  h1 = 'Screen recording you own. Say no to video limits, time limits, monthly bills and pointless stand-ups.',
+  line1 = 'Screen recording you own.',
+  sayNo = 'Say no to',
+  long = false,
+}: Props = {}) {
   const [index, setIndex] = useState(0);
   const [widths, setWidths] = useState<number[] | null>(null);
   const measure = useRef<HTMLSpanElement>(null);
@@ -36,33 +56,34 @@ export function SayNoHeadline() {
   }, []);
 
   useEffect(() => {
-    const timer = window.setInterval(() => setIndex((i) => (i + 1) % ITEMS.length), CYCLE_MS);
+    const timer = window.setInterval(() => setIndex((i) => (i + 1) % items.length), CYCLE_MS);
     return () => window.clearInterval(timer);
   }, []);
 
-  const item = ITEMS[index];
+  const item = items[index];
 
   return (
     <>
       {/* What search engines and screen readers get: the whole idea, once. */}
-      <h1 className='sr-only'>
-        Screen recording you own. Say no to video limits, time limits, monthly
-        bills and pointless stand-ups.
-      </h1>
+      <h1 className='sr-only'>{h1}</h1>
 
       <div aria-hidden className='say-no mt-7 flex flex-col items-center'>
         <p
-          className='font-display font-medium text-[48px] leading-[1] sm:text-[64px] md:whitespace-nowrap md:text-[64px] lg:text-[84px]'
+          className={
+            long
+              ? 'font-display font-medium text-[34px] leading-[1.1] sm:text-[52px] lg:text-[64px]'
+              : 'font-display font-medium text-[48px] leading-[1] sm:text-[64px] md:whitespace-nowrap md:text-[64px] lg:text-[84px]'
+          }
           style={{ letterSpacing: '-0.03em' }}
         >
-          Screen recording you own.
+          {line1}
         </p>
 
         <p
-          className='mt-2 whitespace-nowrap font-display font-medium text-[25px] leading-[1.15] text-muted sm:mt-3 sm:text-[60px]'
+          className={`${SECOND} mt-2 whitespace-nowrap leading-[1.15] text-muted sm:mt-3 ${long ? SECOND_LONG : SECOND_EN}`}
           style={{ letterSpacing: '-0.025em' }}
         >
-          Say no to{' '}
+          {sayNo}{' '}
           <span
             className='say-no-slot'
             style={{ width: widths ? widths[index] : undefined }}
@@ -92,10 +113,10 @@ export function SayNoHeadline() {
         {/* Hidden copies, only for measuring each phrase's width. */}
         <span
           ref={measure}
-          className='pointer-events-none invisible absolute whitespace-nowrap font-display font-medium text-[25px] sm:text-[60px]'
+          className={`${SECOND} pointer-events-none invisible absolute whitespace-nowrap ${long ? SECOND_LONG : SECOND_EN}`}
           style={{ letterSpacing: '-0.025em' }}
         >
-          {ITEMS.map((x) => (
+          {items.map((x) => (
             <span key={x.no} className='inline-block'>
               {x.no}
             </span>

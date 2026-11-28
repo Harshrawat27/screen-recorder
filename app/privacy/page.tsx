@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { languageAlternates } from "@/lib/i18n";
 import { LegalPage } from "@/components/legal-page";
 import { site } from "@/lib/site";
 
@@ -6,7 +7,7 @@ export const metadata: Metadata = {
   title: "Privacy",
   description:
     "What Showthrough collects, what it never sees, and how analytics and cookies work. Your videos stay in your own Cloudflare account, not on our servers.",
-  alternates: { canonical: "/privacy" },
+  alternates: { canonical: "/privacy", languages: languageAlternates("/privacy") },
 };
 
 export default function Privacy() {

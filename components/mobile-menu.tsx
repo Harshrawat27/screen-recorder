@@ -6,7 +6,21 @@ import { useEffect, useState } from "react";
 import { DemoDialog } from "@/components/hero-video";
 
 // The navbar's links on screens narrower than `lg`, behind a menu button.
-export function MobileMenu({ links, chromeStoreUrl }: { links: { href: string; label: string; demo?: boolean }[]; chromeStoreUrl: string }) {
+type Labels = { chrome: string; signIn: string; open: string; close: string };
+const defaultLabels: Labels = { chrome: "Chrome extension", signIn: "Sign in", open: "Open menu", close: "Close menu" };
+
+export function MobileMenu({
+  links,
+  chromeStoreUrl,
+  labels = defaultLabels,
+  signInUntilMd = false,
+}: {
+  links: { href: string; label: string; demo?: boolean }[];
+  chromeStoreUrl: string;
+  labels?: Labels;
+  /** Show Sign in here up to `md` (other languages hide the navbar's Sign in until then). */
+  signInUntilMd?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const [demo, setDemo] = useState(false);
   const pathname = usePathname();
@@ -24,7 +38,7 @@ export function MobileMenu({ links, chromeStoreUrl }: { links: { href: string; l
     <div className="lg:hidden">
       <button
         type="button"
-        aria-label={open ? "Close menu" : "Open menu"}
+        aria-label={open ? labels.close : labels.open}
         aria-expanded={open}
         aria-controls="mobile-menu"
         onClick={() => setOpen((v) => !v)}
@@ -67,12 +81,12 @@ export function MobileMenu({ links, chromeStoreUrl }: { links: { href: string; l
             ))}
             <li>
               <a href={chromeStoreUrl} target="_blank" rel="noopener noreferrer" className="block rounded-2xl px-4 py-3 hover:bg-sunken">
-                Chrome extension
+                {labels.chrome}
               </a>
             </li>
-            <li className="sm:hidden">
+            <li className={signInUntilMd ? "md:hidden" : "sm:hidden"}>
               <Link href="/login" onClick={() => setOpen(false)} className="block rounded-2xl px-4 py-3 hover:bg-sunken">
-                Sign in
+                {labels.signIn}
               </Link>
             </li>
           </ul>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { languageAlternates } from "@/lib/i18n";
 import { Faq, Features, FinalCta, Pricing, SiteFooter, faqText } from "@/components/home-sections";
 import { JsonLd } from "@/components/json-ld";
 import { SkyHero } from "@/components/sky-hero";
@@ -10,7 +11,7 @@ import { site } from "@/lib/site";
 // Rendered on every request so the prices and the countdown are always current.
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { alternates: { canonical: "/" } };
+export const metadata: Metadata = { alternates: { canonical: "/", languages: languageAlternates("/") } };
 
 export default async function Home() {
   const { sold, price } = await currentOffer();
