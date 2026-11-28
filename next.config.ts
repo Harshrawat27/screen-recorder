@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 import { POSTHOG_ASSETS, POSTHOG_HOST } from "./lib/analytics";
 
 const nextConfig: NextConfig = {
+  // Two root layouts (English, and /de /fr /ja) need one 404 page for unmatched URLs: app/global-not-found.tsx.
+  experimental: { globalNotFound: true },
   // "Add a card for R2" became part of "Turn on R2".
   // PostHog through our own domain (/ingest), so ad blockers don't hide visits.
   async rewrites() {

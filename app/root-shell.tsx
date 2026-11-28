@@ -7,6 +7,7 @@ import './globals.css';
 import { VercelAnalytics } from '@/components/vercel-analytics';
 import { Analytics as ProductAnalytics } from '@/components/analytics';
 import { IndiaOffer } from '@/components/india-offer';
+import type { Locale } from '@/lib/i18n';
 // Self-hosted (SIL Open Font License) so builds work offline.
 // Newsreader for headings, Instrument Sans for body text and buttons.
 const newsreader = localFont({
@@ -22,7 +23,7 @@ const instrumentSans = localFont({
   display: 'swap',
 });
 
-export const metadata: Metadata = {
+export const baseMetadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
     default: `${site.name}: Chrome screen recorder you pay for once`,
@@ -69,10 +70,14 @@ export const viewport: Viewport = {
 // neither, the system setting decides.
 const themeScript = `(function(){var t=null;try{t=localStorage.getItem('theme')}catch(e){}if(t!=='light'&&t!=='dark'){var m=document.cookie.match(/(?:^|; )theme=(light|dark)/);t=m?m[1]:null}if(t!=='light'&&t!=='dark'){try{t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}catch(e){t='light'}}document.documentElement.dataset.theme=t})()`;
 
-export default function RootLayout({ children }: LayoutProps<'/'>) {
+/**
+ * The <html> document shared by both root layouts: app/(main) for English and app/[locale] for
+ * the other languages. Two root layouts so each page's <html lang> matches its language.
+ */
+export function RootShell({ lang, locale = 'en', children }: { lang: string; locale?: Locale; children: React.ReactNode }) {
   return (
     <html
-      lang='en'
+      lang={lang}
       className={`${newsreader.variable} ${instrumentSans.variable}`}
       suppressHydrationWarning
     >
@@ -89,7 +94,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         <UpgradeHost />
         {children}
         <VercelAnalytics />
-        <ProductAnalytics />
+        <ProductAnalytics locale={locale} />
         <IndiaOffer />
       </body>
     </html>

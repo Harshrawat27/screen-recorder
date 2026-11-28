@@ -4,6 +4,8 @@ import { Dialog } from '@base-ui/react/dialog';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import 'plyr/dist/plyr.css';
+import { type Locale } from '@/lib/i18n';
+import { ui } from '@/lib/i18n/ui';
 
 // The home page's demo: a still from the video with a play button. Clicking it opens the video
 // in a large popup, playing straight away with the sound off (the player's speaker turns it
@@ -60,15 +62,16 @@ function DemoPlayer() {
 }
 
 /** The demo in a large popup, playing with the sound off. Used by every "Watch the demo" / "See how it works". */
-export function DemoDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function DemoDialog({ open, onOpenChange, locale = 'en' }: { open: boolean; onOpenChange: (open: boolean) => void; locale?: Locale }) {
+  const t = ui[locale].demo;
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Backdrop className='fixed inset-0 z-50 bg-black/80 backdrop-blur-sm transition-opacity duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0' />
         <Dialog.Popup className='fixed left-1/2 top-1/2 z-50 w-[min(94vw,1200px,calc((100dvh-7rem)*16/9))] -translate-x-1/2 -translate-y-1/2 outline-none transition duration-200 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0'>
-          <Dialog.Title className='sr-only'>Showthrough demo</Dialog.Title>
+          <Dialog.Title className='sr-only'>{t.title}</Dialog.Title>
           <Dialog.Close
-            aria-label='Close the video'
+            aria-label={t.close}
             className='absolute -top-12 right-0 grid size-10 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20'
           >
             <svg viewBox='0 0 24 24' aria-hidden className='size-5'>
@@ -83,19 +86,20 @@ export function DemoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
 }
 
 /** A button that opens the demo popup ("See how it works" across the site). */
-export function WatchDemoButton({ className, children }: { className?: string; children: React.ReactNode }) {
+export function WatchDemoButton({ className, children, locale = 'en' }: { className?: string; children: React.ReactNode; locale?: Locale }) {
   const [open, setOpen] = useState(false);
   return (
     <>
       <button type='button' onClick={() => setOpen(true)} className={className}>
         {children}
       </button>
-      <DemoDialog open={open} onOpenChange={setOpen} />
+      <DemoDialog open={open} onOpenChange={setOpen} locale={locale} />
     </>
   );
 }
 
-export function HeroVideo() {
+export function HeroVideo({ locale = 'en' }: { locale?: Locale } = {}) {
+  const t = ui[locale].demo;
   const [open, setOpen] = useState(false);
 
   return (
@@ -103,7 +107,7 @@ export function HeroVideo() {
       <button
         type='button'
         onClick={() => setOpen(true)}
-        aria-label='Play the Showthrough demo video'
+        aria-label={t.play}
         className='group relative mx-auto block w-full max-w-5xl cursor-pointer overflow-hidden rounded-[22px] border border-line bg-surface shadow-[0_40px_90px_-40px_rgb(0_0_0/0.45)] outline-none focus-visible:ring-2 focus-visible:ring-text'
       >
         <Image
@@ -112,7 +116,7 @@ export function HeroVideo() {
           height={900}
           priority
           sizes='(min-width: 1100px) 1024px, 100vw'
-          alt='Showthrough recording a page in Chrome, with the camera bubble and the recording controls'
+          alt={t.poster}
           className='block h-auto w-full transition-transform duration-500 ease-out group-hover:scale-[1.015]'
         />
         <span className='absolute inset-0 grid place-items-center'>
@@ -122,13 +126,13 @@ export function HeroVideo() {
             </span>
             {/* On phones just the round play button, so the picture stays visible. */}
             <span className='hidden text-base font-semibold sm:inline'>
-              Watch the demo <span className='font-normal text-white/60'>· 46 sec</span>
+              {t.watch} <span className='font-normal text-white/60'>· {t.length}{t.english ? ` · ${t.english}` : ''}</span>
             </span>
           </span>
         </span>
       </button>
 
-      <DemoDialog open={open} onOpenChange={setOpen} />
+      <DemoDialog open={open} onOpenChange={setOpen} locale={locale} />
     </>
   );
 }

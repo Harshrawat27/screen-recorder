@@ -118,6 +118,8 @@ export const de: HomeCopy = {
       "Videos in deinem eigenen Cloudflare, verbunden mit einem Klick",
     ],
     paidHeading: "Bezahlt: einmal zahlen, für immer behalten",
+    macEverything: "Alles aus Lifetime",
+    savingsTitle: "So viel spart dein Team im Vergleich zu Loom",
     tiers: {
       first100: { name: "Lifetime", updates: "Updates für immer", note: "Eine Zahlung. Alle künftigen Updates inklusive." },
       launch: { name: "Nach der Mac-App", updates: "Künftige Updates evtl. kostenpflichtig", note: "Der Preis, sobald die Mac-App da ist." },

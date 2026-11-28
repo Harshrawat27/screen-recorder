@@ -28,3 +28,20 @@ export function languageAlternates(path: string) {
 export function fill(text: string, values: Record<string, string | number>) {
   return text.replace(/\{(\w+)\}/g, (match, key) => (key in values ? String(values[key]) : match));
 }
+
+/** Pages that exist in every language. */
+export const translatedPaths = ["/", "/privacy", "/terms", "/guide"];
+
+/** Splits "/de/privacy" into { locale: "de", path: "/privacy" }; English paths have no prefix. */
+export function splitPath(pathname: string): { locale: Locale; path: string } {
+  const [, first, ...rest] = pathname.split("/");
+  if (isOtherLocale(first)) return { locale: first, path: `/${rest.join("/")}` };
+  return { locale: "en", path: pathname || "/" };
+}
+
+/** Where the language menu goes: the same page in that language, or its home page. */
+export function switchHref(pathname: string, target: Locale) {
+  const { path } = splitPath(pathname);
+  const clean = path.length > 1 ? path.replace(/\/$/, "") : "/";
+  return localePath(target, translatedPaths.includes(clean) ? clean : "/");
+}

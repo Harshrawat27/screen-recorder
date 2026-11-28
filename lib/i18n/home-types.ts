@@ -85,6 +85,8 @@ export type HomeCopy = {
     startFree: string;
     freeIncludes: string[];
     paidHeading: string;
+    macEverything: string; // first line of the $79 card
+    savingsTitle: string; // heading above the Loom calculator
     tiers: { first100: { name: string; updates: string; note: string }; launch: { name: string; updates: string; note: string } };
     badges: { open: string; closed: string; ended: string; later: string };
     once: string;

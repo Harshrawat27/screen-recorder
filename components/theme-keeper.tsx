@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-// The script in app/layout.tsx sets <html data-theme> before the page paints. If React has to
+// The script in app/root-shell.tsx sets <html data-theme> before the page paints. If React has to
 // re-render the whole page while loading (for example when a browser extension changed the
 // page before React took over), <html> loses that attribute and the page turns light. This puts
 // it back, now and whenever it goes missing.

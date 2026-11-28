@@ -13,6 +13,8 @@ import { TeamSwitcher } from '@/components/team-ui';
 import { firstName, getTeamContext, teamChoices } from '@/lib/team';
 import { requireSession } from '@/lib/session';
 import { availableUpdate } from '@/lib/updates';
+import { markSeen } from '@/lib/last-seen';
+import { after } from 'next/server';
 
 // The dashboard frame. The sidebar is exactly the height of the window and stays put;
 // only the page content on the right scrolls.
@@ -22,6 +24,8 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { user } = await requireSession();
+  // "Opened today" for the admin panel; after the response, so it never slows the page.
+  after(() => markSeen(user.id).catch((err) => console.error('Could not record last seen', err)));
   const [access, team] = await Promise.all([
     getAccess(user),
     getTeamContext(user),

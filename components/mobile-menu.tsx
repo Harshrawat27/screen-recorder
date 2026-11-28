@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { DemoDialog } from "@/components/hero-video";
+import { LanguageList } from "@/components/language-menu";
+import type { Locale } from "@/lib/i18n";
 
 // The navbar's links on screens narrower than `lg`, behind a menu button.
 type Labels = { chrome: string; signIn: string; open: string; close: string };
@@ -14,12 +16,17 @@ export function MobileMenu({
   chromeStoreUrl,
   labels = defaultLabels,
   signInUntilMd = false,
+  locale = "en",
+  wide = false,
 }: {
   links: { href: string; label: string; demo?: boolean }[];
   chromeStoreUrl: string;
   labels?: Labels;
   /** Show Sign in here up to `md` (other languages hide the navbar's Sign in until then). */
   signInUntilMd?: boolean;
+  locale?: Locale;
+  /** Keep the menu up to `xl` instead of `lg` (longer labels in other languages). */
+  wide?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [demo, setDemo] = useState(false);
@@ -35,7 +42,7 @@ export function MobileMenu({
   }, [open]);
 
   return (
-    <div className="lg:hidden">
+    <div className={wide ? "xl:hidden" : "lg:hidden"}>
       <button
         type="button"
         aria-label={open ? labels.close : labels.open}
@@ -90,9 +97,10 @@ export function MobileMenu({
               </Link>
             </li>
           </ul>
+          <LanguageList locale={locale} onPick={() => setOpen(false)} />
         </div>
       )}
-      <DemoDialog open={demo} onOpenChange={setDemo} />
+      <DemoDialog open={demo} onOpenChange={setDemo} locale={locale} />
     </div>
   );
 }

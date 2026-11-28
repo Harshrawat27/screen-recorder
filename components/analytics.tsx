@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import type { PostHog } from "posthog-js";
 import { POSTHOG_KEY, POSTHOG_UI, untracked } from "@/lib/analytics";
 import { getRegion } from "@/lib/region";
+import { type Locale, localePath } from "@/lib/i18n";
+import { ui } from "@/lib/i18n/ui";
 
 // PostHog in the browser, and the cookie banner.
 //   Europe (EU, EEA, UK, Switzerland): nothing loads until the visitor chooses Allow.
@@ -108,15 +110,16 @@ export function resetAnalytics() {
 }
 
 /** "Cookie settings" in the footer: reopens the banner. */
-export function CookieSettingsLink({ className }: { className?: string }) {
+export function CookieSettingsLink({ className, label = "Cookie settings" }: { className?: string; label?: string }) {
   return (
     <button type="button" className={className} onClick={() => window.dispatchEvent(new Event(OPEN_SETTINGS))}>
-      Cookie settings
+      {label}
     </button>
   );
 }
 
-export function Analytics() {
+export function Analytics({ locale = "en" }: { locale?: Locale } = {}) {
+  const t = ui[locale].cookie;
   const pathname = usePathname();
   const [banner, setBanner] = useState(false);
   const skip = untracked(pathname);
@@ -155,13 +158,13 @@ export function Analytics() {
   return (
     <div
       role="dialog"
-      aria-label="Cookie settings"
+      aria-label={t.settings}
       className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-md rounded-card border border-line bg-surface p-4 text-sm shadow-pop sm:left-auto sm:right-5 sm:bottom-5"
     >
       <p className="leading-relaxed text-muted">
-        We use cookies to see how people use our website, so we can make it better. No ads.{" "}
-        <Link href="/privacy#analytics" className="font-medium text-text underline underline-offset-2">
-          Privacy
+        {t.text}{" "}
+        <Link href={`${localePath(locale, "/privacy")}#analytics`} className="font-medium text-text underline underline-offset-2">
+          {t.privacy}
         </Link>
       </p>
       <div className="mt-3 flex justify-end gap-2">
@@ -170,14 +173,14 @@ export function Analytics() {
           onClick={() => choose("no")}
           className="h-9 rounded-control px-3.5 font-semibold text-muted transition-colors hover:bg-sunken hover:text-text"
         >
-          Decline
+          {t.decline}
         </button>
         <button
           type="button"
           onClick={() => choose("yes")}
           className="h-9 rounded-control bg-text px-3.5 font-semibold text-canvas transition-colors hover:bg-text/85"
         >
-          Allow
+          {t.allow}
         </button>
       </div>
     </div>

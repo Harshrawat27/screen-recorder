@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MobileMenu } from "@/components/mobile-menu";
 import { WatchDemoButton } from "@/components/hero-video";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageMenu } from "@/components/language-menu";
 import { LogoMark } from "@/components/ui";
 import { site } from "@/lib/site";
 import { type Locale, localePath } from "@/lib/i18n";
@@ -25,6 +26,8 @@ function navLinks(locale: Locale): { href: string; label: string; demo?: boolean
 export function SiteNav({ locale = "en" }: { locale?: Locale } = {}) {
   const t = homeCopy(locale).nav;
   const links = navLinks(locale);
+  // Other languages have longer labels, so the full link row waits for wider screens.
+  const wide = locale !== "en";
   return (
     <header className="relative z-50 h-[76px] sm:h-[84px]">
       <div className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-5">
@@ -37,11 +40,11 @@ export function SiteNav({ locale = "en" }: { locale?: Locale } = {}) {
           <span className={`hidden text-[17px] tracking-[-0.01em] ${locale === "en" ? "min-[360px]:inline" : "min-[420px]:inline"}`}>{site.name}</span>
         </Link>
 
-        <ul className="hidden items-center gap-7 text-[15px] text-text lg:flex">
+        <ul className={`hidden items-center gap-5 whitespace-nowrap xl:gap-7 text-[15px] text-text ${wide ? "xl:flex" : "lg:flex"}`}>
           {links.map((link) => (
             <li key={link.href}>
               {link.demo ? (
-                <WatchDemoButton className="cursor-pointer transition-colors hover:text-muted">{link.label}</WatchDemoButton>
+                <WatchDemoButton locale={locale} className="cursor-pointer transition-colors hover:text-muted">{link.label}</WatchDemoButton>
               ) : (
                 <a href={link.href} className="transition-colors hover:text-muted">
                   {link.label}
@@ -57,8 +60,9 @@ export function SiteNav({ locale = "en" }: { locale?: Locale } = {}) {
         </ul>
 
         <div className="flex items-center gap-1 sm:gap-2">
+          <LanguageMenu locale={locale} wide={wide} />
           <ThemeToggle />
-          <MobileMenu links={links} chromeStoreUrl={site.chromeStoreUrl} labels={{ chrome: t.chrome, signIn: t.signIn, open: t.openMenu, close: t.closeMenu }} signInUntilMd={locale !== "en"} />
+          <MobileMenu links={links} chromeStoreUrl={site.chromeStoreUrl} labels={{ chrome: t.chrome, signIn: t.signIn, open: t.openMenu, close: t.closeMenu }} signInUntilMd={locale !== "en"} locale={locale} wide={wide} />
           <Link href="/login" className={`hidden whitespace-nowrap rounded-full px-3.5 py-2 text-[15px] font-medium text-text hover:bg-sunken ${locale === "en" ? "sm:block" : "md:block"}`}>
             {t.signIn}
           </Link>

@@ -44,7 +44,7 @@ export function SkyHero({ price, locale = 'en' }: { price: number; locale?: Loca
           <a href='/start' className={buttonClass('primary', 'lg', 'rounded-full px-7')}>
             {t.startFree}
           </a>
-          <WatchDemoButton className={buttonClass('secondary', 'lg', 'rounded-full px-7')}>
+          <WatchDemoButton locale={locale} className={buttonClass('secondary', 'lg', 'rounded-full px-7')}>
             {t.seeHow}
           </WatchDemoButton>
         </div>
@@ -74,7 +74,7 @@ export function SkyHero({ price, locale = 'en' }: { price: number; locale?: Loca
       </div>
 
       <div className='relative mt-16 px-4 sm:mt-20 sm:px-8'>
-        <HeroVideo />
+        <HeroVideo locale={locale} />
       </div>
     </section>
     </>

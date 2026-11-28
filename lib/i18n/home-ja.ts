@@ -118,6 +118,8 @@ export const ja: HomeCopy = {
       "動画はあなた自身のCloudflareに、接続はワンクリック",
     ],
     paidHeading: "有料：一度払えばずっと使える",
+    macEverything: "買い切りプランのすべて",
+    savingsTitle: "Loomと比べてチームが節約できる金額",
     tiers: {
       first100: { name: "買い切り", updates: "アップデートは永久無料", note: "一回払い。今後のアップデートもすべて込み。" },
       launch: { name: "Macアプリ公開後", updates: "今後のアップデートは有料の可能性あり", note: "Macアプリ公開後の価格です。" },

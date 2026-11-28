@@ -120,6 +120,8 @@ export const en: HomeCopy = {
       "Videos stored in your own Cloudflare, connected in one click",
     ],
     paidHeading: "Paid: pay once, keep it for life",
+    macEverything: "Everything in Lifetime",
+    savingsTitle: "How much your team saves compared to Loom",
     tiers: {
       first100: { name: "Lifetime", updates: "Lifetime updates", note: "One payment. Every future update included." },
       launch: { name: "After the Mac app", updates: "Future updates may be paid", note: "The price once the Mac app is live." },

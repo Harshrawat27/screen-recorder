@@ -3,9 +3,10 @@ import { CookieSettingsLink } from "@/components/analytics";
 import { Savings } from "@/components/savings";
 import { CheckIcon, LogoMark, buttonClass } from "@/components/ui";
 import { site } from "@/lib/site";
-import { LIFETIME_PRICE, MAC_PRICE, type TierState, shownTiers } from "@/lib/pricing";
+import { LIFETIME_PRICE, MAC_PRICE, shownTiers } from "@/lib/pricing";
 import { type Locale, fill, localeNames, localePath, locales } from "@/lib/i18n";
 import { homeCopy } from "@/lib/i18n/home";
+import { ui } from "@/lib/i18n/ui";
 import type { HomeCopy } from "@/lib/i18n/home-types";
 
 type V = HomeCopy["features"]["v"];
@@ -317,81 +318,6 @@ export function Features({ price, locale = "en" }: { price: number; locale?: Loc
 
 type P = HomeCopy["pricing"];
 
-function TierCard({
-  name,
-  price,
-  updates,
-  note,
-  state,
-  hasUpdates,
-  t,
-}: {
-  name: string;
-  price: number;
-  updates: string;
-  note: string;
-  state: TierState;
-  hasUpdates: boolean;
-  t: P;
-}) {
-  const open = state === "open";
-  const gone = state === "closed" || state === "ended";
-  return (
-    <div
-      aria-disabled={!open || undefined}
-      className={`flex flex-col rounded-[24px] bg-surface p-7 sm:p-8 ${
-        open ? "border-2 border-text shadow-pop" : "border border-line"
-      } ${open ? "" : "pointer-events-none select-none opacity-45"}`}
-    >
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-lg font-semibold">{name}</p>
-        <span
-          className={`rounded-full px-3 py-1 text-xs font-semibold ${open ? "bg-text text-canvas" : "border border-line text-muted"}`}
-        >
-          {t.badges[state]}
-        </span>
-      </div>
-      <p className="mt-6 flex items-baseline gap-2">
-        <span
-          className={`font-display text-[64px] leading-none ${gone ? "line-through decoration-2" : ""}`}
-          style={{ letterSpacing: "-0.03em" }}
-        >
-          ${price}
-        </span>
-        <span className="text-muted">{t.once}</span>
-      </p>
-      <p className="mt-2 text-muted">{note}</p>
-
-      <p className="mt-6 flex items-center gap-2.5 text-[15px] font-medium">
-        <span
-          className={`grid size-5 shrink-0 place-items-center rounded-full ${hasUpdates ? "bg-text text-canvas" : "border border-line-strong text-muted"}`}
-        >
-          {hasUpdates ? (
-            <CheckIcon className="size-3" />
-          ) : (
-            <svg viewBox="0 0 12 12" className="size-2.5" fill="none" aria-hidden>
-              <path d="M3 6h6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-            </svg>
-          )}
-        </span>
-        {updates}
-      </p>
-
-      <div className="mt-auto pt-8">
-        {open ? (
-          <a href="/buy" className={buttonClass("primary", "lg", "w-full rounded-full")}>
-            {fill(t.buy, { price })}
-          </a>
-        ) : (
-          <span className={buttonClass("secondary", "lg", "w-full cursor-default rounded-full opacity-70")}>
-            {state === "later" ? t.laterButton : t.badges[state]}
-          </span>
-        )}
-      </div>
-    </div>
-  );
-}
-
 function Check() {
   return (
     <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-text text-canvas">
@@ -400,9 +326,86 @@ function Check() {
   );
 }
 
+function Dash() {
+  return (
+    <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border border-line-strong text-muted">
+      <svg viewBox="0 0 12 12" className="size-2.5" fill="none" aria-hidden>
+        <path d="M3 6h6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    </span>
+  );
+}
+
+/** One plan: name and badge, price, a line under it, the button, then what's included. */
+function PlanCard({
+  name,
+  badge,
+  price,
+  unit,
+  note,
+  button,
+  items,
+  highlight = false,
+  muted = false,
+}: {
+  name: string;
+  badge: string;
+  price: number;
+  unit: string;
+  note: string;
+  button: React.ReactNode;
+  items: { text: React.ReactNode; key: string; no?: boolean }[];
+  highlight?: boolean;
+  muted?: boolean;
+}) {
+  return (
+    <div
+      aria-disabled={muted || undefined}
+      className={`flex flex-col rounded-[24px] bg-surface p-7 sm:p-8 ${highlight ? "border-2 border-text shadow-pop" : "border border-line"} ${
+        muted ? "opacity-60" : ""
+      }`}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-lg font-semibold">{name}</p>
+        <span
+          className={`whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold ${highlight ? "bg-text text-canvas" : "border border-line text-muted"}`}
+        >
+          {badge}
+        </span>
+      </div>
+      <p className="mt-6 flex items-baseline gap-2">
+        <span className="font-display text-[64px] leading-none" style={{ letterSpacing: "-0.03em" }}>
+          ${price}
+        </span>
+        <span className="text-muted">{unit}</span>
+      </p>
+      <p className="mt-2 min-h-[3em] text-muted">{note}</p>
+      <div className="mt-6">{button}</div>
+      <ul className="mt-7 space-y-3 border-t border-line pt-6 text-[15px]">
+        {items.map((item) => (
+          <li key={item.key} className="flex items-start gap-3">
+            {item.no ? <Dash /> : <Check />}
+            <span>{item.text}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function Pricing({ price, notice, locale = "en" }: { sold?: number; price: number; notice?: React.ReactNode; locale?: Locale }) {
-  const t = homeCopy(locale).pricing;
-  const s = homeCopy(locale).savings;
+  const copy = homeCopy(locale);
+  const t = copy.pricing;
+  const s = copy.savings;
+  const tiers = shownTiers();
+  const lifetime = tiers.find((x) => x.tier.id !== "launch");
+  const mac = tiers.find((x) => x.tier.id === "launch");
+  const lifetimeOpen = lifetime?.state === "open";
+  const roadmapLink = (
+    <Link href="/roadmap" className="underline underline-offset-2 hover:text-muted">
+      {t.tiers.first100.updates}
+    </Link>
+  );
   return (
     <section id="pricing" className="scroll-mt-6 border-y border-line bg-surface/60">
       <div className="mx-auto max-w-6xl px-5 py-24 sm:px-8 sm:py-32">
@@ -410,78 +413,79 @@ export function Pricing({ price, notice, locale = "en" }: { sold?: number; price
 
         {notice && <div className="mx-auto mt-10 max-w-3xl">{notice}</div>}
 
-        {/* The free plan: no limits, because the videos live in your own Cloudflare. */}
-        <div className="mt-14 grid gap-8 rounded-[24px] border-2 border-text bg-surface p-7 shadow-pop sm:p-9 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-          <div>
-            <div className="flex items-center gap-3">
-              <p className="text-lg font-semibold">{t.free}</p>
-              <span className="rounded-full bg-text px-3 py-1 text-xs font-semibold text-canvas">{t.forever}</span>
-            </div>
-            <p className="mt-6 flex items-baseline gap-2">
-              <span className="font-display text-[64px] leading-none" style={{ letterSpacing: "-0.03em" }}>
-                $0
-              </span>
-              <span className="text-muted">{t.noCard}</span>
-            </p>
-            <p className="mt-2 text-muted">{t.freeNote}</p>
-            <a href="/start" className={buttonClass("primary", "lg", "mt-8 w-full rounded-full sm:w-auto sm:px-10")}>
-              {t.startFree}
-            </a>
-          </div>
-          <ul className="grid gap-3.5 text-[15px] sm:grid-cols-2">
-            {t.freeIncludes.map((text) => (
-              <li key={text} className="flex items-start gap-3">
-                <Check />
-                {text}
-              </li>
-            ))}
-          </ul>
+        {/* Three plans side by side: Free, the lifetime price on sale now, the price after the Mac app. */}
+        <div className="mt-14 grid items-stretch gap-5 lg:grid-cols-3">
+          <PlanCard
+            name={t.free}
+            badge={t.forever}
+            price={0}
+            unit={t.noCard}
+            note={t.freeNote}
+            button={
+              <a href="/start" className={buttonClass("secondary", "lg", "w-full rounded-full")}>
+                {t.startFree}
+              </a>
+            }
+            items={t.freeIncludes.map((text) => ({ key: text, text }))}
+          />
+          {lifetime && (
+            <PlanCard
+              name={t.tiers.first100.name}
+              badge={t.badges[lifetime.state]}
+              price={lifetime.tier.price}
+              unit={t.once}
+              note={t.tiers.first100.note}
+              highlight={lifetimeOpen}
+              button={
+                lifetimeOpen ? (
+                  <a href="/buy" className={buttonClass("primary", "lg", "w-full rounded-full")}>
+                    {fill(t.buy, { price: lifetime.tier.price })}
+                  </a>
+                ) : (
+                  <span className={buttonClass("secondary", "lg", "w-full cursor-default rounded-full opacity-70")}>
+                    {t.badges[lifetime.state]}
+                  </span>
+                )
+              }
+              items={[
+                ...t.included.map((text) => ({ key: text, text })),
+                { key: "updates", text: roadmapLink },
+              ]}
+            />
+          )}
+          {mac && (
+            <PlanCard
+              name={t.tiers.launch.name}
+              badge={t.badges[mac.state]}
+              price={mac.tier.price}
+              unit={t.once}
+              note={t.tiers.launch.note}
+              muted
+              button={
+                <span className={buttonClass("secondary", "lg", "w-full cursor-default rounded-full opacity-70")}>{t.laterButton}</span>
+              }
+              items={[
+                { key: "all", text: t.macEverything },
+                { key: "updates", text: t.tiers.launch.updates, no: true },
+              ]}
+            />
+          )}
         </div>
 
-        <p className="mt-14 text-center text-lg font-semibold">{t.paidHeading}</p>
+        <p className="mx-auto mt-8 max-w-3xl text-center text-[15px] leading-relaxed text-muted">
+          {t.updatesBefore}
+          <Link href="/roadmap" className="underline underline-offset-2 hover:text-text">
+            {t.updatesLink}
+          </Link>
+          {fill(t.updatesAfter, { price: LIFETIME_PRICE, mac: MAC_PRICE })}
+        </p>
+        <p className="mx-auto mt-3 max-w-3xl text-center text-sm leading-relaxed text-faint">{t.footnote}</p>
 
-        <div className="mx-auto mt-6 grid max-w-4xl gap-5 md:grid-cols-2">
-          {shownTiers().map(({ tier, state }) => {
-            const copy = tier.id === "launch" ? t.tiers.launch : t.tiers.first100;
-            return (
-              <TierCard
-                key={tier.id}
-                name={copy.name}
-                price={tier.price}
-                updates={copy.updates}
-                note={copy.note}
-                state={state}
-                hasUpdates={tier.id !== "launch"}
-                t={t}
-              />
-            );
-          })}
-        </div>
-
-        <div className="mt-6 grid items-start gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-[24px] border border-line bg-surface p-7 sm:p-9">
-            <p className="text-lg font-semibold">{t.paidIncludes}</p>
-            <ul className="mt-6 space-y-3.5 text-[15px]">
-              {t.included.map((text) => (
-                <li key={text} className="flex items-start gap-3">
-                  <Check />
-                  {text}
-                </li>
-              ))}
-              <li className="flex items-start gap-3">
-                <Check />
-                <span>
-                  {t.updatesBefore}
-                  <Link href="/roadmap" className="underline underline-offset-2 hover:text-muted">
-                    {t.updatesLink}
-                  </Link>
-                  {fill(t.updatesAfter, { price: LIFETIME_PRICE, mac: MAC_PRICE })}
-                </span>
-              </li>
-            </ul>
-            <p className="mt-7 border-t border-line pt-6 text-sm leading-relaxed text-faint">{t.footnote}</p>
-          </div>
-
+        {/* The Loom comparison, on its own. */}
+        <div className="mx-auto mt-20 max-w-2xl">
+          <h3 className="mb-6 text-center text-[28px] leading-tight sm:text-[34px]" style={{ letterSpacing: "-0.02em" }}>
+            {t.savingsTitle}
+          </h3>
           <Savings
             price={price}
             labels={{
@@ -751,7 +755,7 @@ export function SiteFooter({ locale = "en", path }: { locale?: Locale; path?: st
                   {link.label}
                 </Link>
               ))}
-              {column.key === "company" && <CookieSettingsLink className="text-left text-muted hover:text-text" />}
+              {column.key === "company" && <CookieSettingsLink label={ui[locale].cookie.settings} className="text-left text-muted hover:text-text" />}
             </div>
           ))}
         </nav>
