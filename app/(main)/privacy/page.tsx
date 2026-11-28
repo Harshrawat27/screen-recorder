@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function Privacy() {
   return (
-    <LegalPage title="Privacy" updated="21 November 2026">
+    <LegalPage title="Privacy" updated="21 November 2026" path="/privacy">
       <p>
         {site.name} is a screen recorder (a website and a Chrome extension) built so that your recordings live in your
         own Cloudflare account, not ours. This page explains what we keep, what passes through our services, and what

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function Terms() {
   return (
-    <LegalPage title="Terms" updated="28 November 2026">
+    <LegalPage title="Terms" updated="28 November 2026" path="/terms">
       <p>
         These terms cover {site.name}: the website, the dashboard, the share pages and the Chrome extension. By using{" "}
         {site.name} you agree to them. They are short on purpose.
